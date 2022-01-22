@@ -2,6 +2,18 @@
 with lib;
 let
   cfg = config.aviallon.general;
+  nixConfigValue = value:
+    if value == true then "true"
+    else if value == false then "false"
+    else if isList value then (toString value)
+    else generators.mkValueStringDefault { } value;
+
+  nixConfig = settings: (generators.toKeyValue {
+    listsAsDuplicateKeys = false;
+    mkKeyValue = generators.mkKeyValueDefault {
+      mkValueString = nixConfigValue;
+    } " = ";
+  } settings);
 in
 {
   options.aviallon.general = {
@@ -84,9 +96,11 @@ in
     ];
     nix.distributedBuilds = mkDefault false;
 
-    nix.extraOptions = ''
-      builders-use-substitutes = true
-    '';
+    nix.package = (if (builtins.compareVersions pkgs.nix.version "2.4" >= 0) then pkgs.nix else pkgs.nix_2_4);
+    nix.extraOptions = nixConfig {
+      builders-use-substitutes = true;
+      experimental-features = [ "nix-command" "flakes" ];
+    };
   };
 
 }
