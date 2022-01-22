@@ -10,10 +10,23 @@ in {
       type = types.bool;
       description = "Enable aviallon's laptop configuration";
     };
+    power-manager = mkOption {
+      default = "tlp";
+      example = "power-profiles-daemon";
+      description = "Change service used to manage power consumption on laptop";
+      type = types.enum [ "tlp" "power-profiles-daemon" false ];
+    };
   };
 
   config = mkIf cfg.enable {
-    networking.networkmanager.wifi.powersave = true;
+    networking.networkmanager.wifi.powersave = mkDefault true;
     aviallon.general.unsafeOptimizations = mkOverride 50 true;
+
+    hardware.sensor.iio.enable = mkDefault true;
+
+    services.tlp.enable = (cfg.power-manager == "tlp");
+    services.power-profiles-daemon.enable = (cfg.power-manager == "power-profiles-daemon");
+    services.tp-auto-kbbl.enable = mkDefault true;
+    powerManagement.powertop.enable = mkDefault true;
   };
 }
