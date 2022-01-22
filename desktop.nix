@@ -2,6 +2,61 @@
 with lib;
 let
   cfg = config.aviallon.desktop;
+  filterConfig = pkgs.writeText "pipewire-noise-filter.cfg"  ''
+# Noise canceling source
+#
+# start with pipewire -c filter-chain/source-rnnoise.conf
+#
+context.properties = {
+    log.level        = 0
+}
+
+context.spa-libs = {
+    audio.convert.* = audioconvert/libspa-audioconvert
+    support.*       = support/libspa-support
+}
+
+context.modules = [
+    {   name = libpipewire-module-rtkit
+        args = {
+            #nice.level   = -11
+            #rt.prio      = 88
+            #rt.time.soft = 200000
+            #rt.time.hard = 200000
+        }
+        flags = [ ifexists nofail ]
+    }
+    {   name = libpipewire-module-protocol-native }
+    {   name = libpipewire-module-client-node }
+    {   name = libpipewire-module-adapter }
+
+    {   name = libpipewire-module-filter-chain
+        args = {
+            node.name =  "rnnoise_source"
+            node.description =  "Noise Canceling source"
+            media.name =  "Noise Canceling source"
+            filter.graph = {
+                nodes = [
+                    {
+                        type = ladspa
+                        name = rnnoise
+                        plugin = ${pkgs.rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so
+                        label = noise_suppressor_stereo
+                        control = {
+                            "VAD Threshold (%)" ${toString cfg.audio.noise-filter.strength}
+                        }
+                    }
+                ]
+            }
+            capture.props = {
+                node.passive = true
+            }
+            playback.props = {
+                media.class = Audio/Source
+            }
+        }
+    }
+]'';
 in {
   options.aviallon.desktop = {
     enable = mkOption {
@@ -14,6 +69,14 @@ in {
       type = types.str;
       default = "fr";
       example = "us";
+    };
+    audio = {
+      noise-filter.strength = mkOption {
+        description = "Noise reduction strength (from 0 to 100)";
+        type = types.float;
+        default = 80.0;
+        example = 0.0;
+      };
     };
   };
 
@@ -34,8 +97,36 @@ in {
     services.printing.enable = true;
 
     # Enable sound.
-    sound.enable = true;
-    # hardware.pulseaudio.enable = true;
+    sound.enable = false;
+    services.pipewire = {
+      enable = true;
+      pulse.enable = true;
+      jack.enable = true;
+      alsa.enable = true;
+      alsa.support32Bit = mkDefault true;
+      media-session.enable = true;
+    };
+    security.rtkit.enable = true; # Real-time support for pipewire
+
+
+    # Hardware-agnostic audio denoising
+    systemd.user.services.pipewire-noise-filter = {
+      serviceConfig = {
+        ExecStart = [
+          "${pkgs.pipewire}/bin/pipewire -c ${filterConfig}"
+        ];
+        Type = "simple";
+        Restart = "on-failure";
+      };
+      bindsTo = [ "pipewire.service" ];
+      after = [ "pipewire.service" ];
+      environment = {
+        PIPEWIRE_DEBUG = "3";
+      };
+      enable = cfg.audio.noise-filter.strength > 0.0;
+      wantedBy = [ "pipewire.service" ];
+      description = "Pipewire Noise Filter";
+    };
 
     # Enable touchpad support (enabled default in most desktopManager).
     services.xserver.libinput.enable = true;
