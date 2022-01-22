@@ -84,6 +84,16 @@ in {
 
     # Enable the X11 windowing system.
     services.xserver.enable = true;
+    # services.xserver.tty = mkOverride 70 1;
+
+    systemd.services."getty@tty1".enable = mkOverride 50 false;
+    systemd.services."autovt@tty1".enable = mkOverride 50 false;
+    # Prevents blinking cursor
+    services.xserver.displayManager.sddm.settings = {
+      X11 = {
+        MinimumVT = mkOverride 50 1;
+      };
+    };
     # Configure keymap in X11
     services.xserver.layout = cfg.layout;
     services.xserver.xkbOptions = "eurosign:e";
@@ -92,6 +102,11 @@ in {
     # Enable the Plasma 5 Desktop Environment.
     services.xserver.displayManager.sddm.enable = true;
     services.xserver.desktopManager.plasma5.enable = true;
+
+    boot.plymouth.enable = mkDefault true;
+    boot.kernelParams = [ "quiet" "splash" "udev.log_level=3" ];
+    boot.initrd.verbose = false;
+    boot.consoleLogLevel = 1;
 
     # Enable CUPS to print documents.
     services.printing.enable = true;
@@ -131,12 +146,15 @@ in {
     # Enable touchpad support (enabled default in most desktopManager).
     services.xserver.libinput.enable = true;
 
+    programs.gnupg.agent.pinentryFlavor = "qt";
 
     environment.systemPackages = with pkgs; with libsForQt5; [
       firefox
       konsole
       kate
       yakuake
+      pinentry-qt
+      plasma-pa
     ];
 
     networking.networkmanager = {
