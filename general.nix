@@ -69,13 +69,14 @@ in
     nix.gc.automatic = mkDefault true;
     nix.gc.randomizedDelaySec = "30min";
     nix.optimise.automatic = mkDefault true;
+    nix.autoOptimiseStore = mkDefault true;
 
     nix.daemonIOSchedPriority = 5;
     nix.daemonCPUSchedPolicy = "batch";
     nix.daemonIOSchedClass = "idle";
 
     system.autoUpgrade.enable = mkDefault true;
-    system.autoUpgrade.allowReboot = mkOverride 500 true;
+    system.autoUpgrade.allowReboot = mkDefault true;
     system.autoUpgrade.dates = "00:00";
 
 
@@ -84,6 +85,7 @@ in
       gcc.arch = cfg.cpuArch;
       gcc.tune = cfg.cpuTune;
     };
+    nixpkgs.config.allowUnfree = mkDefault true;
 
     nix.buildMachines = [
       {
