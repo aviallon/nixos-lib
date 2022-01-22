@@ -16,6 +16,8 @@ in
 {
   imports = [
     ./programs/nano.nix
+    ./programs/git.nix
+    ./programs/htop.nix
   ];
 
   options.aviallon.programs = {
