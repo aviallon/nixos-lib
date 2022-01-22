@@ -46,6 +46,14 @@ in {
       }
     ] (x: builtins.toJSON x));
 
+    programs.gnupg = {
+      agent.enable = true;
+      dirmngr.enable = true;
+      agent.enableSSHSupport = true;
+      agent.enableExtraSocket = true;
+      agent.enableBrowserSocket = true;
+    };
+
     services.avahi.enable = true; # .lan/.local resolution
     services.avahi.nssmdns = true; # .lan/.local resolution
     services.avahi.publish.enable = true;
