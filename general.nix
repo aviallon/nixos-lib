@@ -5,15 +5,19 @@ let
   nixConfigValue = value:
     if value == true then "true"
     else if value == false then "false"
-    else if isList value then (toString value)
+    else if isList value then toString value
     else generators.mkValueStringDefault { } value;
 
   nixConfig = settings: (generators.toKeyValue {
-    listsAsDuplicateKeys = false;
     mkKeyValue = generators.mkKeyValueDefault {
       mkValueString = nixConfigValue;
     } " = ";
-  } settings);
+  } (filterAttrs (n: v: !(
+      (v == null) ||
+      (isList v && (length v == 0))
+    ))
+    settings)
+  );
 in
 {
   options.aviallon.general = {
@@ -36,6 +40,7 @@ in
       type = types.str;
     };
     unsafeOptimizations = mkEnableOption "unsafe system tuning";
+    flakes.enable = mkEnableOption "experimental flake support";
   };
 
   config = mkIf cfg.enable {
@@ -97,11 +102,16 @@ in
     ];
     nix.distributedBuilds = mkDefault false;
 
-    nix.package = (if (builtins.compareVersions pkgs.nix.version "2.4" >= 0) then pkgs.nix else pkgs.nix_2_4);
+    nix.package = mkIf cfg.flakes.enable (if (builtins.compareVersions pkgs.nix.version "2.4" >= 0) then pkgs.nix else pkgs.nix_2_4);
     nix.extraOptions = nixConfig {
       builders-use-substitutes = true;
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = concatLists [
+        (optionals cfg.flakes.enable ["nix-command" "flakes"])
+      ];
+      download-attempts = 5;
+      stalled-download-timeout = 20;
     };
+
   };
 
 }
