@@ -33,19 +33,28 @@ in
   };
 
   config = mkIf cfg.enable {
-    services.udev.extraRules = concatStringsSep "\n" (
-      concatLists [
-        (optional (!(builtins.isNull cfg.hddScheduler))
-          ''ACTION=="add|change" SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}!="none", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
-        )
-        (optional (!(builtins.isNull cfg.slowFlashScheduler))
-          ''ACTION=="add|change" SUBSYSTEM=="block", KERNEL=="sd[a-z]*|nvme[0-9]*n[0-9]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"''
-        )
-        (optional (!(builtins.isNull cfg.nvmeScheduler))
-          ''ACTION=="add|change" SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="${cfg.nvmeScheduler}"''
-        )
-      ]
-    );
+
+    services.udev =
+      let
+        udevRules = concatStringsSep "\n" (
+          concatLists [
+            (optional (!(builtins.isNull cfg.hddScheduler))
+              ''ACTION=="add|change" SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}!="none", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
+            )
+            (optional (!(builtins.isNull cfg.slowFlashScheduler))
+              ''ACTION=="add|change" SUBSYSTEM=="block", KERNEL=="sd[a-z]*|nvme[0-9]*n[0-9]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"''
+            )
+            (optional (!(builtins.isNull cfg.nvmeScheduler))
+              ''ACTION=="add|change" SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="${cfg.nvmeScheduler}"''
+            )
+          ]
+        );
+      in
+      {
+        extraRules = udevRules;
+        initrdRules = udevRules;
+      };
+
 
     services.smartd = {
       enable = mkDefault true;
