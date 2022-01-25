@@ -23,6 +23,9 @@ let
       };
   };
   cfg = config.aviallon.boot;
+  allowUnfree = (types.isType types.attrs config.nixpkgs.config)
+                && (hasAttr "allowUnfree" config.nixpkgs.config)
+                && (getAttr "allowUnfree" config.nixpkgs.config);
 in
 {
 
@@ -52,7 +55,8 @@ in
 
   config = mkIf cfg.enable {
 
-    hardware.enableAllFirmware = mkOverride 500 true;
+    hardware.enableAllFirmware = allowUnfree;
+    hardware.enableRedistributableFirmware = true;
 
     boot = {
       initrd.kernelModules = [ ];

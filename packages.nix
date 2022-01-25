@@ -50,7 +50,6 @@ in
           };
       };
 
-    nixpkgs.config.allowUnfree = true;
 
     environment.systemPackages = with pkgs; with libsForQt5; [
       vim

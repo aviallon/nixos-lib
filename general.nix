@@ -85,7 +85,6 @@ in
       gcc.arch = cfg.cpuArch;
       gcc.tune = cfg.cpuTune;
     };
-    nixpkgs.config.allowUnfree = mkDefault true;
 
     nix.buildMachines = [
       {
