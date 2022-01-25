@@ -7,9 +7,16 @@ in
 {
   options.aviallon.hardening = {
     enable = mkOption {
-      default = !desktopCfg.enable; # It usually conflicts with desktop use.
-      example = desktopCfg.enable;
+      default = true;
+      example = false;
       description = "Enable aviallon's hardening";
+      type = types.bool;
+    };
+
+    hardcore = mkOption {
+      default = !desktopCfg.enable;
+      example = desktopCfg.enable;
+      description = "Enable hardcore hardening, which might break things.";
       type = types.bool;
     };
   };
@@ -18,12 +25,13 @@ in
   #  imports = [
   #     (modulesPath + "/profiles/hardened.nix")
   #  ];
-    boot.kernelPackages = pkgs.linuxPackages_hardened;
-    security.lockKernelModules = mkOverride 500 true;
-    security.protectKernelImage = mkOverride 500 false; # needed for kexec
+    boot.kernelPackages = mkIf cfg.hardcore pkgs.linuxPackages_hardened;
+    security.lockKernelModules = mkIf cfg.hardcore (mkOverride 500 true);
+    security.protectKernelImage = mkIf cfg.hardcore (mkOverride 500 false); # needed for kexec
 
     security.apparmor.enable = true;
     services.dbus.apparmor = "enabled";
+
 
     boot.kernelParams = [
       # Slab/slub sanity checks, redzoning, and poisoning
@@ -34,6 +42,9 @@ in
 
       # Enable page allocator randomization
       "page_alloc.shuffle=1"
+
+      # Apparmor https://wiki.archlinux.org/title/AppArmor#Installation
+      "lsm=landlock,lockdown,yama,apparmor,bpf"
     ];
 
     boot.kernel.sysctl = {
@@ -48,7 +59,7 @@ in
     security.allowUserNamespaces = mkDefault true;
     boot.blacklistedKernelModules = mkForce [ ];
 
-    nix.allowedUsers = [ "@wheel" ];
+    nix.allowedUsers = mkIf cfg.hardcore [ "@wheel" ];
 
     security.audit.enable = true;
     security.auditd.enable = true;
@@ -56,6 +67,32 @@ in
     security.audit.rules = [
       "-a exit,always -F arch=b64 -S execve"
     ];
-  #  systemd.services.udisks2.confinement.enable = true;
+
+
+    systemd.services.dbus.serviceConfig = {
+      # Hardening
+      CapabilityBoundingSet = [ "CAP_SETGID" "CAP_SETUID" "CAP_SETPCAP" "CAP_SYS_RESOURCE" "CAP_AUDIT_WRITE" ];
+      DeviceAllow = [ "/dev/null rw" "/dev/urandom r" ];
+      DevicePolicy = "strict";
+      IPAddressDeny = "any";
+      LimitMEMLOCK = 0;
+      LockPersonality = true;
+      MemoryDenyWriteExecute = true;
+      NoNewPrivileges = true;
+      PrivateDevices = true;
+      PrivateTmp = true;
+      ProtectControlGroups = true;
+      ProtectHome = true;
+      ProtectKernelModules = true;
+      ProtectKernelTunables = true;
+      ProtectSystem = "strict";
+      ReadOnlyPaths = [ "-/" ];
+      RestrictAddressFamilies = [ "AF_UNIX" ];
+      RestrictNamespaces = true;
+      RestrictRealtime = true;
+      SystemCallArchitectures = "native";
+      SystemCallFilter = [ "@system-service" "~@chown" "~@clock" "~@cpu-emulation" "~@debug" "~@module" "~@mount" "~@obsolete" "~@raw-io" "~@reboot" "~@resources" "~@swap" "~memfd_create" "~mincore" "~mlock" "~mlockall" "~personality" ];
+      UMask = "0077";
+    };
   };
 }
