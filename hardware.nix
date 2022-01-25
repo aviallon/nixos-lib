@@ -14,9 +14,10 @@ in
     };
   };
 
-#   imports = [
-#     (if (cfg.gpuVendor == "amd") then ./hardware/amd.nix else "")
-#     (if (cfg.gpuVendor == "nvidia") then ./hardware/nvidia.nix else "")
-#     (if (cfg.gpuVendor == "intel") then ./hardware/intel.nix else "")
-#   ];
+  imports = [
+    ./hardware/amd.nix
+    ./hardware/nvidia.nix
+    ./hardware/intel.nix
+  ];
+
 }

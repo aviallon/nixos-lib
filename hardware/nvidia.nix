@@ -1,8 +1,10 @@
 { config, pkgs, lib, ... }:
 with lib;
 let
-  inherit (cfg);
+  hardwareCfg = config.aviallon.hardware;
 in
 {
-  boot.initrd.kernelModules = [ "nouveau" ];
+  config = mkIf (hardwareCfg.gpuVendor == "nvidia") {
+    boot.initrd.kernelModules = [ "nouveau" ];
+  };
 }
