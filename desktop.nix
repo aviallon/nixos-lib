@@ -160,7 +160,7 @@ in {
     programs.gnupg.agent.pinentryFlavor = "qt";
 
     environment.systemPackages = with pkgs; with libsForQt5; [
-      firefox
+#      firefox
       konsole
       kate
       yakuake
