@@ -82,6 +82,8 @@ in {
 
   config = mkIf cfg.enable {
 
+    aviallon.network.backend = mkDefault "NetworkManager";
+
     # Enable the X11 windowing system.
     services.xserver.enable = true;
     # services.xserver.tty = mkOverride 70 1;

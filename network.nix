@@ -12,26 +12,27 @@ in
       description = "Enable aviallon's network tuning";
       type = types.bool;
     };
-    useNetworkManager = mkOption {
-      default = desktopCfg.enable;
-      example = !desktopCfg.enable;
-      description = "Enable NetworkManager";
-      type = types.bool;
+    backend = mkOption {
+      default = "systemd-networkd";
+      example = "NetworkManager";
+      description = "Set network backend";
+      type = types.enum [ "systemd-networkd" "NetworkManager" "dhcpcd" ];
     };
   };
 
   config = mkIf cfg.enable {
-    networking.useNetworkd = mkOverride 500 true;
-    networking.networkmanager.enable = cfg.useNetworkManager;
-    networking.networkmanager.wifi.backend = "iwd";
+    networking.useNetworkd = (cfg.backend == "systemd-networkd");
+    networking.networkmanager.enable = (cfg.backend == "NetworkManager");
+    networking.dhcpcd.enable = (cfg.backend == "dhcpcd");
 
-    networking.dhcpcd.enable = !config.networking.useNetworkd;
+#    networking.networkmanager.wifi.backend = mkDefault "iwd";
+    networking.wireless.enable = (cfg.backend != "NetworkManager");
 
     # Must always be false
     networking.useDHCP = false;
 
-    networking.hostId = lib.mkDefault (builtins.abort "Default hostId not changed" null);
-    networking.hostName = lib.mkDefault (builtins.abort "Default hostname not changed" null);
+    networking.hostId = mkDefault (builtins.abort "Default hostId not changed" null);
+    networking.hostName = mkDefault (builtins.abort "Default hostname not changed" null);
 
     networking.firewall.allowPing = !desktopCfg.enable;
   };
