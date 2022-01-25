@@ -2,6 +2,7 @@
 with lib;
 let
   cfg = config.aviallon.general;
+  desktopCfg = config.aviallon.desktop;
   nixConfigValue = value:
     if value == true then "true"
     else if value == false then "false"
@@ -81,7 +82,7 @@ in
     nix.daemonIOSchedClass = "idle";
 
     system.autoUpgrade.enable = mkDefault true;
-    system.autoUpgrade.allowReboot = mkDefault true;
+    system.autoUpgrade.allowReboot = mkIf (!desktopCfg.enable) (mkDefault true);
     system.autoUpgrade.dates = "00:00";
 
 
