@@ -103,7 +103,12 @@ in {
 
     # Enable the Plasma 5 Desktop Environment.
     services.xserver.displayManager.sddm.enable = true;
-    services.xserver.desktopManager.plasma5.enable = true;
+    services.xserver.desktopManager.plasma5 = {
+      enable = true;
+      runUsingSystemd = true;
+      useQtScaling = true;
+      supportDDC = true;
+    };
 
     boot.plymouth.enable = mkDefault true;
     boot.kernelParams = [ "quiet" "splash" "udev.log_level=3" ];
@@ -147,6 +152,10 @@ in {
 
     # Enable touchpad support (enabled default in most desktopManager).
     services.xserver.libinput.enable = true;
+
+    hardware.opengl.driSupport = true;
+    # For 32 bit applications
+    hardware.opengl.driSupport32Bit = true;
 
     programs.gnupg.agent.pinentryFlavor = "qt";
 
