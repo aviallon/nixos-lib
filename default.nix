@@ -12,7 +12,7 @@
     ./hardening.nix
     ./hardware.nix
     ./laptop.nix
-    # ./overlays.nix
+    ./overlays.nix
     ./non-persistence.nix
   ];
 }
