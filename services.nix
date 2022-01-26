@@ -44,6 +44,12 @@ in {
         name = "cp";
         type = "BG_CPUIO";
       }
+      { name = "nix-build";
+        type = "BG_CPUIO"; }
+      { name = "nix-store";
+        type = "BG_CPUIO"; }
+      { name = "nix";
+        type = "BG_CPUIO"; }
     ] (x: builtins.toJSON x));
 
     programs.gnupg = {
