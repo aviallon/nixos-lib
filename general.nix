@@ -85,6 +85,11 @@ in
     system.autoUpgrade.allowReboot = mkIf (!desktopCfg.enable) (mkDefault true);
     system.autoUpgrade.dates = "00:00";
 
+    documentation.nixos.includeAllModules = true;
+    documentation.nixos.enable = true;
+    documentation.dev.enable = true;
+    documentation.man.generateCaches = true;
+
 
     nixpkgs.localSystem.system = builtins.currentSystem;
     nixpkgs.localSystem.platform  = lib.systems.platforms.pc // {
