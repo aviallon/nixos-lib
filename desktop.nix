@@ -69,6 +69,7 @@ in {
       type = types.str;
       default = "fr";
       example = "us";
+      description = "Default keyboard layout for X and console";
     };
     audio = {
       noise-filter.strength = mkOption {
