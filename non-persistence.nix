@@ -23,6 +23,7 @@ in
       machine-id.source = "/persist/etc/machine-id";
     };
 
+    boot.tmpOnTmpfs = true;
 
     fileSystems = {
       "/var/log" = {
