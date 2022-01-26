@@ -8,6 +8,7 @@
     set nowrap
     set smarthome
     set positionlog
+    set autoindent
 
     include "${pkgs.nano}/share/nano/*.nanorc"
     include "${pkgs.nanorc}/share/*.nanorc"
