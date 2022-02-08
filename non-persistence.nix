@@ -40,6 +40,10 @@ in
       machine-id.source = "${persistFolder}/etc/machine-id";
     };
 
+    systemd.tmpfiles.rules = mkAfter (traceValSeq (concatLists [
+      (mkPersist "/etc/NetworkManager/system-connections")
+    ]));
+
     boot.tmpOnTmpfs = true;
 
     fileSystems = {
