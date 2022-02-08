@@ -16,8 +16,24 @@ in
     hardcore = mkOption {
       default = !desktopCfg.enable;
       example = desktopCfg.enable;
-      description = "Enable hardcore hardening, which might break things.";
+      description = "Enable hardcore hardening, which might break things. Forces expensive hardening.";
       type = types.bool;
+    };
+
+    expensive = mkOption {
+      default = cfg.hardcore || !desktopCfg.enable;
+      example = desktopCfg.enable;
+      description = "Enable expensive hardening option (reduces performance)";
+      type = types.bool;
+    };
+
+    services = {
+      dbus = mkOption rec {
+        default = cfg.hardcore;
+        example = !default;
+        description = "Enable dbus service hardening";
+        type = types.bool;
+      };
     };
   };
 
@@ -27,33 +43,35 @@ in
   #  ];
     boot.kernelPackages = mkIf cfg.hardcore pkgs.linuxPackages_hardened;
     security.lockKernelModules = mkIf cfg.hardcore (mkOverride 500 true);
-    security.protectKernelImage = mkIf cfg.hardcore (mkOverride 500 false); # needed for kexec
+    # security.protectKernelImage = mkIf cfg.hardcore (mkOverride 500 false); # needed for kexec
+
+    aviallon.hardening.expensive = mkForce cfg.hardcore;
 
     security.apparmor.enable = true;
     services.dbus.apparmor = "enabled";
 
 
-    boot.kernelParams = [
+    boot.kernelParams = concatLists [
       # Slab/slub sanity checks, redzoning, and poisoning
-      "slub_debug=FZP"
+      (optional cfg.expensive "slub_debug=FZP")
 
       # Overwrite free'd memory
-      "page_poison=1"
+      (optional cfg.expensive "page_poison=1")
 
       # Enable page allocator randomization
-      "page_alloc.shuffle=1"
+      [ "page_alloc.shuffle=1" ]
 
       # Apparmor https://wiki.archlinux.org/title/AppArmor#Installation
-      "lsm=landlock,lockdown,yama,apparmor,bpf"
+      (optional cfg.expensive "lsm=landlock,lockdown,yama,apparmor,bpf")
     ];
 
     boot.kernel.sysctl = {
-    "kernel.yama.ptrace_scope" = lib.mkOverride 500 1;
-    "kernel.kptr_restrict" = lib.mkOverride 500 2;
+    "kernel.yama.ptrace_scope" = mkOverride 500 1;
+    "kernel.kptr_restrict" = mkOverride 500 2;
 
-    "net.core.bpf_jit_enable" = lib.mkOverride 500 false;
+    "net.core.bpf_jit_enable" = mkIf cfg.expensive (mkOverride 500 false);
 
-    "kernel.ftrace_enabled" = lib.mkOverride 500 false;
+    "kernel.ftrace_enabled" = mkOverride 500 false;
     };
 
     security.allowUserNamespaces = mkDefault true;
@@ -62,14 +80,14 @@ in
     nix.allowedUsers = mkIf cfg.hardcore [ "@wheel" ];
 
     security.audit.enable = true;
-    security.auditd.enable = true;
+    security.auditd.enable = mkIf cfg.expensive true;
 
-    security.audit.rules = [
-      "-a exit,always -F arch=b64 -S execve"
+    security.audit.rules = concatLists [
+      (optional cfg.expensive "-a exit,always -F arch=b64 -S execve")
     ];
 
 
-    systemd.services.dbus.serviceConfig = {
+    systemd.services.dbus.serviceConfig = mkIf cfg.services.dbus {
       # Hardening
       CapabilityBoundingSet = [ "CAP_SETGID" "CAP_SETUID" "CAP_SETPCAP" "CAP_SYS_RESOURCE" "CAP_AUDIT_WRITE" ];
       DeviceAllow = [ "/dev/null rw" "/dev/urandom r" ];
