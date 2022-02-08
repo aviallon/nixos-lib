@@ -3,6 +3,24 @@ with lib;
 let
   cfg = config.aviallon.services;
   desktopCfg = config.aviallon.desktop;
+  generalCfg = config.aviallon.general;
+
+  journaldConfigValue = value:
+    if value == true then "true"
+    else if value == false then "false"
+    else if isList value then toString value
+    else generators.mkValueStringDefault { } value;
+
+  isNullOrEmpty = v: (v == null) ||
+      (isList v && (length v == 0));
+
+  journaldConfig = settings: (generators.toKeyValue {
+    mkKeyValue = generators.mkKeyValueDefault {
+      mkValueString = journaldConfigValue;
+    } "=";
+  } (filterAttrs (n: v: !(isNullOrEmpty v))
+    settings)
+  );
 in {
   options.aviallon.services = {
     enable = mkOption {
@@ -10,6 +28,13 @@ in {
       example = false;
       type = types.bool;
       description = "Enable aviallon's services configuration";
+    };
+
+    journald.extraConfig = mkOption {
+      default = {};
+      example = {};
+      type = types.attrs;
+      description = "Add extra config to journald with Nix language";
     };
   };
 
@@ -32,6 +57,12 @@ in {
     services.printing.enable = desktopCfg.enable;
 
     services.fwupd.enable = true;
+
+    services.journald.extraConfig = journaldConfig cfg.journald.extraConfig;
+
+    aviallon.services.journald.extraConfig = ifEnable generalCfg.unsafeOptimizations {
+      Storage = "volatile";
+    };
 
     services.ananicy.enable = true;
     services.ananicy.package = pkgs.ananicy-cpp;
