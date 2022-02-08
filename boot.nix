@@ -23,6 +23,7 @@ let
       };
   };
   cfg = config.aviallon.boot;
+  generalCfg = config.aviallon.general;
   allowUnfree = (types.isType types.attrs config.nixpkgs.config)
                 && (hasAttr "allowUnfree" config.nixpkgs.config)
                 && (getAttr "allowUnfree" config.nixpkgs.config);
@@ -51,6 +52,12 @@ in
       example = !default;
       type = types.bool;
     };
+    configurationLimit = mkOption {
+      description = "Maximum number of generations in the boot menu";
+      default = 30;
+      example = null;
+      type = types.int;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -74,10 +81,18 @@ in
       loader.grub = {
         version = 2;
         device = (if cfg.efi then "nodev" else null);
-        efiSupport = true;
+        efiSupport = cfg.efi;
+        configurationLimit = cfg.configurationLimit;
       };
 
-      loader.systemd-boot.enable = cfg.efi && (!cfg.useGrub);
+      loader.systemd-boot = {
+        enable = cfg.efi && (!cfg.useGrub);
+        configurationLimit = cfg.configurationLimit; 
+      };
+
+      loader.generic-extlinux-compatible = {
+        configurationLimit = cfg.configurationLimit;
+      };
 
       loader = {
         efi.efiSysMountPoint = mkDefault "/boot/efi";
