@@ -24,6 +24,11 @@ in {
 
     hardware.sensor.iio.enable = mkDefault true;
 
+    boot.kernelParams = [
+      "i915.enable_fbc=1"
+      "i915.enable_gvt=1"
+    ];
+
     services.tlp.enable = (cfg.power-manager == "tlp");
     services.power-profiles-daemon.enable = (cfg.power-manager == "power-profiles-daemon");
     services.tp-auto-kbbl.enable = mkDefault true;
