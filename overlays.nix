@@ -8,7 +8,7 @@ in
     enable = mkOption {
       default = true;
       example = false;
-      documentation = "Wether to enable system-wide overlays or not";
+      description = "Wether to enable system-wide overlays or not";
       type = types.bool;
     };
   };
