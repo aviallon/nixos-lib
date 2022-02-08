@@ -99,6 +99,11 @@ in {
         MinimumVT = mkOverride 50 1;
       };
     };
+    systemd.tmpfiles.rules = mkAfter [
+      "e /var/lib/sddm/.cache/sddm-greeter/qmlcache/ - - - 0"
+      "x /var/lib/sddm/.cache"
+    ];
+
     # Configure keymap in X11
     services.xserver.layout = cfg.layout;
     services.xserver.xkbOptions = "eurosign:e";
