@@ -30,6 +30,12 @@ in
       description = "Automatically set NVMe IO queue algorithm";
       type = ioSchedType;
     };
+    queuePriority = mkOption {
+      default = true;
+      example = false;
+      description = "Automatically enable ncq_prio if it is supported by the SATA device.\nIt may improve latency.";
+      type = types.bool;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -39,13 +45,16 @@ in
         udevRules = concatStringsSep "\n" (
           concatLists [
             (optional (!(builtins.isNull cfg.hddScheduler))
-              ''ACTION=="add|change" SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}!="none", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
+              ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}!="none", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
             )
             (optional (!(builtins.isNull cfg.slowFlashScheduler))
-              ''ACTION=="add|change" SUBSYSTEM=="block", KERNEL=="sd[a-z]*|nvme[0-9]*n[0-9]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"''
+              ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]*|nvme[0-9]*n[0-9]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"''
             )
             (optional (!(builtins.isNull cfg.nvmeScheduler))
-              ''ACTION=="add|change" SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="${cfg.nvmeScheduler}"''
+              ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="${cfg.nvmeScheduler}"''
+            )
+            (optional cfg.queuePriority
+              ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{device/ncq_prio_supported}=="1", ATTR{device/ncq_prio_enable}="1"''
             )
           ]
         );
