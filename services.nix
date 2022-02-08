@@ -94,6 +94,17 @@ in {
       })
     ] (x: builtins.toJSON x));
 
+
+    systemd.services."hdapsd@" = {
+      serviceConfig = {
+        Nice = -20;
+        CPUSchedulingPolicy = "fifo";
+        CPUSchedulingPriority = 99;
+        IOSchedulingClass = "realtime";
+        IOSchedulingPriority = 0;
+      };
+    };
+
     programs.gnupg = {
       agent.enable = true;
       dirmngr.enable = true;
