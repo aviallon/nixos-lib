@@ -9,16 +9,17 @@ let
     else if isList value then toString value
     else generators.mkValueStringDefault { } value;
 
+  isNullOrEmpty = v: (v == null) ||
+      (isList v && (length v == 0));
+
   nixConfig = settings: (generators.toKeyValue {
     mkKeyValue = generators.mkKeyValueDefault {
       mkValueString = nixConfigValue;
     } " = ";
-  } (filterAttrs (n: v: !(
-      (v == null) ||
-      (isList v && (length v == 0))
-    ))
+  } (filterAttrs (n: v: !(isNullOrEmpty v))
     settings)
   );
+
 in
 {
   options.aviallon.general = {
