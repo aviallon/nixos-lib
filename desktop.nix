@@ -93,16 +93,34 @@ in {
 
     systemd.services."getty@tty1".enable = mkOverride 50 false;
     systemd.services."autovt@tty1".enable = mkOverride 50 false;
-    # Prevents blinking cursor
-    services.xserver.displayManager.sddm.settings = {
-      X11 = {
-        MinimumVT = mkOverride 50 1;
+    
+    systemd.tmpfiles.rules = mkAfter (let
+      sddmDir = "/var/lib/sddm";
+    in [
+      "e ${sddmDir}/.cache/sddm-greeter/qmlcache/ - - - 0"
+      "x ${sddmDir}/.cache"
+
+      # Fix SDDM cursor theme
+      #"d ${sddmDir}/.config/xsettingsd 0755 sddm sddm -"
+      #"f ${sddmDir}/.config/xsettingsd/xsettingsd.conf 0644 sddm sddm - Gtk/CursorThemeName \"breeze_cursors\""
+      
+      #"d ${sddmDir}/.config/gtk-4.0 0755 sddm sddm -"
+      #"f ${sddmDir}/.config/gtk-4.0/settings.ini 0644 sddm sddm - gtk-cursor-theme-name=breeze_cursors"
+      #"w+ ${sddmDir}/.config/gtk-4.0/settings.ini 0644 sddm sddm - gtk-cursor-theme-size=24"
+    ]);
+
+     # Prevents blinking cursor
+    services.xserver.displayManager.sddm = {
+      enable = true;
+      settings = {
+        Theme = {
+          CursorTheme = "breeze_cursors";
+        };
+        X11 = {
+          MinimumVT = mkOverride 50 1;
+        };
       };
     };
-    systemd.tmpfiles.rules = mkAfter [
-      "e /var/lib/sddm/.cache/sddm-greeter/qmlcache/ - - - 0"
-      "x /var/lib/sddm/.cache"
-    ];
 
     # Configure keymap in X11
     services.xserver.layout = cfg.layout;
@@ -110,7 +128,6 @@ in {
 
 
     # Enable the Plasma 5 Desktop Environment.
-    services.xserver.displayManager.sddm.enable = true;
     services.xserver.desktopManager.plasma5 = {
       enable = true;
       runUsingSystemd = true;
