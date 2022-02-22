@@ -18,6 +18,12 @@ in
       description = "Set network backend";
       type = types.enum [ "systemd-networkd" "NetworkManager" "dhcpcd" ];
     };
+    dns = mkOption {
+      default = "systemd-resolved";
+      example = "dnsmasq";
+      description = "Set network DNS";
+      type = types.enum [ "systemd-resolved" "dnsmasq" ];
+    };
   };
 
   config = mkIf cfg.enable {
@@ -25,7 +31,16 @@ in
     networking.networkmanager.enable = (cfg.backend == "NetworkManager");
     networking.dhcpcd.enable = (cfg.backend == "dhcpcd");
 
-#    networking.networkmanager.wifi.backend = mkDefault "iwd";
+
+    services.resolved.enable = (cfg.dns == "systemd-resolved");
+
+    networking.networkmanager = {
+      wifi.backend = mkDefault "iwd";
+      dns = mkDefault cfg.dns;
+      packages = with pkgs; concatLists [
+        (optional (cfg.dns == "dnsmasq") dnsmasq)
+      ];
+    };
     networking.wireless.enable = (cfg.backend != "NetworkManager");
 
     # Must always be false
