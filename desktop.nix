@@ -191,6 +191,8 @@ in {
       yakuake
       pinentry-qt
       plasma-pa
+      ark
+      p7zip
     ];
 
     networking.networkmanager = {
