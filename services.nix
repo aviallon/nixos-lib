@@ -83,6 +83,8 @@ in {
         type = "BG_CPUIO"; }
       { name = "X";
         type = "LowLatency_RT"; }
+      { name = "htop";
+        type = "LowLatency_RT"; }
       (ifEnable false { name = "hdapsd";
         type = "LowLatency_RT";
         sched = "fifo";
