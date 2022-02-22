@@ -22,6 +22,11 @@ let
     settings)
   );
 in {
+
+  imports = [
+    ./services
+  ];
+
   options.aviallon.services = {
     enable = mkOption {
       default = true;
@@ -119,5 +124,12 @@ in {
     services.avahi.nssmdns = true; # .lan/.local resolution
     services.avahi.publish.enable = true;
     services.avahi.publish.hinfo = true; # Whether to register a mDNS HINFO record which contains information about the local operating system and CPU.
+
+
+    services.nginx = {
+      recommendedProxySettings = true;
+      recommendedGzipSettings = true;
+      recommendedOptimisation = true;
+    };
   };
 }
