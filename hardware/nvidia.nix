@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 with lib;
 let
-  hardwareCfg = config.aviallon.hardware;
+  cfg = config.aviallon.hardware;
 in
 {
   imports = [
@@ -10,24 +10,25 @@ in
 
   options.aviallon.hardware.useProprietary = mkEnableOption "nvidia proprietary drivers";
 
-  config = mkIf (hardwareCfg.gpuVendor == "nvidia") {
-    boot.initrd.kernelModules = if hardwareCfg.useProprietary then [
+  config = mkIf (cfg.gpuVendor == "nvidia") {
+    boot.initrd.kernelModules = if cfg.useProprietary then [
       "nvidia"
       "nvidia_drm"
       "nvidia_uvm"
       "nvidia_modeset"
     ] else [ "nouveau" ];
-    # boot.blacklistedKernelModules = optional hardwareCfg.useProprietary "nouveau";
-    services.xserver.videoDrivers = optional hardwareCfg.useProprietary "nvidia";
+    # boot.blacklistedKernelModules = optional cfg.useProprietary "nouveau";
+    services.xserver.videoDrivers = optional cfg.useProprietary "nvidia";
     hardware.opengl.driSupport32Bit = true;
     hardware.nvidia = {
       powerManagement.enable = true;
       modesetting.enable = true;
     };
 
-    nixpkgs.config.allowUnfreePredicate = mkIf (hardwareCfg.useProprietary) (pkg: builtins.elem (lib.getName pkg) [
+    aviallon.programs.allowUnfreeList = mkIf (cfg.useProprietary) [
         "nvidia-x11"
-    ]);
+        "nvidia-settings"
+    ];
 
     hardware.opengl.extraPackages = with pkgs; [
       libvdpau-va-gl

@@ -33,6 +33,12 @@ in
       description = "Add specific compile flags";
       type = types.listOf types.str;
     };
+    allowUnfreeList = mkOption {
+      default = [ ];
+      example = [ "nvidia-x11" "steam" ];
+      description = "Allow specific unfree software to be installed";
+      type = types.listOf types.str;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -50,6 +56,7 @@ in
           };
       };
 
+    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowUnfreeList;
 
     environment.systemPackages = with pkgs; with libsForQt5; [
       vim
