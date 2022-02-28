@@ -58,6 +58,7 @@ in
       opensshOptimized
       rsyncOptimized
       htop
+      cachix
     ];
 
     programs.ssh.package = pkgs.opensshOptimized;
