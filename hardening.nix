@@ -75,7 +75,7 @@ in
     };
 
     security.allowUserNamespaces = mkDefault true;
-    boot.blacklistedKernelModules = mkForce [ ];
+#    boot.blacklistedKernelModules = mkForce [ ];
 
     nix.allowedUsers = mkIf cfg.hardcore [ "@wheel" ];
 
