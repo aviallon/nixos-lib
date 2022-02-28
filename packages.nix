@@ -42,19 +42,23 @@ in
   };
 
   config = mkIf cfg.enable {
-    nixpkgs.config.packageOverrides = pkgs:
-      let
-          optimizePackage = optimizeForThisHost pkgs;
-      in {
-          nano = optimizeForThisHost pkgs.nano;
-          rsyncOptimized = optimizeForThisHost pkgs.rsync;
 
-          opensshOptimized = optimizeForThisHost pkgs.openssh;
+    programs.java.enable = true;
 
-          nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-              inherit pkgs;
-          };
+    nixpkgs.config.packageOverrides = pkgs: {
+      nano = optimizeForThisHost pkgs.nano;
+      rsyncOptimized = optimizeForThisHost pkgs.rsync;
+
+      opensshOptimized = optimizeForThisHost pkgs.openssh;
+
+      steam = pkgs.steam.override {
+        withJava = true;
       };
+
+      nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+        inherit pkgs;
+      };
+    };
 
     nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowUnfreeList;
 
@@ -70,12 +74,18 @@ in
 
     programs.ssh.package = pkgs.opensshOptimized;
 
+    programs.steam.enable = true;
+    hardware.steam-hardware.enable = true;
+    programs.steam.remotePlay.openFirewall = true;
+    aviallon.programs.allowUnfreeList = [ "steam" "steam-original" "steam-runtime" ];
+
     programs.ccache.enable = true;
     programs.ccache.packageNames = [
     #  config.boot.kernelPackages.kernel
   #    "opensshOptimized"
   #    "rsyncOptimized"
     ];
+    
     nix.sandboxPaths = [
       (toString config.programs.ccache.cacheDir)
     ];
