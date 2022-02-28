@@ -45,11 +45,11 @@ in
     });
     users.groups = genAttrs cfg.users (u: { } );
 
-    systemd.tmpfiles.rules = concatLists (forEach cfg.users (u:
-      [
-        "d ${usersCfg.users.${u}.home}/.config/nixpkgs 0700 ${u} ${u} -"
-        "C ${usersCfg.users.${u}.home}/.config/nixpkgs/home.nix 0600 ${u} ${u} - ${cfg.defaultHomeFile}"
-      ]
-    ));
+  #  systemd.tmpfiles.rules = concatLists (forEach cfg.users (u:
+  #    [
+  #      "d ${usersCfg.users.${u}.home}/.config/nixpkgs 0700 ${u} ${u} -"
+  #      "C ${usersCfg.users.${u}.home}/.config/nixpkgs/home.nix 0600 ${u} ${u} - ${cfg.defaultHomeFile}"
+  #    ]
+  #  ));
   };
 }
