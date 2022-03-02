@@ -47,7 +47,7 @@ in {
     # Enable the OpenSSH daemon.
     services.openssh.enable = true;
   #  services.openssh.permitRootLogin = "prohibit-password";
-    services.openssh.permitRootLogin = "yes";
+    services.openssh.permitRootLogin = mkDefault "yes";
     networking.firewall.allowedTCPPorts = [ 22 ];
     networking.firewall.allowedUDPPorts = [ 22 ];
 
@@ -113,6 +113,7 @@ in {
     ] (x: builtins.toJSON x));
 
 
+    # Enusre low-latency response for this time-critical service
     systemd.services."hdapsd@" = {
       serviceConfig = {
         Nice = -20;

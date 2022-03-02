@@ -47,6 +47,8 @@ in
 
     aviallon.hardening.expensive = mkForce cfg.hardcore;
 
+    services.openssh.permitRootLogin = "prohibit-password";
+
     security.apparmor.enable = true;
     services.dbus.apparmor = "enabled";
 
