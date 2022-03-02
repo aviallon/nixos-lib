@@ -140,9 +140,6 @@ in {
     boot.initrd.verbose = false;
     boot.consoleLogLevel = 1;
 
-    # Enable CUPS to print documents.
-    services.printing.enable = true;
-
     # Enable sound.
     sound.enable = false;
     services.pipewire = {

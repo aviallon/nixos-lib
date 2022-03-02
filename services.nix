@@ -59,7 +59,18 @@ in {
 
     services.irqbalance.enable = true;
 
-    services.printing.enable = desktopCfg.enable;
+    services.printing = mkIf desktopCfg.enable {
+      enable = true;
+      defaultShared = mkDefault true;
+      browsing = mkDefault true;
+      drivers = with pkgs; [
+        hplipWithPlugin
+        gutenprint
+        splix
+      ];
+      webInterface = mkDefault false;
+    };
+    aviallon.programs.allowUnfreeList = [ "hplip" "hplipWithPlugin" ];
 
     services.fwupd.enable = true;
 
