@@ -70,6 +70,10 @@ in
       rsyncOptimized
       htop
       cachix
+      psmisc # killall, etc.
+      par2cmdline # .par2 archive verification
+      schedtool
+      python3
     ];
 
     programs.ssh.package = pkgs.opensshOptimized;

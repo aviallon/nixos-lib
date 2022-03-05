@@ -188,8 +188,11 @@ in {
       yakuake
       pinentry-qt
       plasma-pa
-      ark
+      ark.override {
+        unfreeEnableUnrar = true;
+      }
       p7zip
+      vlc
     ];
 
     networking.networkmanager = {
