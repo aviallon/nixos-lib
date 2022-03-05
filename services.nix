@@ -70,6 +70,15 @@ in {
       ];
       webInterface = mkDefault false;
     };
+
+    hardware.sane = mkIf desktopCfg.enable {
+      enable = true;
+      netConf = "192.168.0.0/24";
+      extraBackends = with pkgs; [
+        hplipWithPlugin
+      ];
+    };
+    
     aviallon.programs.allowUnfreeList = [ "hplip" "hplipWithPlugin" ];
 
     services.fwupd.enable = true;
