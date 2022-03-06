@@ -188,11 +188,22 @@ in {
       yakuake
       pinentry-qt
       plasma-pa
-      ark.override {
+      ( ark.override {
         unfreeEnableUnrar = true;
-      }
+      } )
       p7zip
       vlc
+      packagekit-qt
+      discover
+    ];
+
+    services.packagekit = {
+      enable = true;
+    };
+    
+    aviallon.programs.allowUnfreeList = [
+      "unrar"
+      "ark"
     ];
 
     networking.networkmanager = {
