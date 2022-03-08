@@ -193,13 +193,12 @@ in {
       } )
       p7zip
       vlc
+      skanlite
       packagekit-qt
       discover
     ];
 
-    services.packagekit = {
-      enable = true;
-    };
+    services.packagekit.enable = true;
     
     aviallon.programs.allowUnfreeList = [
       "unrar"
