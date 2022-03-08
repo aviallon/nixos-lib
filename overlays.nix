@@ -2,6 +2,7 @@
 with lib;
 let
   cfg = config.aviallon.overlays;
+  unstable = import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") { config = config.nixpkgs.config; };
 in
 {
   options.aviallon.overlays = {
@@ -22,6 +23,9 @@ in
 
 
     nixpkgs.overlays = [
+      (self: super: {
+          inherit unstable;
+       })
     #  (self: super: {
     #    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
     #      inherit pkgs;
