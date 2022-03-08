@@ -67,6 +67,23 @@ in {
         hplipWithPlugin
         gutenprint
         splix
+        brlaser
+        cups-bjnp
+        # cups-dymo
+        # cups-zj-58
+        # cups-kyocera
+        cups-filters
+        carps-cups
+        # cups-kyodialog3
+        cups-brother-hl1110
+        cups-toshiba-estudio
+        cups-brother-hl1210w
+        hll2390dw-cups
+        cups-brother-hl3140cw
+        cups-brother-hll2340dw
+        cups-drv-rastertosag-gdi
+        # cups-kyocera-ecosys-m552x-p502x
+        canon-cups-ufr2
       ];
       webInterface = mkDefault false;
     };
@@ -79,7 +96,27 @@ in {
       ];
     };
     
-    aviallon.programs.allowUnfreeList = [ "hplip" "hplipWithPlugin" ];
+    aviallon.programs.allowUnfreeList = [
+      "hplip"
+      "hplipWithPlugin"
+      "cups-bjnp"
+      "cups-dymo"
+      "cups-zj-58"
+      "cups-kyocera"
+      "cups-filters"
+      "carps-cups"
+      "cups-kyodialog3"
+      "cups-brother-hl1110"
+      "cups-toshiba-estudio"
+      "cups-brother-hl1210w"
+      "cups-brother-hl1210W"
+      "hll2390dw-cups"
+      "cups-brother-hl3140cw"
+      "cups-brother-hll2340dw"
+      "cups-drv-rastertosag-gdi"
+      "cups-kyocera-ecosys-m552x-p502x"
+      "canon-cups-ufr2"
+    ];
 
     services.fwupd.enable = true;
 
