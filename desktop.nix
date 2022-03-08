@@ -196,6 +196,9 @@ in {
       skanlite
       packagekit-qt
       discover
+      akonadi
+      kmail
+      korganizer
     ];
 
     services.packagekit.enable = true;
