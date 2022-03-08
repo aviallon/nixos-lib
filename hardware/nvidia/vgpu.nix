@@ -2,14 +2,18 @@
 with lib;
 let
   cfg = config.aviallon.hardware;
+  nixos-nvidia-vgpu = import (builtins.fetchTarball "https://github.com/danielfullmer/nixos-nvidia-vgpu/archive/master.tar.gz") {
+    inherit config;
+    inherit pkgs;
+    inherit lib;
+  };
   useVgpu = (cfg.useProprietary &&
             (cfg.gpuVendor == "nvidia") &&
             (versionOlder config.boot.kernelPackages.kernel.version "5.10"));
 in
 {
   imports = [
-    <nixos-nvidia-vgpu>
-    # (optional useVgpu (builtins.fetchTarball "https://github.com/danielfullmer/nixos-nvidia-vgpu/archive/master.tar.gz"))
+    nixos-nvidia-vgpu
   ];
 
   config = mkIf useVgpu {
