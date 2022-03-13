@@ -136,9 +136,9 @@ in {
     };
 
     boot.plymouth.enable = mkDefault true;
-    boot.kernelParams = [ "quiet" "splash" "udev.log_level=3" ];
+    boot.kernelParams = [ "splash" "udev.log_level=3" ];
     boot.initrd.verbose = false;
-    boot.consoleLogLevel = 1;
+    # boot.consoleLogLevel = 1;
 
     # Enable sound.
     sound.enable = false;
