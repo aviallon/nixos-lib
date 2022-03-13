@@ -36,9 +36,21 @@ in
       description = "Automatically enable ncq_prio if it is supported by the SATA device.\nIt may improve latency.";
       type = types.bool;
     };
+    lvm = mkEnableOption "lvm options required for correct booting";
   };
 
   config = mkIf cfg.enable {
+
+    services.lvm = mkIf cfg.lvm {
+      boot.thin.enable = true;
+      dmeventd.enable = true;
+    };
+    boot.initrd.kernelModules = ifEnable cfg.lvm [
+      "dm-cache" "dm-cache-smq" "dm-cache-mq" "dm-cache-cleaner"
+    ];
+    boot.kernelModules = ifEnable cfg.lvm [ "dm-cache" "dm-cache-smq" "dm-persistent-data" "dm-bio-prison" "dm-clone" "dm-crypt" "dm-writecache" "dm-mirror" "dm-snapshot"];
+
+    fileSystems."/boot".neededForBoot = mkDefault true;
 
     services.udev =
       let
