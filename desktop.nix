@@ -179,7 +179,7 @@ in {
     # For 32 bit applications
     hardware.opengl.driSupport32Bit = true;
 
-    programs.gnupg.agent.pinentryFlavor = "qt";
+    # programs.gnupg.agent.pinentryFlavor = "qt";
 
     environment.systemPackages = with pkgs; with libsForQt5; [
 #      firefox
