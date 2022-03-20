@@ -93,6 +93,13 @@ in
     documentation.man.generateCaches = true;
 
 
+    environment.shellInit = concatStringsSep "\n" [
+      ''export GPG_TTY="$(tty)"''
+      ''gpg-connect-agent /bye''
+      ''export SSH_AUTH_SOCK="/run/user/$UID/gnupg/S.gpg-agent.ssh"''
+    ];
+
+
     nixpkgs.localSystem.system = builtins.currentSystem;
     nixpkgs.localSystem.platform  = lib.systems.platforms.pc // {
       gcc.arch = cfg.cpuArch;

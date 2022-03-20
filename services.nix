@@ -173,10 +173,15 @@ in {
     programs.gnupg = {
       agent.enable = true;
       dirmngr.enable = true;
+      agent.pinentryFlavor = "curses";
       agent.enableSSHSupport = true;
       agent.enableExtraSocket = true;
       agent.enableBrowserSocket = true;
     };
+    programs.ssh.startAgent = false;
+
+    # SmartCards
+    services.pcscd.enable = true;
 
     services.avahi.enable = true; # .lan/.local resolution
     services.avahi.nssmdns = true; # .lan/.local resolution
