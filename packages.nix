@@ -55,6 +55,8 @@ in
         withJava = true;
       };
 
+      veracrypt = optimizeForThisHost pkgs.veracrypt;
+
       nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
         inherit pkgs;
       };
@@ -74,6 +76,7 @@ in
       par2cmdline # .par2 archive verification
       schedtool
       python3
+      veracrypt
     ];
 
     programs.ssh.package = pkgs.opensshOptimized;
@@ -81,7 +84,10 @@ in
     programs.steam.enable = true;
     hardware.steam-hardware.enable = true;
     programs.steam.remotePlay.openFirewall = true;
-    aviallon.programs.allowUnfreeList = [ "steam" "steam-original" "steam-runtime" ];
+    aviallon.programs.allowUnfreeList = [
+      "steam" "steam-original" "steam-runtime"
+      "veracrypt"
+    ];
 
     programs.ccache.enable = true;
     programs.ccache.packageNames = [
