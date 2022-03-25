@@ -34,6 +34,16 @@ in
           inherit unstable;
       })
       (self: super: {
+        nextcloud-client = optimizeForThisHost (super.nextcloud-client.overrideAttrs (old: {
+          nativeBuildInputs = old.nativeBuildInputs ++ (with super; [
+            extra-cmake-modules
+          ]);
+          buildInputs = old.buildInputs ++ (with super; with libsForQt5; [
+            kio
+          ]);
+        }));
+      })
+      (self: super: {
         opensshOptimized = optimizeForThisHost super.openssh;
         rsyncOptimized = optimizeForThisHost super.rsync;
         nano = optimizeForThisHost super.nano;
