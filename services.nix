@@ -3,6 +3,7 @@ with lib;
 let
   cfg = config.aviallon.services;
   desktopCfg = config.aviallon.desktop;
+  laptopCfg = config.aviallon.laptop;
   generalCfg = config.aviallon.general;
 
   journaldConfigValue = value:
@@ -85,7 +86,7 @@ in {
         # cups-kyocera-ecosys-m552x-p502x
         canon-cups-ufr2
       ];
-      webInterface = mkDefault false;
+      webInterface = mkDefault true;
     };
 
     hardware.sane = mkIf desktopCfg.enable {
@@ -183,10 +184,20 @@ in {
     # SmartCards
     services.pcscd.enable = true;
 
-    services.avahi.enable = true; # .lan/.local resolution
-    services.avahi.nssmdns = true; # .lan/.local resolution
-    services.avahi.publish.enable = true;
-    services.avahi.publish.hinfo = true; # Whether to register a mDNS HINFO record which contains information about the local operating system and CPU.
+    services.avahi = {
+      enable = true; # .lan/.local resolution
+      nssmdns = true; # .lan/.local resolution
+      openFirewall = true;
+      reflector = true;
+      publish = {
+        enable = true;
+        domain = true;
+        userServices = true;
+        addresses = true;
+        workstation = mkDefault (desktopCfg.enable && !laptopCfg.enable);
+        hinfo = true; # Whether to register a mDNS HINFO record which contains information about the local operating system and CPU.
+      };
+    };
 
 
     services.nginx = {
