@@ -179,6 +179,16 @@ in {
     # For 32 bit applications
     hardware.opengl.driSupport32Bit = true;
 
+    xdg = {
+      portal = {
+        enable = true;
+        gtkUsePortal = mkDefault true;
+        extraPortals = with pkgs; [
+          xdg-desktop-portal-gtk
+        ];
+      };
+    };
+
     # programs.gnupg.agent.pinentryFlavor = "qt";
 
     environment.systemPackages = with pkgs; with libsForQt5; [
