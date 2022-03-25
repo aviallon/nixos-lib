@@ -201,6 +201,16 @@ in {
       akonadi
       kmail
       korganizer
+      dolphin
+      glxinfo
+      vdpauinfo
+      libva-utils
+    ]
+    ++ [
+      spotify
+      nextcloud-client
+      libreoffice-fresh
+      unstable.kotatogram-desktop
     ];
 
     aviallon.programs.allowUnfreeList = [

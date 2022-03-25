@@ -54,9 +54,18 @@ in
       schedtool
       python3
       veracrypt
+      ripgrep
+      fd
     ];
 
     programs.ssh.package = pkgs.opensshOptimized;
+
+    programs.tmux = {
+      enable = true;
+      clock24 = true;
+      historyLimit = 9999;
+      newSession = true;
+    };
 
     programs.steam.enable = true;
     hardware.steam-hardware.enable = true;
