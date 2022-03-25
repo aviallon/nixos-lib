@@ -5,19 +5,13 @@ let
   desktopCfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
 
-  optimizeWithFlag = pkg: flag:
-    pkg.overrideAttrs (attrs: {
-      NIX_CFLAGS_COMPILE = (attrs.NIX_CFLAGS_COMPILE or "") + " ${flag}";
-      doCheck = false;
-    });
-  optimizeWithFlags = pkg: flags: pkgs.lib.foldl' (pkg: flag: optimizeWithFlag pkg flag) pkg flags;
-  optimizeForThisHost = pkg: optimizeWithFlags pkg (builtins.trace "${toString config.aviallon.programs.compileFlags}" config.aviallon.programs.compileFlags);
 in
 {
   imports = [
     ./programs/nano.nix
     ./programs/git.nix
     ./programs/htop.nix
+    ./overlays.nix
   ];
 
   options.aviallon.programs = {
@@ -44,23 +38,6 @@ in
   config = mkIf cfg.enable {
 
     programs.java.enable = true;
-
-    nixpkgs.config.packageOverrides = pkgs: {
-      nano = optimizeForThisHost pkgs.nano;
-      rsyncOptimized = optimizeForThisHost pkgs.rsync;
-
-      opensshOptimized = optimizeForThisHost pkgs.openssh;
-
-      steam = pkgs.steam.override {
-        withJava = true;
-      };
-
-      veracrypt = optimizeForThisHost pkgs.veracrypt;
-
-      nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-        inherit pkgs;
-      };
-    };
 
     nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowUnfreeList;
 

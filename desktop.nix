@@ -202,9 +202,7 @@ in {
       yakuake
       pinentry-qt
       plasma-pa
-      ( ark.override {
-        unfreeEnableUnrar = true;
-      } )
+      ark
       p7zip
       vlc
       skanlite
@@ -215,13 +213,13 @@ in {
       korganizer
     ];
 
-    services.packagekit.enable = true;
-    
     aviallon.programs.allowUnfreeList = [
-      "unrar"
-      "ark"
+      "spotify"
+      "spotify-unwrapped"
     ];
 
+    services.packagekit.enable = true;
+    
     networking.networkmanager = {
       packages = [
         pkgs.networkmanager-openvpn

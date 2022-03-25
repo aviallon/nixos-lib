@@ -3,6 +3,13 @@ with lib;
 let
   cfg = config.aviallon.overlays;
   unstable = import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") { config = config.nixpkgs.config; };
+  optimizeWithFlag = pkg: flag:
+    pkg.overrideAttrs (attrs: {
+      NIX_CFLAGS_COMPILE = (attrs.NIX_CFLAGS_COMPILE or "") + " ${flag}";
+      doCheck = false;
+    });
+  optimizeWithFlags = pkg: flags: pkgs.lib.foldl' (pkg: flag: optimizeWithFlag pkg flag) pkg flags;
+  optimizeForThisHost = pkg: optimizeWithFlags pkg (builtins.trace "${getName pkg}: ${toString config.aviallon.programs.compileFlags}" config.aviallon.programs.compileFlags);
 in
 {
   options.aviallon.overlays = {
@@ -25,12 +32,26 @@ in
     nixpkgs.overlays = [
       (self: super: {
           inherit unstable;
-       })
+      })
+      (self: super: {
+        opensshOptimized = optimizeForThisHost super.openssh;
+        rsyncOptimized = optimizeForThisHost super.rsync;
+        nano = optimizeForThisHost super.nano;
+        veracrypt = optimizeForThisHost pkgs.veracrypt;
+        steam = super.steam.override {
+          withJava = true;
+        };
+        ark = optimizeForThisHost (super.ark.override {
+          unfreeEnableUnrar = true;
+        });
+      })
     #  (self: super: {
     #    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
     #      inherit pkgs;
     #    };
     #  })
     ];
+
+    aviallon.programs.allowUnfreeList = [ "unrar" "ark" ];
   }; 
 }
