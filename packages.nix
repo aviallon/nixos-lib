@@ -56,6 +56,13 @@ in
       veracrypt
       ripgrep
       fd
+      parallel
+      pciutils
+      coreutils-full
+
+      gcc
+      gnumake
+      cmake
     ];
 
     programs.ssh.package = pkgs.opensshOptimized;
