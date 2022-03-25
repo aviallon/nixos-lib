@@ -38,6 +38,21 @@ in
         rsyncOptimized = optimizeForThisHost super.rsync;
         nano = optimizeForThisHost super.nano;
         veracrypt = optimizeForThisHost pkgs.veracrypt;
+        htop = optimizeForThisHost (super.htop.overrideAttrs (old: {
+          configureFlags = old.configureFlags ++ [
+            "--enable-hwloc"
+          ];
+        
+          nativeBuildInputs = old.nativeBuildInputs ++ (with super; [
+            pkg-config
+          ]);
+          buildInputs = old.buildInputs ++ (with super; [
+            libunwind
+            libcap
+            libnl
+            hwloc
+          ]);
+        }));
         steam = super.steam.override {
           withJava = true;
         };
