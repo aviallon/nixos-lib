@@ -43,6 +43,7 @@ in
     };
     unsafeOptimizations = mkEnableOption "unsafe system tuning";
     flakes.enable = mkEnableOption "experimental flake support";
+    debug = mkEnableOption "debug-specific configuration";
   };
 
   config = mkIf cfg.enable {

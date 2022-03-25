@@ -2,6 +2,7 @@
 with lib;
 let
   cfg = config.aviallon.desktop;
+  generalCfg = config.aviallon.general;
   filterConfig = pkgs.writeText "pipewire-noise-filter.cfg"  ''
 # Noise canceling source
 #
@@ -136,9 +137,12 @@ in {
     };
 
     boot.plymouth.enable = mkDefault true;
-    boot.kernelParams = [ "splash" "udev.log_level=3" ];
-    boot.initrd.verbose = false;
-    # boot.consoleLogLevel = 1;
+    boot.kernelParams = concatLists [
+      (optionals (!generalCfg.debug) [ "splash" "udev.log_level=3" ])
+      ["preempt=full"]
+    ];
+    boot.initrd.verbose = generalCfg.debug;
+    boot.consoleLogLevel = mkIf (!generalCfg.debug) 1;
 
     # Enable sound.
     sound.enable = false;
