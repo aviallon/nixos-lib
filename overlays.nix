@@ -47,7 +47,7 @@ in
         opensshOptimized = optimizeForThisHost super.openssh;
         rsyncOptimized = optimizeForThisHost super.rsync;
         nano = optimizeForThisHost super.nano;
-        veracrypt = optimizeForThisHost pkgs.veracrypt;
+        veracrypt = optimizeForThisHost super.veracrypt;
         htop = optimizeForThisHost (super.htop.overrideAttrs (old: {
           configureFlags = old.configureFlags ++ [
             "--enable-hwloc"
