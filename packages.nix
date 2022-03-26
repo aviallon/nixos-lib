@@ -74,11 +74,7 @@ in
       newSession = true;
     };
 
-    programs.steam.enable = true;
-    hardware.steam-hardware.enable = true;
-    programs.steam.remotePlay.openFirewall = true;
     aviallon.programs.allowUnfreeList = [
-      "steam" "steam-original" "steam-runtime"
       "veracrypt"
     ];
 
