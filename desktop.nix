@@ -187,6 +187,7 @@ in {
 
     environment.systemPackages = with pkgs; with libsForQt5; [
 #      firefox
+      chromium
       konsole
       kate
       yakuake
@@ -212,6 +213,16 @@ in {
       libreoffice-fresh
       unstable.kotatogram-desktop
     ];
+
+    programs.chromium = {
+      enable = true;
+      extensions = [
+        "gcbommkclmclpchllfjekcdonpmejbdp" # HTTPS Everywhere
+        "cjpalhdlnbpafiamejdnhcphjbkeiagm" # Ublock Origin
+      ];
+      defaultSearchProviderSearchURL = "https://duckduckgo.com/?kp=1&k1=-1&kav=1&kak=-1&kax=-1&kaq=-1&kap=-1&kau=-1&kao=-1&kae=d&q={searchTerms}";
+    };
+
 
     programs.steam.enable = true;
     hardware.steam-hardware.enable = true;
