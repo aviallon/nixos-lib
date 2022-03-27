@@ -74,14 +74,11 @@ in
           ]);
         }));
       })
+      # KDE packages
       (self: super: {
         libsForQt5 = super.libsForQt5.overrideScope' (mself: msuper: {
           kwin = optimizeForThisHost msuper.kwin;
-          dolphin = optimizeForThisHost (msuper.dolphin.overrideAttrs (old: {
-            propagatedBuildInputs = old.propagatedBuildInputs ++ (with super; [
-              kio-fuse
-            ]);
-          }));
+          dolphin = optimizeForThisHost msuper.dolphin;
         });
       })
       (self: super: {
