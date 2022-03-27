@@ -101,8 +101,10 @@ in
             hwloc
           ]);
         }));
-        mesa = optimizeForThisHost super.mesa;
-        xorgserver = optimizeForThisHost super.xorg.xorgserver;
+        # mesa = optimizeForThisHost super.mesa;
+        #xorg = super.xorg.overrideScope' (mself: msuper: {
+        #  xorgserver = optimizeForThisHost msuper.xorgserver;
+        #});
         steam = super.steam.override {
           withJava = true;
         };
