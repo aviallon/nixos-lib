@@ -14,16 +14,21 @@ let
       cxxflags = [ (attrs.CXXFLAGS or "") ] ++ config.aviallon.programs.compileFlags;
       rustflags = [ (attrs.RUSTFLAGS or "") "-C target-cpu=${config.aviallon.general.cpuArch}" ];
       pkgname = getName pkg;
-      cmakeflags = [ (attrs.cmakeFlags or "") ] ++ [ "-DCMAKE_CXX_FLAGS=\"${toString cxxflags}\"" ];
+      cmakeflags = mytrace "cmakeflags" "-DCMAKE_CXX_FLAGS=${toString cxxflags}";
+      configureflags = [ (attrs.configureFlags or "") ] ++ [
+        "--enable-lto" "--enable-offload-targets=nvptx-none" "--disable-libunwind-exceptions"
+      ];
       mytrace = name: value: builtins.trace "${pkgname}: ${name}: ${toString value}" (toString value);
      in {
       NIX_CFLAGS_COMPILE = mytrace "CFLAGS" cflags;
       CXXFLAGS = mytrace "CXXFLAGS" cxxflags;
       RUSTFLAGS = mytrace "RUSTFLAGS" rustflags;
-      configureFlags = mytrace "configureFlags" ([ (attrs.configureFlags or "") ] ++ [
-        "--enable-lto" "--enable-offload-targets=nvptx-none" "--disable-libunwind-exceptions"
-      ]);
-      cmakeFlags = mytrace "cmakeFlags" cmakeflags;
+      configureFlags = mytrace "configureFlags" configureflags;
+      preConfigure = ''
+        cmakeFlagsArray+=(
+          "${cmakeflags}"
+        )
+      '';
       doCheck = false;
     });
    optimizeForThisHost = if (cfg.optimizations) then (pkg: _optimizeForThisHost pkg) else (pkg: pkg);
