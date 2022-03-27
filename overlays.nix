@@ -8,7 +8,7 @@ let
       NIX_CFLAGS_COMPILE = toString ([ (attrs.NIX_CFLAGS_COMPILE or "") ] ++ flags);
       doCheck = false;
     });
-  optimizeForThisHost = pkg:
+  _optimizeForThisHost = pkg:
      pkg.overrideAttrs (attrs: let
       cflags = [ (attrs.NIX_CFLAGS_COMPILE or "") ] ++ config.aviallon.programs.compileFlags;
       cxxflags = [ (attrs.CXXFLAGS or "") ] ++ config.aviallon.programs.compileFlags;
@@ -26,6 +26,7 @@ let
       cmakeFlags = mytrace "cmakeFlags" cmakeflags;
       doCheck = false;
     });
+   optimizeForThisHost = if (cfg.optimizations) then (pkg: _optimizeForThisHost pkg) else (pkg: pkg);
 in
 {
   options.aviallon.overlays = {
@@ -33,6 +34,12 @@ in
       default = true;
       example = false;
       description = "Wether to enable system-wide overlays or not";
+      type = types.bool;
+    };
+    optimizations = mkOption {
+      default = true;
+      example = false;
+      description = "Wether to enable CPU-specific optimizations for some packages or not";
       type = types.bool;
     };
   };
