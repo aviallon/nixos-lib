@@ -33,6 +33,7 @@ in
 
 
     services.resolved.enable = (cfg.dns == "systemd-resolved");
+    services.resolved.llmnr = mkForce "false"; # https://www.blackhillsinfosec.com/how-to-disable-llmnr-why-you-want-to/
 
     networking.networkmanager = {
       wifi.backend = mkDefault "iwd";
