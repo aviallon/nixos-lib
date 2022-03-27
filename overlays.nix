@@ -3,6 +3,7 @@ with lib;
 let
   cfg = config.aviallon.overlays;
   unstable = import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") { config = config.nixpkgs.config; };
+  nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") { inherit pkgs; };
   optimizeWithFlags = pkg: flags:
     pkg.overrideAttrs (attrs: {
       NIX_CFLAGS_COMPILE = toString ([ (attrs.NIX_CFLAGS_COMPILE or "") ] ++ flags);
@@ -61,6 +62,7 @@ in
     nixpkgs.overlays = [
       (self: super: {
           inherit unstable;
+          inherit nur;
       })
       (self: super: {
         nextcloud-client = optimizeForThisHost (super.nextcloud-client.overrideAttrs (old: {
@@ -114,11 +116,6 @@ in
           enableWideVine = true;
         };
       })
-    #  (self: super: {
-    #    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-    #      inherit pkgs;
-    #    };
-    #  })
     ];
 
     aviallon.programs.allowUnfreeList = [
