@@ -95,11 +95,7 @@ in
     ];
 
     programs.ccache.enable = true;
-    programs.ccache.packageNames = [
-    #  config.boot.kernelPackages.kernel
-  #    "opensshOptimized"
-  #    "rsyncOptimized"
-    ];
+    programs.ccache.packageNames = [  ];
     
     nix.sandboxPaths = [
       (toString config.programs.ccache.cacheDir)
