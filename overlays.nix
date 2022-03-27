@@ -97,8 +97,7 @@ in
         ark = optimizeForThisHost (super.ark.override {
           unfreeEnableUnrar = true;
         });
-        chromium = super.ungoogled-chromium.override {
-          # ungoogled = true;
+        ungoogled-chromium = super.ungoogled-chromium.override {
           enableWideVine = true;
         };
       })
@@ -109,6 +108,9 @@ in
     #  })
     ];
 
-    aviallon.programs.allowUnfreeList = [ "unrar" "ark" ];
+    aviallon.programs.allowUnfreeList = [
+      "unrar" "ark"
+      "chromium-unwrapped" "chrome-widevine-cdm" "ungoogled-chromium" # because of widevine
+    ];
   }; 
 }

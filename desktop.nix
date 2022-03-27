@@ -187,7 +187,7 @@ in {
 
     environment.systemPackages = with pkgs; with libsForQt5; [
 #      firefox
-      chromium
+      ungoogled-chromium
       konsole
       kate
       yakuake
