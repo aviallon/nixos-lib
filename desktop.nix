@@ -203,6 +203,7 @@ in {
       kmail
       korganizer
       dolphin
+      kio-fuse
       glxinfo
       vdpauinfo
       libva-utils
