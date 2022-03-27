@@ -20,6 +20,7 @@ let
       ];
       mytrace = name: value: builtins.trace "${pkgname}: ${name}: ${toString value}" (toString value);
      in {
+      stdenv = pkgs.fastStdenv;
       NIX_CFLAGS_COMPILE = mytrace "CFLAGS" cflags;
       CXXFLAGS = mytrace "CXXFLAGS" cxxflags;
       RUSTFLAGS = mytrace "RUSTFLAGS" rustflags;
