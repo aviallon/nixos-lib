@@ -3,13 +3,29 @@ with lib;
 let
   cfg = config.aviallon.overlays;
   unstable = import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") { config = config.nixpkgs.config; };
-  optimizeWithFlag = pkg: flag:
+  optimizeWithFlags = pkg: flags:
     pkg.overrideAttrs (attrs: {
-      NIX_CFLAGS_COMPILE = (attrs.NIX_CFLAGS_COMPILE or "") + " ${flag}";
+      NIX_CFLAGS_COMPILE = toString ([ (attrs.NIX_CFLAGS_COMPILE or "") ] ++ flags);
       doCheck = false;
     });
-  optimizeWithFlags = pkg: flags: pkgs.lib.foldl' (pkg: flag: optimizeWithFlag pkg flag) pkg flags;
-  optimizeForThisHost = pkg: optimizeWithFlags pkg (builtins.trace "${getName pkg}: ${toString config.aviallon.programs.compileFlags}" config.aviallon.programs.compileFlags);
+  optimizeForThisHost = pkg:
+     pkg.overrideAttrs (attrs: let
+      cflags = [ (attrs.NIX_CFLAGS_COMPILE or "") ] ++ config.aviallon.programs.compileFlags;
+      cxxflags = [ (attrs.CXXFLAGS or "") ] ++ config.aviallon.programs.compileFlags;
+      rustflags = [ (attrs.RUSTFLAGS or "") "-C target-cpu=${config.aviallon.general.cpuArch}" ];
+      pkgname = getName pkg;
+      cmakeflags = [ (attrs.cmakeFlags or "") ] ++ [ "-DCMAKE_CXX_FLAGS=\"${toString cxxflags}\"" ];
+      mytrace = name: value: builtins.trace "${pkgname}: ${name}: ${toString value}" (toString value);
+     in {
+      NIX_CFLAGS_COMPILE = mytrace "CFLAGS" cflags;
+      CXXFLAGS = mytrace "CXXFLAGS" cxxflags;
+      RUSTFLAGS = mytrace "RUSTFLAGS" rustflags;
+      configureFlags = mytrace "configureFlags" ([ (attrs.configureFlags or "") ] ++ [
+        "--enable-lto" "--enable-offload-targets=nvptx-none" "--disable-libunwind-exceptions"
+      ]);
+      cmakeFlags = mytrace "cmakeFlags" cmakeflags;
+      doCheck = false;
+    });
 in
 {
   options.aviallon.overlays = {
@@ -44,6 +60,16 @@ in
         }));
       })
       (self: super: {
+        libsForQt5 = super.libsForQt5.overrideScope' (mself: msuper: {
+          kwin = optimizeForThisHost msuper.kwin;
+          dolphin = optimizeForThisHost (msuper.dolphin.overrideAttrs (old: {
+            propagatedBuildInputs = old.propagatedBuildInputs ++ (with super; [
+              kio-fuse
+            ]);
+          }));
+        });
+      })
+      (self: super: {
         opensshOptimized = optimizeForThisHost super.openssh;
         rsyncOptimized = optimizeForThisHost super.rsync;
         nano = optimizeForThisHost super.nano;
@@ -63,6 +89,8 @@ in
             hwloc
           ]);
         }));
+        mesa = optimizeForThisHost super.mesa;
+        xorgserver = optimizeForThisHost super.xorg.xorgserver;
         steam = super.steam.override {
           withJava = true;
         };

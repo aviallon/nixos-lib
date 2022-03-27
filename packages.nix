@@ -22,7 +22,23 @@ in
       type = types.bool;
     };
     compileFlags = mkOption {
-      default = [ "-O3" "-march=${generalCfg.cpuArch}" "-mtune=${generalCfg.cpuTune}" ];
+      default = [
+        "-O3" "-march=${generalCfg.cpuArch}" "-mtune=${generalCfg.cpuTune}"
+        "-feliminate-unused-debug-types" "--param=ssp-buffer-size=32"
+        # "-Wl,--copy-dt-needed-entries-m64-fasynchronous-unwind-tables"
+        "-fasynchronous-unwind-tables"
+        "-fno-semantic-interposition"
+        "-ffat-lto-objects"
+        "-fno-signed-zeros"
+        "-fno-trapping-math"
+        "-fassociative-math"
+        "-fexceptions"
+        "-ftree-loop-distribute-patterns"
+        "-Wl,-sort-common"
+        "-fno-semantic-interposition"
+        "-fipa-pta"
+        "-fdevirtualize-at-ltrans"
+        ];
       example = [ "-O2" "-mavx" ];
       description = "Add specific compile flags";
       type = types.listOf types.str;
