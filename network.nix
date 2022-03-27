@@ -22,7 +22,7 @@ in
       default = "systemd-resolved";
       example = "dnsmasq";
       description = "Set network DNS";
-      type = types.enum [ "systemd-resolved" "dnsmasq" ];
+      type = types.enum [ "systemd-resolved" "dnsmasq" "unbound" "none" "default" ];
     };
   };
 
@@ -34,6 +34,8 @@ in
 
     services.resolved.enable = (cfg.dns == "systemd-resolved");
     services.resolved.llmnr = mkForce "false"; # https://www.blackhillsinfosec.com/how-to-disable-llmnr-why-you-want-to/
+
+    services.unbound.enable = (cfg.dns == "unbound");
 
     networking.networkmanager = {
       wifi.backend = mkDefault "iwd";
