@@ -218,10 +218,28 @@ in {
     programs.chromium = {
       enable = true;
       extensions = [
-        "gcbommkclmclpchllfjekcdonpmejbdp" # HTTPS Everywhere
-        "cjpalhdlnbpafiamejdnhcphjbkeiagm" # Ublock Origin
+        "gcbommkclmclpchllfjekcdonpmejbdp;https://clients2.google.com/service/update2/crx" # HTTPS Everywhere
+        "cjpalhdlnbpafiamejdnhcphjbkeiagm;https://clients2.google.com/service/update2/crx" # Ublock Origin
       ];
-      defaultSearchProviderSearchURL = "https://duckduckgo.com/?kp=1&k1=-1&kav=1&kak=-1&kax=-1&kaq=-1&kap=-1&kau=-1&kao=-1&kae=d&q={searchTerms}";
+      extraOpts = {
+        "BrowserSignin" = 0;
+        "SyncDisabled" = true;
+        "PasswordManagerEnabled" = true;
+        "SpellcheckEnabled" = true;
+        "SpellcheckLanguage" = [
+          "fr"
+          "en-US"
+        ];
+        "DefaultSearchProviderEnabled" = true;
+        "DefaultSearchProviderKeyword" = "duckduckgo";
+        "DefaultSearchProviderName" = "DuckDuckGo";
+        "ExtensionInstallSources" = [ 
+          "https://chrome.google.com/webstore/*"
+          "https://microsoftedge.microsoft.com/addons/*"
+        ];
+      };
+      defaultSearchProviderSearchURL = ''https://duckduckgo.com/?kp=1&k1=-1&kav=1&kak=-1&kax=-1&kaq=-1&kap=-1&kau=-1&kao=-1&kae=d&q={searchTerms}'';
+      defaultSearchProviderSuggestURL = ''https://ac.duckduckgo.com/ac/?q={searchTerms}'';
     };
 
 

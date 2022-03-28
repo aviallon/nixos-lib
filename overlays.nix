@@ -114,6 +114,7 @@ in
         ungoogled-chromium = super.ungoogled-chromium.override {
           enableWideVine = true;
         };
+        chromium = self.ungoogled-chromium;
       })
     ];
 
