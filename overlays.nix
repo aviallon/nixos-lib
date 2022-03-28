@@ -2,7 +2,10 @@
 with lib;
 let
   cfg = config.aviallon.overlays;
-  unstable = import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") { config = config.nixpkgs.config; };
+  unstable = import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") {
+    config = config.nixpkgs.config // { allowUnfree = true; } ;
+    overlays = config.nixpkgs.overlays;
+  };
   nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") { inherit pkgs; };
   optimizeWithFlags = pkg: flags:
     pkg.overrideAttrs (attrs: {
