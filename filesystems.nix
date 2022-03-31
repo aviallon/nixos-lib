@@ -49,6 +49,11 @@ in
       "dm-cache" "dm-cache-smq" "dm-cache-mq" "dm-cache-cleaner"
     ];
     boot.kernelModules = ifEnable cfg.lvm [ "dm-cache" "dm-cache-smq" "dm-persistent-data" "dm-bio-prison" "dm-clone" "dm-crypt" "dm-writecache" "dm-mirror" "dm-snapshot"];
+    boot.initrd.extraFiles = {
+      "/bin/fsck.vfat" = {
+        source = pkgs.dosfstools; # "${pkgs.dosfstools}/bin/fsck.vfat";
+      };
+    };
 
     fileSystems."/boot".neededForBoot = mkDefault true;
 
