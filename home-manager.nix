@@ -4,6 +4,9 @@ let
   cfg = config.aviallon.home-manager;
   usersCfg = config.users;
   defaultUsers = attrNames (filterAttrs (name: value: value.isNormalUser) usersCfg.users);
+  hmUserCfg = u: config.home-manager.users.${u};
+  userCfg = u: config.users.users.${u};
+  getUserCfgPath = u: "${(userCfg u).home}/.config/nixpkgs/home.nix";
 in
 {
   imports = [
@@ -45,11 +48,38 @@ in
     });
     users.groups = genAttrs cfg.users (u: { } );
 
-  #  systemd.tmpfiles.rules = concatLists (forEach cfg.users (u:
-  #    [
-  #      "d ${usersCfg.users.${u}.home}/.config/nixpkgs 0700 ${u} ${u} -"
-  #      "C ${usersCfg.users.${u}.home}/.config/nixpkgs/home.nix 0600 ${u} ${u} - ${cfg.defaultHomeFile}"
-  #    ]
-  #  ));
+    #environment.systemPackages = with pkgs; [
+    #  home-manager
+    #];
+
+    home-manager.users = genAttrs cfg.users (u: {
+      home.username = "${u}";
+      home.homeDirectory = "${(userCfg u).home}";
+      home.stateVersion = mkDefault config.system.stateVersion;
+
+      programs.bash.enable = mkDefault true;
+      qt.enable = mkDefault true;
+      services.kdeconnect.enable = mkDefault true;
+      programs.powerline-go = {
+        enable = mkDefault true;
+        modules = [ "host" "ssh" "cwd" "gitlite" "jobs" "exit" ];
+        #modulesRight = [ "venv" "git" ];
+        newline = mkDefault true;
+      };
+
+      # nixpkgs.config.allowUnfree = mkDefault true;
+
+      imports = [
+        (import (getUserCfgPath u) {
+          config = config.home-manager;
+          pkgs = (import <nixpkgs> {
+            config = (hmUserCfg u).nixpkgs.config;
+            # overlays = ifEnable ((hmUserCfg u).nixpkgs ? overlays) (hmUserCfg u).nixpkgs.overlays;
+          });
+          inherit lib;
+        })
+      ];
+            
+    });
   };
 }
