@@ -20,6 +20,30 @@ let
     settings)
   );
 
+  buildUserKeyFile = "remote_builder/id_builder";
+  buildUserPubKey = readFile ./nix/id_builder.pub;
+  buildUserKey = readFile ./nix/id_builder;
+
+  getSpeed = cores: threads: cores + (threads - cores) / 2;
+  mkBuildMachine = {
+  hostName,
+  cores,
+  threads ? (cores * 2),
+  features ? [ ],
+  x86ver ? 1 }:
+  rec {
+    inherit hostName;
+    system = "x86_64-linux";
+    maxJobs = cores / 2;
+    sshUser = "builder";
+    sshKey = "/etc/${buildUserKeyFile}";
+    speedFactor = getSpeed cores threads; 
+    supportedFeatures = [ "kvm" "benchmark" ]
+      ++ optional (speedFactor > 8) "big-parallel"
+      ++ optional (x86ver >= 2) "arch-x86-64-v2"
+      ++ optional (x86ver >= 3) "arch-x86-64-v3"
+    ;
+  };
 in
 {
   options.aviallon.general = {
@@ -109,6 +133,7 @@ in
       gcc.tune = cfg.cpuTune;
     };
 
+    environment.etc."${buildUserKeyFile}".text = buildUserKey;
     nix.buildMachines = [
       {
         hostName = "lesviallon.fr";
@@ -118,6 +143,16 @@ in
         supportedFeatures = [ "kvm" "benchmark" "big-parallel" ];
       }
     ];
+    users.users.builder = {
+      isSystemUser = true;
+      group = "builder";
+      hashedPassword = mkForce null; # Must not have a password!
+      openssh.authorizedKeys.keys = [
+        buildUserPubKey
+      ];
+    };
+    users.groups.builder = {};
+    nix.trustedUsers = [ "builder" ];
     nix.distributedBuilds = mkDefault false;
 
     nix.package = mkIf cfg.flakes.enable (if (builtins.compareVersions pkgs.nix.version "2.4" >= 0) then pkgs.nix else pkgs.nix_2_4);
