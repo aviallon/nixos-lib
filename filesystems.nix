@@ -36,6 +36,12 @@ in
       description = "Automatically enable ncq_prio if it is supported by the SATA device.\nIt may improve latency.";
       type = types.bool;
     };
+    udevRules = mkOption {
+      default = [];
+      example = [ ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sda", ATTR{queue/scheduler}="none"'' ];
+      description = "Additional udev rules";
+      type = types.listOf types.str;
+    };
     lvm = mkEnableOption "lvm options required for correct booting";
   };
 
@@ -57,29 +63,25 @@ in
 
     fileSystems."/boot".neededForBoot = mkDefault true;
 
-    services.udev =
-      let
-        udevRules = concatStringsSep "\n" (
-          concatLists [
-            (optional (!(builtins.isNull cfg.hddScheduler))
-              ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}!="none", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
-            )
-            (optional (!(builtins.isNull cfg.slowFlashScheduler))
-              ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]*|nvme[0-9]*n[0-9]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"''
-            )
-            (optional (!(builtins.isNull cfg.nvmeScheduler))
-              ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="${cfg.nvmeScheduler}"''
-            )
-            (optional cfg.queuePriority
-              ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{device/ncq_prio_supported}=="1", ATTR{device/ncq_prio_enable}="1"''
-            )
-          ]
-        );
-      in
-      {
-        extraRules = udevRules;
-        initrdRules = udevRules;
-      };
+    aviallon.filesystems.udevRules = mkBefore (concatLists [
+      (optional (!(builtins.isNull cfg.hddScheduler))
+        ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}!="none", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
+      )
+      (optional (!(builtins.isNull cfg.slowFlashScheduler))
+        ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]*|nvme[0-9]*n[0-9]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"''
+      )
+      (optional (!(builtins.isNull cfg.nvmeScheduler))
+        ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="${cfg.nvmeScheduler}"''
+      )
+      (optional cfg.queuePriority
+        ''ACTION=="add|change", SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{device/ncq_prio_supported}=="1", ATTR{device/ncq_prio_enable}="1"''
+      )
+    ]);
+
+    services.udev = {
+      extraRules = concatStringsSep "\n" cfg.udevRules;
+      initrdRules = concatStringsSep "\n" cfg.udevRules;
+    };
 
 
     services.smartd = {
