@@ -76,8 +76,10 @@ in
     };
 
     nix.gc.automatic = mkDefault true;
-    nix.gc.randomizedDelaySec = "30min";
+    nix.gc.dates = mkDefault "Monday,Wednesday,Friday,Sunday 03:00:00";
+    nix.gc.randomizedDelaySec = "3h";
     nix.optimise.automatic = mkDefault true;
+    nix.optimise.dates = mkForce [ "Tuesday,Thursday,Saturday 03:00:00" ];
     nix.autoOptimiseStore = mkDefault true;
 
     nix.daemonIOSchedPriority = 5;
@@ -86,7 +88,7 @@ in
 
     system.autoUpgrade.enable = mkDefault true;
     system.autoUpgrade.allowReboot = mkIf (!desktopCfg.enable) (mkDefault true);
-    system.autoUpgrade.dates = "00:00";
+    system.autoUpgrade.dates = "Sunday *-*-* 00:00";
 
     documentation.nixos.includeAllModules = true;
     documentation.nixos.enable = true;
