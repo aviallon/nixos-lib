@@ -134,13 +134,13 @@ in {
       cgroup_realtime_workaround = false;
     };
     services.ananicy.extraRules = concatStringsSep "\n" ( forEach [
-      {
-        name = "cp";
-        type = "BG_CPUIO";
-      }
+      { name = "cp";
+        type = "BG_CPUIO"; }
       { name = "nix-build";
         type = "BG_CPUIO"; }
       { name = "nix-store";
+        type = "BG_CPUIO"; }
+      { name = "nix-collect-garbage";
         type = "BG_CPUIO"; }
       { name = "nix";
         type = "BG_CPUIO"; }
