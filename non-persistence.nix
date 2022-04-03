@@ -44,7 +44,6 @@ in
       (mkPersist "/etc/NetworkManager/system-connections")
     ]));
 
-    boot.tmpOnTmpfs = true;
 
     fileSystems = {
       "/var/log" = {

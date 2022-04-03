@@ -83,6 +83,7 @@ in
       initrdRules = concatStringsSep "\n" cfg.udevRules;
     };
 
+    boot.tmpOnTmpfs = true;
 
     services.smartd = {
       enable = mkDefault true;
