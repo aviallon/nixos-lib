@@ -117,13 +117,17 @@ in
         ungoogled-chromium = super.ungoogled-chromium.override {
           enableWideVine = true;
         };
-        chromium = self.ungoogled-chromium;
+        chromium = super.chromium.override {
+          enableWideVine = true;
+        };
+        # chromium = self.ungoogled-chromium;
       })
     ];
 
     aviallon.programs.allowUnfreeList = [
       "unrar" "ark"
-      "chromium-unwrapped" "chrome-widevine-cdm" "ungoogled-chromium" # because of widevine
+      "chromium-unwrapped" "chrome-widevine-cdm"
+      "ungoogled-chromium" "chromium" # because of widevine
     ];
   }; 
 }
