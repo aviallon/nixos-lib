@@ -154,6 +154,7 @@ in {
     # programs.gnupg.agent.pinentryFlavor = "qt";
 
     environment.systemPackages = with pkgs; [
+      myFirefox
       chromium
       p7zip
       vlc
