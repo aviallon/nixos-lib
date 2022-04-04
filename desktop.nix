@@ -6,6 +6,7 @@ let
   filterConfig = pkgs.callPackage ./packages/pipewire-noise-filter.cfg.nix {
     noiseFilterStrength = cfg.audio.noise-filter.strength;
   };
+  mkTmpDir = dirpath: cleanup: "D ${dirpath} 777 root root ${cleanup}";
 in {
   options.aviallon.desktop = {
     enable = mkOption {
@@ -26,6 +27,22 @@ in {
         type = types.float;
         default = 80.0;
         example = 0.0;
+      };
+    };
+    graphics = {
+      shaderCache = {
+        path = mkOption {
+          description = "Where to put shader cache (currently only for NVidia)";
+          type = types.path;
+          default = "/var/tmp/shadercache";
+          example = "/tmp/shadercache";
+        };
+        cleanupInterval = mkOption {
+          description = "Interval for cache cleanup (tmpfiles.d format). Set to '-' to disable.";
+          type = types.str;
+          default = "180d";
+          example = "-";
+        };
       };
     };
   };
@@ -148,7 +165,17 @@ in {
     programs.steam.enable = true;
     hardware.steam-hardware.enable = true;
     programs.steam.remotePlay.openFirewall = true;
-
+    environment.variables = {
+      "__GL_SHADER_DISK_CACHE_SKIP_CLEANUP" = "1"; # Avoid 128mb limit of shader cache
+      "__GL_SHADER_DISK_CACHE_PATH" = cfg.graphics.shaderCache.path + "/nvidia" ;
+      "MESA_SHADER_CACHE_MAX_SIZE" = "50G"; # Put large-enough value. Default is only 1G
+      "MESA_SHADER_CACHE_DIR" = cfg.graphics.shaderCache.path + "/mesa";
+    };
+    
+    systemd.tmpfiles.rules = [
+      (mkTmpDir (cfg.graphics.shaderCache.path + "/nvidia") cfg.graphics.shaderCache.cleanupInterval)
+      (mkTmpDir (cfg.graphics.shaderCache.path + "/mesa") cfg.graphics.shaderCache.cleanupInterval)
+    ];
 
     aviallon.programs.allowUnfreeList = [
       "spotify"
