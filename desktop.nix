@@ -82,6 +82,10 @@ in {
     };
   };
 
+  imports = [
+    ./desktop/plasma.nix
+  ];
+
   config = mkIf cfg.enable {
 
     aviallon.network.backend = mkDefault "NetworkManager";
@@ -94,37 +98,11 @@ in {
 
     systemd.services."getty@tty1".enable = mkOverride 50 false;
     systemd.services."autovt@tty1".enable = mkOverride 50 false;
-    
-    systemd.tmpfiles.rules = mkAfter [
-      "e ${config.users.users.sddm.home}/.cache/sddm-greeter/qmlcache/ - - - 0"
-      "x ${config.users.users.sddm.home}/.cache"
-    ];
-
-     # Prevents blinking cursor
-    services.xserver.displayManager.sddm = {
-      enable = true;
-      settings = {
-        Theme = {
-          CursorTheme = "breeze_cursors";
-        };
-        X11 = {
-          MinimumVT = mkOverride 50 1;
-        };
-      };
-    };
 
     # Configure keymap in X11
     services.xserver.layout = cfg.layout;
     services.xserver.xkbOptions = "eurosign:e";
 
-
-    # Enable the Plasma 5 Desktop Environment.
-    services.xserver.desktopManager.plasma5 = {
-      enable = true;
-      runUsingSystemd = true;
-      useQtScaling = true;
-      supportDDC = true;
-    };
 
     boot.plymouth.enable = mkDefault true;
     boot.kernelParams = concatLists [
@@ -173,37 +151,12 @@ in {
     # For 32 bit applications
     hardware.opengl.driSupport32Bit = true;
 
-    xdg = {
-      portal = {
-        enable = true;
-        gtkUsePortal = mkDefault true;
-        extraPortals = with pkgs; [
-          xdg-desktop-portal-gtk
-        ];
-      };
-    };
-
     # programs.gnupg.agent.pinentryFlavor = "qt";
 
-    environment.systemPackages = with pkgs; with libsForQt5; [
-#      firefox
+    environment.systemPackages = with pkgs; [
       chromium
-      konsole
-      kate
-      yakuake
-      pinentry-qt
-      plasma-pa
-      ark
       p7zip
       vlc
-      skanlite
-      packagekit-qt
-      discover
-      akonadi
-      kmail
-      korganizer
-      dolphin
-      kio-fuse
       glxinfo
       vdpauinfo
       libva-utils
