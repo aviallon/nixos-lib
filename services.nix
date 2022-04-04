@@ -46,9 +46,13 @@ in {
 
   config = mkIf cfg.enable {
     # Enable the OpenSSH daemon.
-    services.openssh.enable = true;
-  #  services.openssh.permitRootLogin = "prohibit-password";
-    services.openssh.permitRootLogin = mkDefault "yes";
+    services.openssh = {
+      enable = true;
+      permitRootLogin = mkDefault "prohibit-password";
+      forwardX11 = mkDefault true;
+      openFirewall = true;
+    };
+    
     networking.firewall.allowedTCPPorts = [ 22 ];
     networking.firewall.allowedUDPPorts = [ 22 ];
 
