@@ -172,6 +172,7 @@ in {
       "__GL_SHADER_DISK_CACHE_PATH" = cfg.graphics.shaderCache.path + "/nvidia" ;
       "MESA_SHADER_CACHE_MAX_SIZE" = "50G"; # Put large-enough value. Default is only 1G
       "MESA_SHADER_CACHE_DIR" = cfg.graphics.shaderCache.path + "/mesa";
+      "MESA_GLSL_CACHE_DIR" = cfg.graphics.shaderCache.path + "/mesa";
     };
     
     systemd.tmpfiles.rules = [
