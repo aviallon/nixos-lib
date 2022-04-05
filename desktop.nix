@@ -166,6 +166,8 @@ in {
     hardware.steam-hardware.enable = true;
     programs.steam.remotePlay.openFirewall = true;
     environment.variables = {
+      "__GL_SHADER_DISK_CACHE" = "true";
+      "__GL_SHADER_DISK_CACHE_SIZE" = "${toString (50 * 1000)}";
       "__GL_SHADER_DISK_CACHE_SKIP_CLEANUP" = "1"; # Avoid 128mb limit of shader cache
       "__GL_SHADER_DISK_CACHE_PATH" = cfg.graphics.shaderCache.path + "/nvidia" ;
       "MESA_SHADER_CACHE_MAX_SIZE" = "50G"; # Put large-enough value. Default is only 1G
