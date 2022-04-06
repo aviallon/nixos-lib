@@ -20,6 +20,9 @@ let
     settings)
   );
 
+  log2 = let
+    mylog = x: y: if (x >= 2) then mylog (x / 2) (y + 1) else y;
+  in x: mylog x 0;
   buildUserKeyFile = "remote_builder/id_builder";
   buildUserPubKey = readFile ./nix/id_builder.pub;
   buildUserKey = readFile ./nix/id_builder;
@@ -53,6 +56,13 @@ in
       description = "Enable aviallon's general tuning";
       type = types.bool;
     };
+    cores = mkOption {
+      default = null;
+      example = 4;
+      description = "Number of physical threads of the machine";
+      type = types.nullOr (types.addCheck types.int (x: x > 0));
+    };
+    
     cpuArch = mkOption {
       default = "x86-64";
       example = "x86-64-v2";
@@ -162,9 +172,11 @@ in
         (optionals cfg.flakes.enable ["nix-command" "flakes"])
       ];
       download-attempts = 5;
+      cores = ifEnable (cfg.cores != null) cfg.cores;
       stalled-download-timeout = 20;
     };
 
+    nix.maxJobs = mkIf (cfg.cores != null) (log2 cfg.cores);
   };
 
 }
