@@ -24,10 +24,17 @@ let
   };
 
   toCmdlineValue = v: if (isBool v) then (if v then "y" else "n")
-                      else if (isInt v || isString v) then (toString v)
-                      else throw "Invalid value for kernel cmdline parameter";
+                        else if (isInt v || isString v) then (toString v)
+                        else if (isList v) then (concatStringsSep "," v)
+                        else throw "Invalid value for kernel cmdline parameter";
 
-  toCmdlineList = set: mapAttrsToList (key: value: "${key}=${toCmdlineValue value}") set;
+  toCmdlineList = set: mapAttrsToList
+      (key: value:
+        if (value == "") then
+          "${key}"
+        else
+          "${key}=${toCmdlineValue value}"
+      ) set;
   
   cfg = config.aviallon.boot;
   generalCfg = config.aviallon.general;
@@ -70,7 +77,7 @@ in
       description = "Kernel params as attributes (instead of list)";
       default = { };
       example = { "i915.fastboot" = true; };
-      type = types.attrsOf (types.oneOf [ types.bool types.int types.str ]);
+      type = types.attrsOf (types.oneOf [ types.bool types.int types.str (types.listOf types.str) ]);
     };
   };
 
