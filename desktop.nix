@@ -70,10 +70,11 @@ in {
 
 
     boot.plymouth.enable = mkDefault true;
-    boot.kernelParams = concatLists [
-      (optionals (!generalCfg.debug) [ "splash" "udev.log_level=3" ])
-      ["preempt=full"]
-    ];
+    aviallon.boot.cmdline = {
+      splash = mkIf (!generalCfg.debug) true;
+      "udev.log_level" = mkIf (!generalCfg.debug) 3;
+      preempt = "full";
+    };
     boot.initrd.verbose = generalCfg.debug;
     boot.consoleLogLevel = mkIf (!generalCfg.debug) 1;
 

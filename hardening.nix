@@ -53,7 +53,7 @@ in
     services.dbus.apparmor = "enabled";
 
 
-    boot.kernelParams = concatLists [
+    boot.kernelParams = mkAfter (concatLists [
       # Slab/slub sanity checks, redzoning, and poisoning
       (optional cfg.expensive "slub_debug=FZP")
 
@@ -65,7 +65,7 @@ in
 
       # Apparmor https://wiki.archlinux.org/title/AppArmor#Installation
       (optional cfg.expensive "lsm=landlock,lockdown,yama,apparmor,bpf")
-    ];
+    ]);
 
     boot.kernel.sysctl = {
     "kernel.yama.ptrace_scope" = mkOverride 500 1;

@@ -7,12 +7,14 @@ in
   config = mkIf (hardwareCfg.gpuVendor == "amd") {
     boot.initrd.kernelModules = [ "amdgpu" ];
 
-    boot.kernelParams = concatLists [
+    aviallon.boot.cmdline = {}
       # for Southern Islands (SI ie. GCN 1) cards
-      [ "radeon.si_support=0" "amdgpu.si_support=1" ]
+      // { "radeon.si_support" = 0;
+      "amdgpu.si_support" = 1; }
       # for Sea Islands (CIK ie. GCN 2) cards
-      [ "radeon.cik_support=0" "amdgpu.cik_support=1" ]
-    ];
+      // { "radeon.cik_support" = 0;
+       "amdgpu.cik_support" = 1; }
+    ;
 
     hardware.opengl.extraPackages = with pkgs; [
       rocm-opencl-icd

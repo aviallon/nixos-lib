@@ -22,6 +22,13 @@ let
         '';
       };
   };
+
+  toCmdlineValue = v: if (isBool v) then (if v then "y" else "n")
+                      else if (isInt v || isString v) then (toString v)
+                      else throw "Invalid value for kernel cmdline parameter";
+
+  toCmdlineList = set: mapAttrsToList (key: value: "${key}=${toCmdlineValue value}") set;
+  
   cfg = config.aviallon.boot;
   generalCfg = config.aviallon.general;
   allowUnfree = (types.isType types.attrs config.nixpkgs.config)
@@ -58,6 +65,13 @@ in
       example = null;
       type = types.int;
     };
+
+    cmdline = mkOption {
+      description = "Kernel params as attributes (instead of list)";
+      default = { };
+      example = { "i915.fastboot" = true; };
+      type = types.attrsOf (types.oneOf [ types.bool types.int types.str ]);
+    };
   };
 
   config = mkIf cfg.enable {
@@ -65,14 +79,16 @@ in
     hardware.enableAllFirmware = allowUnfree;
     hardware.enableRedistributableFirmware = true;
 
+    aviallon.boot.cmdline = {
+      "syscall.x32" = cfg.x32abi.enable;
+    };
+
     boot = {
       initrd.kernelModules = [ ];
       initrd.availableKernelModules = [ "ehci_pci" ];
 
-      kernelParams = concatLists [
-        (optional cfg.x32abi.enable "syscall.x32=y")
-      ];
-
+      kernelParams = toCmdlineList cfg.cmdline;
+      
       kernelPatches = concatLists [
         (optional cfg.x32abi.enable customKernelPatches.enableX32ABI)
       ];
