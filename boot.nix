@@ -95,6 +95,10 @@ in
 
     aviallon.boot.cmdline = {
       "syscall.x32" = cfg.x32abi.enable;
+
+      # Reboot after 5 seconds on panic (prevent system lockup)
+      "panic" = 5;
+
       # Sets loops_per_jiffy to given constant, thus avoiding time-consuming boot-time autodetection
       # https://www.kernel.org/doc/html/v5.15/admin-guide/kernel-parameters.html
       "lpj" = cfg.loops_per_jiffies;
