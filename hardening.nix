@@ -45,43 +45,63 @@ in
     security.lockKernelModules = mkIf cfg.hardcore (mkOverride 500 true);
     # security.protectKernelImage = mkIf cfg.hardcore (mkOverride 500 false); # needed for kexec
 
-    aviallon.hardening.expensive = mkForce cfg.hardcore;
+    aviallon.hardening.expensive = mkIf cfg.hardcore (mkForce true);
 
     services.openssh.permitRootLogin = "prohibit-password";
 
     security.apparmor.enable = true;
     services.dbus.apparmor = "enabled";
 
+    aviallon.boot.cmdline = {
+      "lsm" = [ "landlock" ]
+        ++ optional cfg.hardcore "lockdown"
+        # Apparmor https://wiki.archlinux.org/title/AppArmor#Installation
+        ++ optionals config.security.apparmor.enable [ "apparmor" ]
+        ++ [ "yama" ]
+        ++ [ "bpf" ]
+      ;
+      "lockdown" = if cfg.hardcore then "confidentiality" else "integrity";
 
-    boot.kernelParams = mkAfter (concatLists [
+      # Vsyscall page not readable (default is "emulate". "none" might break statically-linked binaries.)
+      vsyscall = mkIf cfg.hardcore "xonly";
+    } // (ifEnable cfg.expensive {
       # Slab/slub sanity checks, redzoning, and poisoning
-      (optional cfg.expensive "slub_debug=FZP")
+      "slub_debug" = "FZP";
 
       # Overwrite free'd memory
-      (optional cfg.expensive "page_poison=1")
+      "page_poison" = 1;
 
       # Enable page allocator randomization
-      [ "page_alloc.shuffle=1" ]
+      "page_alloc.shuffle" = 1;
 
-      # Apparmor https://wiki.archlinux.org/title/AppArmor#Installation
-      (optional cfg.expensive "lsm=landlock,lockdown,yama,apparmor,bpf")
-    ]);
+      "nordrand" = "";
+      "random.trust_cpu" = "off";
+    });
 
     boot.kernel.sysctl = {
-    "kernel.yama.ptrace_scope" = mkOverride 500 1;
-    "kernel.kptr_restrict" = mkOverride 500 2;
+      # Almost free security. https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
+      "kernel.yama.ptrace_scope" = mkOverride 999 1;
 
-    "net.core.bpf_jit_enable" = mkIf cfg.expensive (mkOverride 500 false);
+      # https://lwn.net/Articles/420403/
+      "kernel.kptr_restrict" = mkOverride 999 2;
 
-    "kernel.ftrace_enabled" = mkOverride 500 false;
+      # Can have dire impact on performance if BPF network filtering is used.
+      "net.core.bpf_jit_enable" = mkIf cfg.expensive (mkOverride 999 false);
+
+      # Can be used by developers. Should be disabled on regular desktops.
+      # https://www.kernel.org/doc/html/latest/trace/ftrace.html
+      "kernel.ftrace_enabled" = mkIf cfg.hardcore (mkOverride 999 false);
     };
 
+    # Is used in podman containers, for instance
     security.allowUserNamespaces = mkDefault true;
 #    boot.blacklistedKernelModules = mkForce [ ];
 
-    nix.allowedUsers = mkIf cfg.hardcore [ "@wheel" ];
+    # Only authorize admins to use nix in hardcore mode
+    nix.allowedUsers = mkIf cfg.hardcore (mkForce [ "@wheel" ]);
 
-    security.audit.enable = true;
+    # Can really badly affect performance in some occasions.
+    security.audit.enable = mkIf cfg.expensive true;
     security.auditd.enable = mkIf cfg.expensive true;
 
     security.audit.rules = concatLists [
