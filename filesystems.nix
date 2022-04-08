@@ -2,6 +2,10 @@
 with lib;
 let
   cfg = config.aviallon.filesystems;
+  
+  getSwapDevice = index: ifEnable (length config.swapDevices > index) (elemAt config.swapDevices index);
+  resumeDevice = ifEnable ((getSwapDevice 0) ? label ) ((getSwapDevice 0).label);
+  
   ioSchedType = types.enum [ "bfq" "kyber" "mq-deadline" "none" null ];
 in
 {
@@ -55,10 +59,8 @@ in
       "dm-cache" "dm-cache-smq" "dm-cache-mq" "dm-cache-cleaner"
     ];
     boot.kernelModules = ifEnable cfg.lvm [ "dm-cache" "dm-cache-smq" "dm-persistent-data" "dm-bio-prison" "dm-clone" "dm-crypt" "dm-writecache" "dm-mirror" "dm-snapshot"];
-    boot.initrd.extraFiles = {
-      "/bin/fsck.vfat" = {
-        source = pkgs.dosfstools; # "${pkgs.dosfstools}/bin/fsck.vfat";
-      };
+    aviallon.boot.cmdline = {
+      resume = mkIf (! isNull resumeDevice) (mkDefault "LABEL=${resumeDevice}");
     };
 
     fileSystems."/boot".neededForBoot = mkDefault true;
