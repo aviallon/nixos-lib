@@ -73,6 +73,13 @@ in
       type = types.int;
     };
 
+    loops_per_jiffies = mkOption {
+      description = "Set loops_per_jiffies to given constant, reducing boot-time. A value of 0 means autodetection.";
+      default = 0;
+      example = 4589490;
+      type = types.addCheck types.int (v: v > 500);
+    };
+
     cmdline = mkOption {
       description = "Kernel params as attributes (instead of list)";
       default = { };
@@ -88,6 +95,10 @@ in
 
     aviallon.boot.cmdline = {
       "syscall.x32" = cfg.x32abi.enable;
+      # Sets loops_per_jiffy to given constant, thus avoiding time-consuming boot-time autodetection
+      # https://www.kernel.org/doc/html/v5.15/admin-guide/kernel-parameters.html
+      "lpj" = cfg.loops_per_jiffies;
+
     };
 
     boot = {
