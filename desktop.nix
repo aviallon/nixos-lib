@@ -71,9 +71,12 @@ in {
 
     boot.plymouth.enable = mkDefault true;
     aviallon.boot.cmdline = {
-      splash = mkIf (!generalCfg.debug) true;
+      splash = mkIf (!generalCfg.debug) "";
       "udev.log_level" = mkIf (!generalCfg.debug) 3;
       preempt = "full";
+      reboot = mkDefault "warm";
+      "usbhid.mousepoll" = 1000; # 1ms latency for mouse
+      "usbhid.kbpoll" = 250; # 4ms latency for kb
     };
     boot.initrd.verbose = generalCfg.debug;
     boot.consoleLogLevel = mkIf (!generalCfg.debug) 1;
