@@ -27,6 +27,10 @@ in {
     aviallon.boot.cmdline = {
       "i915.enable_fbc" = 1;
       "i915.enable_gvt" = 1;
+
+      # Les power consumption against some performance
+      "workqueue.power_efficient" = "";
+      nohz = "on";
     };
 
     services.tlp.enable = (cfg.power-manager == "tlp");
