@@ -16,6 +16,9 @@ in {
       description = "Change service used to manage power consumption on laptop";
       type = types.enum [ "tlp" "power-profiles-daemon" false ];
     };
+    tweaks = {
+      pcieAspmForce = mkEnableOption "hardcore tweaks to power consumption. Warning: Might be dangerous to use.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -31,6 +34,23 @@ in {
       # Les power consumption against some performance
       "workqueue.power_efficient" = "";
       nohz = "on";
+
+      pcie_aspm = mkIf cfg.tweaks.pcieAspmForce "force";
+    };
+
+
+    systemd.services.aspm-force-enable = let
+      aspm_enable = pkgs.callPackage ./packages/aspm_enable { };
+    in {
+      serviceConfig = {
+        ExecStart = [
+          "${aspm_enable}/bin/aspm_enable"
+        ];
+        Type = "simple";
+      };
+      wantedBy = [ "multi-user.target" ];
+      description = "Force-enable PCIe ASPM";
+      enable = cfg.tweaks.pcieAspmForce;
     };
 
     services.tlp.enable = (cfg.power-manager == "tlp");
