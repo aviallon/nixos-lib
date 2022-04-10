@@ -166,6 +166,12 @@ in {
           "https://microsoftedge.microsoft.com/addons/*"
           "https://gitlab.com/magnolia1234/bypass-paywalls-chrome-clean/*"
         ];
+        "BuiltInDnsClientEnabled" = false;
+        "TranslateEnabled" = false;
+        "PasswordLeakDetectionEnabled" = false;
+        "CloudPrintProxyEnabled" = false;
+        "CloudPrintSubmitEnabled" = false;
+        "SafeBrowsingProtectionLevel" = 0; # Force disabled
       };
       defaultSearchProviderSearchURL = ''https://duckduckgo.com/?kp=1&k1=-1&kav=1&kak=-1&kax=-1&kaq=-1&kap=-1&kau=-1&kao=-1&kae=d&q={searchTerms}'';
       defaultSearchProviderSuggestURL = ''https://ac.duckduckgo.com/ac/?q={searchTerms}'';
