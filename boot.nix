@@ -77,7 +77,7 @@ in
       description = "Set loops_per_jiffies to given constant, reducing boot-time. A value of 0 means autodetection.";
       default = 0;
       example = 4589490;
-      type = types.addCheck types.int (v: v > 500);
+      type = types.addCheck types.int (v: v > 500 || v == 0);
     };
 
     cmdline = mkOption {
