@@ -176,6 +176,7 @@ in
       download-attempts = 5;
       cores = ifEnable (cfg.cores != null) cfg.cores;
       stalled-download-timeout = 20;
+      connect-timeout = 5;
     };
 
     nix.maxJobs = mkIf (cfg.cores != null) (log2 cfg.cores);
