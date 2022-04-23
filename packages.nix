@@ -30,7 +30,7 @@ in
         "-fno-asynchronous-unwind-tables"
 
         # Fat LTO objects are object files that contain both the intermediate language and the object code. This makes them usable for both LTO linking and normal linking.
-        "-flto=auto" # Use -flto=auto to use GNU make’s job server, if available, or otherwise fall back to autodetection of the number of CPU threads present in your system.
+        # "-flto=auto" # Use -flto=auto to use GNU make’s job server, if available, or otherwise fall back to autodetection of the number of CPU threads present in your system.
         "-ffat-lto-objects"
 
         # Math optimizations leading to loss of precision
