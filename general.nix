@@ -1,28 +1,8 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, myLib, ... }:
 with lib;
 let
   cfg = config.aviallon.general;
   desktopCfg = config.aviallon.desktop;
-  nixConfigValue = value:
-    if value == true then "true"
-    else if value == false then "false"
-    else if isList value then toString value
-    else generators.mkValueStringDefault { } value;
-
-  isNullOrEmpty = v: (v == null) ||
-      (isList v && (length v == 0));
-
-  nixConfig = settings: (generators.toKeyValue {
-    mkKeyValue = generators.mkKeyValueDefault {
-      mkValueString = nixConfigValue;
-    } " = ";
-  } (filterAttrs (n: v: !(isNullOrEmpty v))
-    settings)
-  );
-
-  log2 = let
-    mylog = x: y: if (x >= 2) then mylog (x / 2) (y + 1) else y;
-  in x: mylog x 0;
   buildUserKeyFile = "remote_builder/id_builder";
   buildUserPubKey = readFile ./nix/id_builder.pub;
   buildUserKey = readFile ./nix/id_builder;
@@ -60,7 +40,7 @@ in
       default = null;
       example = 4;
       description = "Number of physical threads of the machine";
-      type = types.nullOr (types.addCheck types.int (x: x > 0));
+      type = with types; nullOr ints.positive;
     };
     
     cpuArch = mkOption {
@@ -111,21 +91,6 @@ in
       enableSSHSupport = true;
     };
 
-    nix.gc.automatic = mkDefault true;
-    nix.gc.dates = mkDefault "Monday,Wednesday,Friday,Sunday 03:00:00";
-    nix.gc.randomizedDelaySec = "3h";
-    nix.optimise.automatic = mkDefault true;
-    nix.optimise.dates = mkForce [ "Tuesday,Thursday,Saturday 03:00:00" ];
-    nix.autoOptimiseStore = mkDefault true;
-
-    nix.daemonIOSchedPriority = 5;
-    nix.daemonCPUSchedPolicy = "batch";
-    nix.daemonIOSchedClass = "idle";
-
-    system.autoUpgrade.enable = mkDefault true;
-    system.autoUpgrade.allowReboot = mkIf (!desktopCfg.enable) (mkDefault true);
-    system.autoUpgrade.dates = "Sunday *-*-* 00:00";
-
     documentation.nixos.includeAllModules = true;
     documentation.nixos.enable = true;
     documentation.dev.enable = true;
@@ -166,20 +131,6 @@ in
     users.groups.builder = {};
     nix.trustedUsers = [ "builder" ];
     nix.distributedBuilds = mkDefault false;
-
-    nix.package = mkIf cfg.flakes.enable (if (builtins.compareVersions pkgs.nix.version "2.4" >= 0) then pkgs.nix else pkgs.nix_2_4);
-    nix.extraOptions = nixConfig {
-      builders-use-substitutes = true;
-      experimental-features = concatLists [
-        (optionals cfg.flakes.enable ["nix-command" "flakes"])
-      ];
-      download-attempts = 5;
-      cores = ifEnable (cfg.cores != null) cfg.cores;
-      stalled-download-timeout = 20;
-      connect-timeout = 5;
-    };
-
-    nix.maxJobs = mkIf (cfg.cores != null) (log2 cfg.cores);
   };
 
 }
