@@ -4,7 +4,8 @@ let
   cfg = config.aviallon.filesystems;
   
   getSwapDevice = index: ifEnable (length config.swapDevices > index) (elemAt config.swapDevices index);
-  resumeDevice = ifEnable ((getSwapDevice 0) ? label ) ((getSwapDevice 0).label);
+  firstSwapDevice = getSwapDevice 0;
+  resumeDeviceLabel = attrByPath [ "label" ] null firstSwapDevice; 
   
   ioSchedType = types.enum [ "bfq" "kyber" "mq-deadline" "none" null ];
 in
@@ -60,7 +61,7 @@ in
     ];
     boot.kernelModules = ifEnable cfg.lvm [ "dm-cache" "dm-cache-smq" "dm-persistent-data" "dm-bio-prison" "dm-clone" "dm-crypt" "dm-writecache" "dm-mirror" "dm-snapshot"];
     aviallon.boot.cmdline = {
-      resume = mkIf (! isNull resumeDevice) (mkDefault "LABEL=${resumeDevice}");
+      resume = mkIf (! isNull resumeDeviceLabel) (mkDefault "LABEL=${resumeDeviceLabel}");
     };
 
     fileSystems."/boot".neededForBoot = mkDefault true;
