@@ -2,7 +2,11 @@
 with lib;
 let
   cfg = config.aviallon.overlays;
-  unstable = import (builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") {
+  unstable = import (fetchGit {
+    url = "https://github.com/NixOS/nixpkgs.git";
+    rev = "c573e3eaa8717fbabab3f9a58bfed637fb441eac";
+    ref = "nixos-unstable";
+  }) {
     config = config.nixpkgs.config // { allowUnfree = true; } ;
     overlays = config.nixpkgs.overlays;
   };
