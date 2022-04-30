@@ -3,11 +3,15 @@
 }:
 with lib;
 let
-  genPrefList = {locked ? false}: prefs: concatStringsSep "\n" (
-                      mapAttrsToList
-                        (key: value: ''lockPref(${toString key}, ${builtins.toJSON value});'')
-                        prefs
-                );
+  genPrefList = {locked ? false}: prefs:
+    let
+      prefFuncName = if locked then "lockPref" else "user_pref";
+    in
+    concatStringsSep "\n" (
+      mapAttrsToList
+        (key: value: ''lockPref(${toString key}, ${builtins.toJSON value});'' )
+        prefs
+      );
 in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
     cfg = {
       smartcardSupport = true;
@@ -71,5 +75,8 @@ in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
       "network.IDN_show_punycode" = true;
       "plugins.enumerable_names" = true;
       "security.identityblock.show_extended_validation" = true;
+    }
+    + "\n" + genPrefList { } {
+
     };
   }
