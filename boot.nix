@@ -60,6 +60,7 @@ in
     x32abi = {
       enable = mkEnableOption "X32 kernel ABI";
     };
+    kvdo.enable = mkEnableOption "dm-kvdo kernel module";
     efi = mkOption rec {
       description = "Use EFI bootloader";
       default = builtins.pathExists "/sys/firmware/efi";
@@ -113,6 +114,9 @@ in
       
       kernelPatches = concatLists [
         (optional cfg.x32abi.enable customKernelPatches.enableX32ABI)
+      ];
+      extraModulePackages = concatLists [
+        (optional cfg.kvdo.enable pkgs.kvdo)
       ];
 
       loader.grub.enable = cfg.useGrub || (!cfg.efi);

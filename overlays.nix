@@ -127,6 +127,8 @@ in
         # chromium = self.ungoogled-chromium;
 
         myFirefox = (import ./packages/firefox.nix { pkgs = self; inherit lib; });
+
+        kvdo = config.boot.kernelPackages.callPackage ./packages/kvdo.nix { };
       })
     ];
 
