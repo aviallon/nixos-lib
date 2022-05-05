@@ -23,8 +23,8 @@ let
     speedFactor = getSpeed cores threads; 
     supportedFeatures = [ "kvm" "benchmark" ]
       ++ optional (speedFactor > 8) "big-parallel"
-      ++ optional (x86ver >= 2) "arch-x86-64-v2"
-      ++ optional (x86ver >= 3) "arch-x86-64-v3"
+      ++ optional (x86ver >= 2) "gccarch-x86-64-v2"
+      ++ optional (x86ver >= 3) "gccarch-x86-64-v3"
     ;
   };
 in
