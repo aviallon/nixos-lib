@@ -45,6 +45,7 @@ in {
       pinentry-qt
       plasma-pa
       ark
+      kolourpaint
     ];
 
     xdg.portal = {
