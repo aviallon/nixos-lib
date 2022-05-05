@@ -49,6 +49,7 @@ in {
 
   imports = [
     ./desktop/plasma.nix
+    ./desktop/developer.nix
   ];
 
   config = mkIf cfg.enable {
