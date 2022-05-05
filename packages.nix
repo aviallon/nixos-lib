@@ -125,6 +125,15 @@ in
       parallel
       pciutils
       coreutils-full
+      nmap
+      pv
+      usbutils
+      xxHash
+      clinfo
+      binutils
+      unzip
+      cpuset
+      gptfdisk # gdisk
 
       gcc
       gnumake
