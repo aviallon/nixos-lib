@@ -25,13 +25,20 @@ in
       default = [
         "-O3" "-march=${generalCfg.cpuArch}" "-mtune=${generalCfg.cpuTune}"
         "-feliminate-unused-debug-types"
+
+        # Pipe outputs instead of using intermediate files
+        "-pipe"
+        
         "--param=ssp-buffer-size=32"
         
-        "-fno-asynchronous-unwind-tables"
+        "-fasynchronous-unwind-tables"
+
+        # Use re-entrant libc functions whenever possible
+        "-Wp,-D_REENTRANT"
 
         # Fat LTO objects are object files that contain both the intermediate language and the object code. This makes them usable for both LTO linking and normal linking.
         # "-flto=auto" # Use -flto=auto to use GNU make’s job server, if available, or otherwise fall back to autodetection of the number of CPU threads present in your system.
-        "-ffat-lto-objects"
+        # "-ffat-lto-objects"
 
         # Math optimizations leading to loss of precision
         "-fno-signed-zeros"
@@ -49,11 +56,38 @@ in
         # Perform interprocedural pointer analysis and interprocedural modification and reference analysis. This option can cause excessive memory and compile-time usage on large compilation units.
         "-fipa-pta"
 
+        "-Wl,--enable-new-dtags"
+        "-Wa,-mbranches-within-32B-boundaries"
 
-        "-fdevirtualize-speculatively"
-        
         # Stream extra information needed for aggressive devirtualization when running the link-time optimizer in local transformation mode.
-        "-fdevirtualize-at-ltrans"
+        # "-fdevirtualize-at-ltrans"
+
+        ##### Very aggressive and experimental options ######
+        "-fmodulo-sched"
+        "-fmodulo-sched-allow-regmoves"
+        "-fgcse-sm" # "This pass attempts to move stores out of loops."
+        "-fgcse-las" # "global common subexpression elimination pass eliminates redundant loads that come after stores to the same memory location"
+        "-fdevirtualize-speculatively" # "Attempt to convert calls to virtual functions to speculative direct calls"
+
+        # Reduce code size, improving cache locality
+        "-fira-hoist-pressure" # "Use IRA to evaluate register pressure in the code hoisting pass for decisions to hoist expressions. This option usually results in smaller code, but it can slow the compiler down."
+        "-fira-loop-pressure" # "Use IRA to evaluate register pressure in loops for decisions to move loop invariants. This option usually results in generation of faster and smaller code on machines with large register files."
+        "-flive-range-shrinkage" # "Attempt to decrease register pressure through register live range shrinkage. This is helpful for fast processors with small or moderate size register sets."
+        "-fschedule-insns" # "If supported for the target machine, attempt to reorder instructions to eliminate execution stalls due to required data being unavailable."
+        "-fsched-pressure" # "Enable register pressure sensitive insn scheduling before register allocation."
+        "-fsched-spec-load" # "Allow speculative motion of some load instructions."
+        "-fsched-stalled-insns=4" # Define how many insns (if any) can be moved prematurely from the queue of stalled insns into the ready list during the second scheduling pass"
+        "-ftree-loop-ivcanon" # "Create a canonical counter for number of iterations in loops for which determining number of iterations requires complicated analysis."
+        "-ftree-loop-im" # "Perform loop invariant motion on trees."
+        "-ftree-vectorize" # "Perform vectorization on trees."
+
+        # Super experimental
+        "-fgraphite-identity" # "Enable the identity transformation for graphite."
+        "-floop-nest-optimize" # "Enable the isl based loop nest optimizer."
+        "-floop-parallelize-all" # "Use the Graphite data dependence analysis to identify loops that can be parallelized."
+
+        ## To be tested
+        ## "-ftree-parallelize-loops=N" : Parallelize loops, i.e., split their iteration space to run in n threads. This is only possible for loops whose iterations are independent and can be arbitrarily reordered.
         ];
       example = [ "-O2" "-mavx" ];
       description = "Add specific compile flags";
