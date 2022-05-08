@@ -89,8 +89,10 @@ in
     };
   };
 
-  config = mkIf cfg.enable {
-
+  config = {
+    boot.kernelParams = toCmdlineList cfg.cmdline;
+  } // (mkIf cfg.enable {
+  
     hardware.enableAllFirmware = allowUnfree;
     hardware.enableRedistributableFirmware = true;
 
@@ -106,12 +108,12 @@ in
 
     };
 
+    aviallon.boot.useGrub = mkIf (!cfg.efi) (mkForce true);
+
     boot = {
       initrd.kernelModules = [ ];
       initrd.availableKernelModules = [ "ehci_pci" ];
 
-      kernelParams = toCmdlineList cfg.cmdline;
-      
       kernelPatches = concatLists [
         (optional cfg.x32abi.enable customKernelPatches.enableX32ABI)
       ];
@@ -119,10 +121,10 @@ in
         (optional cfg.kvdo.enable pkgs.kvdo)
       ];
 
-      loader.grub.enable = cfg.useGrub || (!cfg.efi);
+      loader.grub.enable = cfg.useGrub;
       loader.grub = {
         version = 2;
-        device = (if cfg.efi then "nodev" else null);
+        device = mkIf cfg.efi "nodev";
         efiSupport = cfg.efi;
         configurationLimit = cfg.configurationLimit;
       };
@@ -141,5 +143,5 @@ in
         efi.canTouchEfiVariables = mkDefault true;
       };
     };
-  };
+  });
 }
