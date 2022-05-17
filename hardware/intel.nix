@@ -1,10 +1,14 @@
 { config, pkgs, lib, ... }:
 with lib;
 let
-  hardwareCfg = config.aviallon.hardware;
+  cfg = config.aviallon.hardware.intel;
 in
 {
-  config = mkIf (hardwareCfg.gpuVendor == "intel") {
+  options.aviallon.hardware.intel = {
+    enable = mkEnableOption "Intel GPUs";
+  };
+  
+  config = mkIf cfg.enable {
     boot.initrd.kernelModules = [ "i915" ];
     hardware.opengl = {
       enable = true;

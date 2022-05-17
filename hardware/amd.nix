@@ -1,10 +1,14 @@
 { config, pkgs, lib, ... }:
 with lib;
 let
-  hardwareCfg = config.aviallon.hardware;
+  cfg = config.aviallon.hardware.amd;
 in
 {
-  config = mkIf (hardwareCfg.gpuVendor == "amd") {
+  options.aviallon.hardware.amd = {
+    enable = mkEnableOption "AMD gpus";
+  };
+  
+  config = mkIf (cfg.enable) {
     boot.initrd.kernelModules = [ "amdgpu" ];
 
     aviallon.boot.cmdline = {}

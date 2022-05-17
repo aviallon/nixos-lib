@@ -1,15 +1,21 @@
 {config, pkgs, lib, ...}:
 with lib;
 let
-  cfg = config.aviallon.hardware;
-  nixos-nvidia-vgpu = import (builtins.fetchTarball "https://github.com/danielfullmer/nixos-nvidia-vgpu/archive/master.tar.gz") {
+  cfg = config.aviallon.hardware.nvidia;
+  vgpu-git = fetchGit {
+    url = "https://github.com/danielfullmer/nixos-nvidia-vgpu.git";
+    rev = "a4be77969dc2a8acbe3a4882ba5f0324cca138b6";
+    ref = "master";
+  };
+  nixos-nvidia-vgpu = import vgpu-git {
     inherit config;
     inherit pkgs;
     inherit lib;
   };
-  useVgpu = (cfg.useProprietary &&
-            (cfg.gpuVendor == "nvidia") &&
-            (versionOlder config.boot.kernelPackages.kernel.version "5.10"));
+  useVgpu = (
+    cfg.enable && cfg.useProprietary &&
+    (versionOlder config.boot.kernelPackages.kernel.version "5.10")
+  );
 in
 {
   imports = [

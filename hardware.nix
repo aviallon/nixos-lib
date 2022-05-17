@@ -5,14 +5,7 @@ let
   desktopCfg = config.aviallon.desktop;
 in
 {
-  options.aviallon.hardware = {
-    gpuVendor = mkOption {
-      default = null;
-      example = "amd";
-      description = "Enable GPU vendor specific options";
-      type = types.enum [ "amd" "nvidia" "intel" ];
-    };
-  };
+  options.aviallon.hardware = {  };
 
   imports = [
     ./hardware/amd.nix
