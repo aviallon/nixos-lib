@@ -4,24 +4,6 @@ with myLib;
 let
   generalCfg = config.aviallon.general;
   desktopCfg = config.aviallon.desktop;
-
-
-  nixConfigValue = value:
-    if value == true then "true"
-    else if value == false then "false"
-    else if isList value then toString value
-    else generators.mkValueStringDefault { } value;
-
-  isNullOrEmpty = v: (v == null) ||
-      (isList v && (length v == 0));
-
-  nixConfig = settings: (generators.toKeyValue {
-    mkKeyValue = generators.mkKeyValueDefault {
-      mkValueString = nixConfigValue;
-    } " = ";
-  } (filterAttrs (n: v: !(isNullOrEmpty v))
-    settings)
-  );
 in
 {
   config = {
@@ -43,12 +25,9 @@ in
     nix.daemonIOSchedClass = "idle";
 
   
-    nix.package = mkIf generalCfg.flakes.enable (
-      if (builtins.compareVersions pkgs.nix.version "2.4" >= 0)
-      then pkgs.nix
-      else pkgs.nix_2_4
-    );
-    nix.extraOptions = nixConfig {
+    nix.package = mkIf (strings.versionOlder pkgs.nix.version "2.7") pkgs.nix_2_7;
+    
+    nix.extraOptions = myLib.config.toNix {
       builders-use-substitutes = true;
       experimental-features = concatLists [
         (optionals generalCfg.flakes.enable ["nix-command" "flakes"])
