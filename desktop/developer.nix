@@ -15,8 +15,13 @@ in {
       sqlite
       hwloc
       bind
+      git-cola
       # adbfs-rootless
     ];
+
+    documentation = {
+      dev.enable = true;
+    };
 
     aviallon.programs.allowUnfreeList = [
       "tabnine"
