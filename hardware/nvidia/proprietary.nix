@@ -17,18 +17,8 @@ in {
 
       hardware.nvidia = {
         powerManagement.enable = true;
-        powerManagement.finegrained = ifEnable config.hardware.nvidia.prime.offload.enable true;
+        powerManagement.finegrained = mkIf config.hardware.nvidia.prime.offload.enable true;
         modesetting.enable = true;
-        #package = with config.boot.kernelPackages.nvidiaPackages;
-        #  if (cfg.driver == "stable") then
-        #    stable
-        #  else if (cfg.driver == "390") then
-        #    legacy_390
-        #  else if (cfg.driver == "340") then
-        #    legacy_340
-        # else
-        #    null
-        #  ;
       };
 
       aviallon.boot.cmdline = mkIf cfg.saveAllVram {
@@ -39,6 +29,7 @@ in {
       aviallon.programs.allowUnfreeList = [
           "nvidia-x11"
           "nvidia-settings"
+          "cudatoolkit"
       ];
 
       hardware.opengl.extraPackages = with pkgs; [
@@ -49,6 +40,10 @@ in {
       hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [
         libvdpau-va-gl
         vaapiVdpau
+      ];
+
+      environment.systemPackages = with pkgs; [
+        nvtop
       ];
 
       # See documentation here: https://download.nvidia.com/XFree86/Linux-x86_64/510.60.02/README/openglenvvariables.html
