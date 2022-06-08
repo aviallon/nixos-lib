@@ -41,7 +41,7 @@ in
     networking.networkmanager = {
       wifi.backend = mkDefault "iwd";
       dns = mkDefault cfg.dns;
-      packages = with pkgs; concatLists [
+      plugins = with pkgs; concatLists [
         (optional (cfg.dns == "dnsmasq") dnsmasq)
       ];
     };

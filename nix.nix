@@ -29,9 +29,7 @@ in
     
     nix.extraOptions = myLib.config.toNix {
       builders-use-substitutes = true;
-      experimental-features = concatLists [
-        (optionals generalCfg.flakes.enable ["nix-command" "flakes"])
-      ];
+      experimental-features = [ "nix-command" "flakes"];
       download-attempts = 5;
       stalled-download-timeout = 20;
     };

@@ -29,6 +29,10 @@ let
   };
 in
 {
+  imports = [
+    (mkRemovedOptionModule [ "aviallon" "general" "flakes" "enable" ] "Flakes are now enabled by default")
+  ];
+
   options.aviallon.general = {
     enable = mkOption {
       default = true;
@@ -56,7 +60,6 @@ in
       type = types.str;
     };
     unsafeOptimizations = mkEnableOption "unsafe system tuning";
-    flakes.enable = mkEnableOption "experimental flake support";
     debug = mkEnableOption "debug-specific configuration";
   };
 

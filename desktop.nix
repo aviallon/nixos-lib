@@ -90,7 +90,7 @@ in {
       jack.enable = true;
       alsa.enable = true;
       alsa.support32Bit = mkDefault true;
-      media-session.enable = true;
+      wireplumber.enable = true;
     };
     security.rtkit.enable = true; # Real-time support for pipewire
 
@@ -207,7 +207,7 @@ in {
     services.packagekit.enable = true;
     
     networking.networkmanager = {
-      packages = [
+      plugins = [
         pkgs.networkmanager-openvpn
       ];
     };

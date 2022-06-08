@@ -83,9 +83,10 @@ in
       )
     ]);
 
+    boot.initrd.services.udev.rules = concatStringsSep "\n" cfg.udevRules;
+
     services.udev = {
       extraRules = concatStringsSep "\n" cfg.udevRules;
-      initrdRules = concatStringsSep "\n" cfg.udevRules;
     };
 
     boot.tmpOnTmpfs = true;
