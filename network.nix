@@ -32,9 +32,11 @@ in
     networking.dhcpcd.enable = (cfg.backend == "dhcpcd");
 
 
-    services.resolved.enable = (cfg.dns == "systemd-resolved");
-    services.resolved.llmnr = mkForce "false"; # https://www.blackhillsinfosec.com/how-to-disable-llmnr-why-you-want-to/
-    services.resolved.dnssec = "false"; # Causes issues with masquerading DNS
+    services.resolved = {
+      enable = (cfg.dns == "systemd-resolved");
+      llmnr = mkForce "false"; # https://www.blackhillsinfosec.com/how-to-disable-llmnr-why-you-want-to/
+      dnssec = "false"; # Causes issues with masquerading DNS
+    };
 
     services.unbound.enable = (cfg.dns == "unbound");
 
