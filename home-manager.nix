@@ -1,16 +1,28 @@
-{config, pkgs, lib, ...}:
+{config, pkgs, lib, utils, ...}:
 with lib;
 let
   cfg = config.aviallon.home-manager;
-  usersCfg = config.users;
+  usersCfg = attrByPath [ "users" ] { users = {}; groups = {}; } config;
   defaultUsers = attrNames (filterAttrs (name: value: value.isNormalUser) usersCfg.users);
   hmUserCfg = u: config.home-manager.users.${u};
   userCfg = u: config.users.users.${u};
   getUserCfgPath = u: "${(userCfg u).home}/.config/nixpkgs/home.nix";
+
+  homeManager = fetchGit {
+    url = "https://github.com/nix-community/home-manager";
+    ref = "release-22.05";
+  };
+
+  homeManagerNixos = import "${homeManager}/nixos" {
+    inherit config;
+    inherit pkgs;
+    inherit lib;
+    inherit utils;
+  };
 in
 {
   imports = [
-    <home-manager/nixos>
+    homeManagerNixos
   ];
 
   options.aviallon.home-manager = {
