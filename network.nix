@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, myLib, ... }:
 with lib;
 let
   cfg = config.aviallon.network;
@@ -36,6 +36,15 @@ in
       enable = (cfg.dns == "systemd-resolved");
       llmnr = mkForce "false"; # https://www.blackhillsinfosec.com/how-to-disable-llmnr-why-you-want-to/
       dnssec = "false"; # Causes issues with masquerading DNS
+      extraConfig = myLib.config.toSystemd {
+        "DNS" = [
+          # cloudflare-dns.com
+          "1.1.1.1"
+          "2606:4700:4700::1111"
+          "1.0.0.1"
+          "2606:4700:4700::1001"
+        ];
+      };
     };
 
     services.unbound.enable = (cfg.dns == "unbound");
