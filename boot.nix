@@ -92,6 +92,7 @@ in
   config = {
     boot.kernelParams = toCmdlineList cfg.cmdline;
   } // (mkIf cfg.enable {
+    boot.kernelParams = toCmdlineList cfg.cmdline;
   
     hardware.enableAllFirmware = allowUnfree;
     hardware.enableRedistributableFirmware = true;
