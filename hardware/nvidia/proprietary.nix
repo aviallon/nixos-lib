@@ -30,7 +30,6 @@ in {
         #    null
         #  ;
       };
-      services.xserver.displayManager.gdm.nvidiaWayland = mkDefault true;
 
       aviallon.boot.cmdline = mkIf cfg.saveAllVram {
         NVreg_PreserveVideoMemoryAllocations = 1;
