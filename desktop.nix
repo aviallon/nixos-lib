@@ -91,6 +91,11 @@ in {
       alsa.enable = true;
       alsa.support32Bit = mkDefault true;
       wireplumber.enable = true;
+      config.pipewire-pulse = {
+        "context.exec" = [
+          { path = "pactl"; args = ''load-module module-combine-sink sink_name="Sorties combinées"''; }
+        ];
+      };
     };
     security.rtkit.enable = true; # Real-time support for pipewire
 
