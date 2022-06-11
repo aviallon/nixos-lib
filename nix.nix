@@ -34,6 +34,9 @@ in
       stalled-download-timeout = 20;
     };
 
+    nix.binaryCaches = mkBefore [ "https://nix-cache.lesviallon.fr" ];
+    nix.binaryCachePublicKeys = mkBefore [ "nix-cache.lesviallon.fr-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" ];
+
     nix.buildCores = mkIf (generalCfg.cores != null) generalCfg.cores;
     nix.maxJobs = mkIf (generalCfg.cores != null) (math.log2 generalCfg.cores);
 
