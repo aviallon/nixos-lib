@@ -53,8 +53,10 @@ in {
       openFirewall = true;
     };
     
-    networking.firewall.allowedTCPPorts = [ 22 ];
-    networking.firewall.allowedUDPPorts = [ 22 ];
+    networking.firewall.allowedTCPPorts = [ 22 ]
+      ++ optionals config.services.printing.enable [ 631 139 445 ];
+    networking.firewall.allowedUDPPorts = [ 22 5353 ]
+      ++ optionals config.services.printing.enable [ 137 ];
 
     services.rsyncd.enable = !desktopCfg.enable;
 
@@ -68,6 +70,7 @@ in {
       enable = true;
       defaultShared = mkDefault true;
       browsing = mkDefault true;
+      listenAddresses = [ "0.0.0.0:631" ];
       drivers = with pkgs; [
         hplipWithPlugin
         gutenprint
@@ -92,6 +95,7 @@ in {
       ];
       webInterface = mkDefault true;
     };
+    services.system-config-printer.enable = mkIf desktopCfg.enable true;
 
     hardware.sane = mkIf desktopCfg.enable {
       enable = true;
