@@ -78,6 +78,7 @@ in {
       reboot = mkDefault "warm";
       "usbhid.mousepoll" = 1; # 1ms latency for mouse
       "usbhid.kbpoll" = 4; # 4ms latency for kb
+      "intel_pstate" = "passive";
     };
     boot.initrd.verbose = generalCfg.debug;
     boot.consoleLogLevel = mkIf (!generalCfg.debug) 1;
