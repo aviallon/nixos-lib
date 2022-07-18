@@ -23,7 +23,7 @@ in {
 
   config = mkIf cfg.enable {
     networking.networkmanager.wifi.powersave = mkDefault true;
-    aviallon.general.unsafeOptimizations = mkOverride 50 true;
+    aviallon.general.unsafeOptimizations = mkOverride 15 true;
 
     hardware.sensor.iio.enable = mkDefault true;
 
@@ -31,7 +31,7 @@ in {
       "i915.enable_fbc" = 1;
       "i915.enable_gvt" = 1;
 
-      # Les power consumption against some performance
+      # Less power consumption vs some performance loss
       "workqueue.power_efficient" = "";
       nohz = "on";
 
@@ -55,7 +55,6 @@ in {
 
     services.tlp.enable = (cfg.power-manager == "tlp");
     services.power-profiles-daemon.enable = (cfg.power-manager == "power-profiles-daemon");
-    services.tp-auto-kbbl.enable = mkDefault true;
     powerManagement.powertop.enable = mkDefault true;
   };
 }
