@@ -5,11 +5,11 @@ with lib;
 let
   genPrefList = {locked ? false}: prefs:
     let
-      prefFuncName = if locked then "lockPref" else "user_pref";
+      prefFuncName = if locked then "lockPref" else "defaultPref";
     in
     concatStringsSep "\n" (
       mapAttrsToList
-        (key: value: ''lockPref(${toString key}, ${builtins.toJSON value});'' )
+        (key: value: ''${prefFuncName}(${builtins.toJSON key}, ${builtins.toJSON value});'' )
         prefs
       );
 in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
@@ -73,15 +73,45 @@ in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
       ExtensionUpdate = true;
     }; 
 
-    extraPrefs = genPrefList { locked = true; } {
-      "intl.accept_languages" = "";
+    extraPrefs = traceVal (genPrefList { locked = true; } {
       "widget.use-xdg-desktop-portal" = true;
       "dom.event.contextmenu.enabled" = true;
       "network.IDN_show_punycode" = true;
       "plugins.enumerable_names" = true;
       "security.identityblock.show_extended_validation" = true;
-    }
-    + "\n" + genPrefList { } {
 
-    };
+      "toolkit.telemetry.server" = "";
+      "toolkit.telemetry.unified" = false;
+      "toolkit.telemetry.shutdownPingSender.enabled" = false;
+      "toolkit.telemetry.newProfilePing.enabled" = false;
+      "toolkit.telemetry.firstShutdownPing.enabled" = false;
+      "toolkit.telemetry.bhrPing.enabled" = false;
+      "security.protectionspopup.recordEventTelemetry" = false;
+      "security.identitypopup.recordEventTelemetry" = false;
+      "security.certerrors.recordEventTelemetry" = false;
+      "security.app_menu.recordEventTelemetry" = false;
+      "privacy.trackingprotection.origin_telemetry.enabled" = false;
+      "browser.ping-centre.telemetry" = false;
+      "browser.newtabpage.activity-stream.telemetry" = false;
+      "browser.newtabpage.activity-stream.feeds.telemetry" = false;
+      "browser.newtabpage.activity-stream.telemetry.structuredIngestion.endpoint" = "";
+
+      "browser.safebrowsing.provider.google.advisoryURL" = "";
+      "browser.safebrowsing.provider.google.gethashURL" = "";
+      "browser.safebrowsing.provider.google.reportURL" = "";
+      "browser.safebrowsing.provider.google.updateURL" = "";
+      "browser.safebrowsing.provider.google4.dataSharingURL" = "";
+      "browser.safebrowsing.provider.google4.gethashURL" = "";
+      "browser.safebrowsing.provider.google4.reportURL" = "";
+      "browser.safebrowsing.provider.google4.updateURL" = "";
+    } + "\n" + genPrefList {} {
+      "intl.accept_languages" =	"fr-fr,en-us,en";
+      "intl.locale.requested" = "fr,en-US";
+      "media.eme.enabled" = true; # DRM
+      "general.autoScroll" = true; # Middleclick scrolling
+
+      "privacy.trackingprotection.enabled" = true;
+
+      "browser.shell.didSkipDefaultBrowserCheckOnFirstRun" = true;
+    });
   }
