@@ -72,6 +72,8 @@ in
 
     fileSystems."/boot".neededForBoot = mkDefault true;
 
+    boot.supportedFilesystems = [ "ntfs" "ext4" "vfat" "exfat" ];
+
     aviallon.filesystems.udevRules = mkBefore (concatLists [
       (optional (!(builtins.isNull cfg.hddScheduler))
         ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
