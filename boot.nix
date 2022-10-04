@@ -9,18 +9,45 @@ let
         X86_X32 y
       '';
     };
-    grayskyUarches = {
-        name = "graysky-optimized-5.10";
-        patch = pkgs.fetchpatch {
-          name = "graysky-optimized-5.10.patch";
-          url = "https://raw.githubusercontent.com/graysky2/kernel_compiler_patch/master/more-uarches-for-kernel-5.8-5.14.patch";
-          #url = "https://raw.githubusercontent.com/graysky2/kernel_compiler_patch/master/more-uarches-for-kernel-5.15%2B.patch"
-          sha256 = "sha256:079f1gvgj7k1irj25k6bc1dgnihhmxvcwqwbgmvrdn14f7kh8qb3";
-        };
-        extraConfig = ''
-          MK10 y
-        '';
+    optimizeForCPUArch = arch: let
+      archConfigMap = {
+        "k8" = "K8"; "opteron" = "K8"; "athlon64" = "K8"; "athlon-fx" = "K8";
+        "k8-sse3" = "K8SSE3"; "opteron-sse3" = "K8SSE3"; "athlon64-sse3" = "K8SSE3";
+        "znver1" = "ZEN"; "znver2" = "ZEN2"; "znver3" = "ZEN3";
+        "bdver1" = "BULLDOZER"; "bdver2" = "PILEDRIVER"; "bdver3" = "STEAMROLLER"; "bdver4" = "EXCAVATOR";
+        "barcelona" = "BARCELONA"; "amdfam10" = "BARCELONA";
+        "btver1" = "BOBCAT"; "btver2" = "JAGUAR";
+
+        "rocketlake" = "ROCKETLAKE"; "alderlake" = "ALDERLAKE";
+        "sapphirerapids" = "SAPPHIRERAPIDS"; "tigerlake" = "TIGERLAKE"; "cooperlake" = "COOPERLAKE";
+        "cascadelake" = "CASCADELAKE"; "icelake-server" = "ICELAKE"; "icelake-client" = "ICELAKE";
+        "cannonlake" = "CANNONLAKE"; "skylake-avx512" = "SKYLAKEX";
+        "tremont" = "GOLDMONTPLUS"; "goldmont-plus" = "GOLDMONTPLUS"; "goldmont" = "GOLDMONT";
+        "silvermont" = "SILVERMONT"; "bonnel" = "GENERIC_CPU"; "skylake" = "SKYLAKE";
+        "broadwell" = "BROADWELL"; "haswell" = "HASWELL";
+        "ivybridge" = "IVYBRIDGE"; "sandybridge" = "SANDYBRIDGE";
+        "westmere" = "WESTMERE"; "nehalem" = "NEHALEM";
+        "core2" = "CORE2";
+        "nocona" = "PSC"; "prescott" = "PSC"; "pentium4m" = "PSC"; "pentium4" = "PSC";
+
+        "nano-3000" = "GENERIC_CPU2"; "nano-x2" = "GENERIC_CPU2"; "nano-x4" = "GENERIC_CPU2";
+        
+        "lujiazui" = "GENERIC_CPU2";
+        
+        "native" = "NATIVE_INTEL"; "x86-64-v2" = "GENERIC_CPU2"; "x86-64-v3" = "GENERIC_CPU3"; "x86-64-v4" = "GENERIC_CPU4";
       };
+      
+      archToConfig = arch:
+        if (hasAttr arch archConfigMap) then archConfigMap."${arch}"
+        else trace "Warning: '${arch}' not recognized, building for generic CPU" "GENERIC_CPU"
+      ;
+    in {
+      name = "optimize-for-${arch}";
+      patch = null;
+      extraConfig = ''
+        M${archToConfig arch} y
+      '';
+    };
   };
 
   toCmdlineValue = v: if (isBool v) then (if v then "y" else "n")
@@ -115,12 +142,10 @@ in
       initrd.kernelModules = [ ];
       initrd.availableKernelModules = [ "ehci_pci" ];
 
-      kernelPatches = concatLists [
-        (optional cfg.x32abi.enable customKernelPatches.enableX32ABI)
-      ];
-      extraModulePackages = concatLists [
-        (optional cfg.kvdo.enable pkgs.kvdo)
-      ];
+      kernelPatches = []
+        ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
+        ++ optional config.aviallon.overlays.optimizations (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpuArch)
+      ;
 
       loader.grub.enable = cfg.useGrub;
       loader.grub = {
