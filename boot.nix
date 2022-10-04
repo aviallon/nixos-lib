@@ -9,6 +9,13 @@ let
         X86_X32 y
       '';
     };
+    enableRTGroupSched = {
+      name = "enable-rt-group-sched";
+      patch = null;
+      extraConfig = ''
+        RT_GROUP_SCHED y
+      '';
+    };
     optimizeForCPUArch = arch: let
       archConfigMap = {
         "k8" = "K8"; "opteron" = "K8"; "athlon64" = "K8"; "athlon-fx" = "K8";
@@ -88,6 +95,7 @@ in
       enable = mkEnableOption "X32 kernel ABI";
     };
     kvdo.enable = mkEnableOption "dm-kvdo kernel module";
+    rtGroupSched.enable = mkEnableOption "RT cgroups";
     efi = mkOption rec {
       description = "Use EFI bootloader";
       default = builtins.pathExists "/sys/firmware/efi";
@@ -120,7 +128,7 @@ in
     boot.kernelParams = toCmdlineList cfg.cmdline;
   } // (mkIf cfg.enable {
     boot.kernelParams = toCmdlineList cfg.cmdline;
-  
+
     hardware.enableAllFirmware = allowUnfree;
     hardware.enableRedistributableFirmware = true;
 
@@ -132,7 +140,7 @@ in
 
       # Sets loops_per_jiffy to given constant, thus avoiding time-consuming boot-time autodetection
       # https://www.kernel.org/doc/html/v5.15/admin-guide/kernel-parameters.html
-      "lpj" = cfg.loops_per_jiffies;
+      "lpj" = mkIf (cfg.loops_per_jiffies > 0) cfg.loops_per_jiffies;
 
     };
 
@@ -144,6 +152,7 @@ in
 
       kernelPatches = []
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
+        ++ optional cfg.rtGroupSched.enable customKernelPatches.enableRTGroupSched
         ++ optional config.aviallon.overlays.optimizations (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpuArch)
       ;
 
