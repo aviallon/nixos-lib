@@ -51,6 +51,7 @@ in {
         "__GL_YIELD" = "USLEEP"; # use usleep(0) instead of sched_yield() -> better performance in most cases
         "__GL_ALLOW_UNOFFICIAL_PROTOCOL" = "1"; # allow unofficial GLX protocol if also set in Xorg conf
         "__GL_VRR_ALLOWED" = "1"; # Try to enable G-SYNC VRR if screen AND app is compatible
+        "KWIN_DRM_USE_EGL_STREAMS"  = "1"; # Make KWin use EGL Streams, because otherwise performance will be horrible.
       };
     };
 }

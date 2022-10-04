@@ -13,8 +13,11 @@ let
         prefs
       );
 in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
+    forceWayland = true;
     cfg = {
       smartcardSupport = true;
+      pipewireSupport = true;
+      ffmpegSupport = true;
       enablePlasmaBrowserIntegration = true;
     };
 
@@ -113,5 +116,12 @@ in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
       "privacy.trackingprotection.enabled" = true;
 
       "browser.shell.didSkipDefaultBrowserCheckOnFirstRun" = true;
+
+      "media.ffmpeg.vaapi.enabled" = true;
+      "media.ffvpx.enabled" = true;
+      "media.navigator.mediadatadecoder_vpx_enabled" = true;
+      "media.rdd-ffmpeg.enabled" = true;
+      "media.rdd-ffvpx.enabled" = true;
+      "media.rdd-opus.enabled" = true;
     });
   }

@@ -100,6 +100,8 @@ in {
     };
     security.rtkit.enable = true; # Real-time support for pipewire
 
+    # Enable running X11 apps on Wayland
+    programs.xwayland.enable = true;
 
     # Hardware-agnostic audio denoising
     systemd.user.services.pipewire-noise-filter = {
