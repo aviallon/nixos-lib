@@ -14,6 +14,7 @@
     ./hardware.nix
     ./laptop.nix
     ./overlays.nix
+    ./optimizations.nix
     ./non-persistence.nix
   ];
 }

@@ -11,36 +11,6 @@ let
     overlays = config.nixpkgs.overlays;
   };
   nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") { inherit pkgs; };
-  optimizeWithFlags = pkg: flags:
-    pkg.overrideAttrs (attrs: {
-      NIX_CFLAGS_COMPILE = toString ([ (attrs.NIX_CFLAGS_COMPILE or "") ] ++ flags);
-      doCheck = false;
-    });
-  _optimizeForThisHost = pkg:
-     pkg.overrideAttrs (attrs: let
-      cflags = [ (attrs.NIX_CFLAGS_COMPILE or "") ] ++ config.aviallon.programs.compileFlags;
-      cxxflags = [ (attrs.CXXFLAGS or "") ] ++ config.aviallon.programs.compileFlags;
-      rustflags = [ (attrs.RUSTFLAGS or "") "-C target-cpu=${config.aviallon.general.cpuArch}" ];
-      pkgname = getName pkg;
-      cmakeflags = mytrace "cmakeflags" "-DCMAKE_CXX_FLAGS=${toString cxxflags}";
-      configureflags = [ (attrs.configureFlags or "") ] ++ [
-        "--enable-lto" "--enable-offload-targets=nvptx-none" "--disable-libunwind-exceptions"
-      ];
-      mytrace = name: value: builtins.trace "${pkgname}: ${name}: ${toString value}" (toString value);
-     in {
-      stdenv = pkgs.fastStdenv;
-      NIX_CFLAGS_COMPILE = mytrace "CFLAGS" cflags;
-      CXXFLAGS = mytrace "CXXFLAGS" cxxflags;
-      RUSTFLAGS = mytrace "RUSTFLAGS" rustflags;
-      configureFlags = mytrace "configureFlags" configureflags;
-      preConfigure = ''
-        cmakeFlagsArray+=(
-          "${cmakeflags}"
-        )
-      '';
-      doCheck = false;
-    });
-   optimizeForThisHost = if (cfg.optimizations) then (pkg: _optimizeForThisHost pkg) else (pkg: pkg);
 in
 {
   options.aviallon.overlays = {
@@ -72,28 +42,7 @@ in
           inherit nur;
       })
       (self: super: {
-        nextcloud-client = optimizeForThisHost (super.nextcloud-client.overrideAttrs (old: {
-          nativeBuildInputs = old.nativeBuildInputs ++ (with super; [
-            extra-cmake-modules
-          ]);
-          buildInputs = old.buildInputs ++ (with super; with libsForQt5; [
-            kio
-          ]);
-        }));
-      })
-      # KDE packages
-      (self: super: {
-        libsForQt5 = super.libsForQt5.overrideScope' (mself: msuper: {
-          kwin = optimizeForThisHost msuper.kwin;
-          dolphin = optimizeForThisHost msuper.dolphin;
-        });
-      })
-      (self: super: {
-        opensshOptimized = optimizeForThisHost super.openssh;
-        rsyncOptimized = optimizeForThisHost super.rsync;
-        nano = optimizeForThisHost super.nano;
-        veracrypt = optimizeForThisHost super.veracrypt;
-        htop = optimizeForThisHost (super.htop.overrideAttrs (old: {
+        htop = super.htop.overrideAttrs (old: {
           configureFlags = old.configureFlags ++ [
             "--enable-hwloc"
           ];
@@ -107,26 +56,60 @@ in
             libnl
             hwloc
           ]);
-        }));
-        # mesa = optimizeForThisHost super.mesa;
-        #xorg = super.xorg.overrideScope' (mself: msuper: {
-        #  xorgserver = optimizeForThisHost msuper.xorgserver;
-        #});
+        });
         steam = super.steam.override {
           withJava = true;
         };
-        ark = optimizeForThisHost (super.ark.override {
+        ark = super.ark.override {
           unfreeEnableUnrar = true;
-        });
+        };
         ungoogled-chromium = super.ungoogled-chromium.override {
           enableWideVine = true;
         };
         chromium = super.chromium.override {
           enableWideVine = true;
         };
+
+        scribus = super.scribus.overrideAttrs (old: rec {
+          version = "1.5.8";
+          sha256 = "sha256-R4Fuj89tBXiP8WqkSZ+X/yJDHHd6d4kUmwqItFHha3Q=";
+          src = super.fetchurl {
+            url = "mirror://sourceforge/${old.pname}/${old.pname}-devel/${old.pname}-${version}.tar.xz";
+            inherit sha256;
+          };
+          patches = with super; [
+            # For Poppler 22.02
+            (fetchpatch {
+              url = "https://github.com/scribusproject/scribus/commit/85c0dff3422fa3c26fbc2e8d8561f597ec24bd92.patch";
+              sha256 = "YR0ii09EVU8Qazz6b8KAIWsUMTwPIwO8JuQPymAWKdw=";
+            })
+            (fetchpatch {
+              url = "https://github.com/scribusproject/scribus/commit/f19410ac3b27e33dd62105746784e61e85b90a1d.patch";
+              sha256 = "JHdgntYcioYatPeqpmym3c9dORahj0CinGOzbGtA4ds=";
+            })
+            (fetchpatch {
+              url = "https://github.com/scribusproject/scribus/commit/e013e8126d2100e8e56dea5b836ad43275429389.patch";
+              sha256 = "+siPNtJq9Is9V2PgADeQJB+b4lkl5g8uk6zKBu10Jqw=";
+            })
+            (fetchpatch {
+              url = "https://github.com/scribusproject/scribus/commit/48263954a7dee0be815b00f417ae365ab26cdd85.patch";
+              sha256 = "1WE9kALFw79bQH88NUafXaZ1Y/vJEKTIWxlk5c+opsQ=";
+            })
+            (fetchpatch {
+              url = "https://github.com/scribusproject/scribus/commit/f2237b8f0b5cf7690e864a22ef7a63a6d769fa36.patch";
+              sha256 = "FXpLoX/a2Jy3GcfzrUUyVUfEAp5wAy2UfzfVA5lhwJw=";
+            })
+          ];
+        });
         # chromium = self.ungoogled-chromium;
 
-        myFirefox = (import ./packages/firefox.nix { pkgs = self; inherit lib; });
+        xwayland = super.xwayland.overrideAttrs (old: {
+          buildInputs = old.buildInputs or [] ++ [ super.makeWrapper ];
+          postInstall = old.postInstall or "" + ''
+            # Force EGL Stream support
+            wrapProgram $out/bin/Xwayland --add-flags "-eglstream"
+          '';
+        });
 
         ffmpeg-full = let
           withLto = super.ffmpeg-full.override { enableLto = false; rav1e = self.rav1e; };
@@ -137,7 +120,21 @@ in
             configureFlags = (old.configureFlags or []) ++ [ "--enable-libtensorflow" ];
           });
         in withTensorflow;
+
+
+        myFirefox = (import ./packages/firefox.nix { pkgs = self; inherit lib; });
       })
+      (self: super: {
+        nextcloud-client = super.nextcloud-client.overrideAttrs (old: {
+          nativeBuildInputs = old.nativeBuildInputs ++ (with super; [
+            extra-cmake-modules
+          ]);
+          buildInputs = old.buildInputs ++ (with super; with libsForQt5; [
+            kio
+          ]);
+        });
+      })
+
     ];
 
     aviallon.programs.allowUnfreeList = [
