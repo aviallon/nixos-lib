@@ -59,12 +59,12 @@ in
     services.lvm = mkIf cfg.lvm {
       boot.thin.enable = true;
       dmeventd.enable = true;
+      boot.vdo.enable = true;
     };
     boot.initrd.kernelModules = ifEnable cfg.lvm [
       "dm-cache" "dm-cache-smq" "dm-cache-mq" "dm-cache-cleaner"
     ];
     boot.kernelModules = ifEnable cfg.lvm [ "dm-cache" "dm-cache-smq" "dm-persistent-data" "dm-bio-prison" "dm-clone" "dm-crypt" "dm-writecache" "dm-mirror" "dm-snapshot" "kvdo" ];
-    aviallon.boot.kvdo.enable = mkDefault cfg.lvm;
     
     aviallon.boot.cmdline = {
       resume = mkIf (! isNull resumeDeviceLabel) (mkDefault "LABEL=${resumeDeviceLabel}");

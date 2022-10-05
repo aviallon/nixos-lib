@@ -19,6 +19,7 @@ in {
         powerManagement.enable = true;
         powerManagement.finegrained = mkIf config.hardware.nvidia.prime.offload.enable true;
         modesetting.enable = true;
+        nvidiaSettings = true;
       };
 
       aviallon.boot.cmdline = mkIf cfg.saveAllVram {

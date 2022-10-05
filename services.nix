@@ -71,7 +71,8 @@ in {
       defaultShared = mkDefault true;
       browsing = mkDefault true;
       listenAddresses = [ "0.0.0.0:631" ];
-      drivers = with pkgs; [
+      drivers = with pkgs; []
+        ++ (optionals (!desktopCfg.minimal) [
         hplipWithPlugin
         gutenprint
         splix
@@ -92,13 +93,13 @@ in {
         cups-drv-rastertosag-gdi
         # cups-kyocera-ecosys-m552x-p502x
         canon-cups-ufr2
-      ];
+      ]);
       webInterface = mkDefault true;
     };
-    services.system-config-printer.enable = mkIf desktopCfg.enable true;
+    services.system-config-printer.enable = mkIf (desktopCfg.enable && !desktopCfg.minimal) true;
 
     hardware.sane = mkIf desktopCfg.enable {
-      enable = true;
+      enable = !desktopCfg.minimal;
       netConf = "192.168.0.0/24";
       extraBackends = with pkgs; [
         hplipWithPlugin
@@ -190,10 +191,10 @@ in {
     programs.ssh.startAgent = false;
 
     # SmartCards
-    services.pcscd.enable = true;
+    services.pcscd.enable = mkDefault (!desktopCfg.minimal);
 
     services.avahi = {
-      enable = true; # .lan/.local resolution
+      enable = !desktopCfg.minimal; # .lan/.local resolution
       nssmdns = true; # .lan/.local resolution
       openFirewall = true;
       reflector = true;

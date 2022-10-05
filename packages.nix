@@ -103,42 +103,48 @@ in
 
   config = mkIf cfg.enable {
 
-    programs.java.enable = true;
+    programs.java.enable = mkDefault (!generalCfg.minimal);
 
     nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowUnfreeList;
 
-    environment.systemPackages = with pkgs; with libsForQt5; [
+    environment.systemPackages = with pkgs; with libsForQt5; []
+    ++ [
       vim
       wget
       nano
-      opensshOptimized
-      rsyncOptimized
-      htop
-      cachix
-      psmisc # killall, etc.
-      par2cmdline # .par2 archive verification
-      schedtool
-      python3
-      veracrypt
+      openssh
+      psmisc
+      pciutils
       ripgrep
       fd
+      htop
+      cachix
+      usbutils
+    ]
+    ++ optionals (!generalCfg.minimal) [
+      rsync
+      par2cmdline # .par2 archive verification
+      python3
+      veracrypt
       parallel
-      pciutils
       coreutils-full
       nmap
       pv
-      usbutils
       xxHash
+      unzip
+    ]
+    ++ (optionals config.aviallon.developer.enable [
+      schedtool
       clinfo
       binutils
-      unzip
       cpuset
       gptfdisk # gdisk
-
+    
       gcc
       gnumake
       cmake
-    ];
+    ])
+    ;
 
     programs.ssh.package = pkgs.opensshOptimized;
 
