@@ -72,7 +72,7 @@ in {
       browsing = mkDefault true;
       listenAddresses = [ "0.0.0.0:631" ];
       drivers = with pkgs; []
-        ++ (optionals (!desktopCfg.minimal) [
+        ++ (optionals (!generalCfg.minimal) [
         hplipWithPlugin
         gutenprint
         splix
@@ -96,10 +96,10 @@ in {
       ]);
       webInterface = mkDefault true;
     };
-    services.system-config-printer.enable = mkIf (desktopCfg.enable && !desktopCfg.minimal) true;
+    services.system-config-printer.enable = mkIf (desktopCfg.enable && !generalCfg.minimal) true;
 
     hardware.sane = mkIf desktopCfg.enable {
-      enable = !desktopCfg.minimal;
+      enable = !generalCfg.minimal;
       netConf = "192.168.0.0/24";
       extraBackends = with pkgs; [
         hplipWithPlugin
@@ -191,10 +191,10 @@ in {
     programs.ssh.startAgent = false;
 
     # SmartCards
-    services.pcscd.enable = mkDefault (!desktopCfg.minimal);
+    services.pcscd.enable = mkDefault (!generalCfg.minimal);
 
     services.avahi = {
-      enable = !desktopCfg.minimal; # .lan/.local resolution
+      enable = !generalCfg.minimal; # .lan/.local resolution
       nssmdns = true; # .lan/.local resolution
       openFirewall = true;
       reflector = true;
