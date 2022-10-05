@@ -40,6 +40,9 @@ in
       description = "Enable aviallon's general tuning";
       type = types.bool;
     };
+
+    minimal = mkEnableOption "minimal installation";
+    
     cores = mkOption {
       default = null;
       example = 4;

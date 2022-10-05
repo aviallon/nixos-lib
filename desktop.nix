@@ -28,6 +28,12 @@ in {
         default = 80.0;
         example = 0.0;
       };
+      noise-filter.enable = mkOption {
+        description = "Wether to enable noise filter at all";
+        type = types.bool;
+        default = true;
+        example = false;
+      };
     };
     graphics = {
       shaderCache = {
@@ -70,7 +76,7 @@ in {
     services.xserver.xkbOptions = "eurosign:e";
 
 
-    boot.plymouth.enable = mkDefault true;
+    boot.plymouth.enable = mkDefault (!generalCfg.minimal);
     aviallon.boot.cmdline = {
       splash = mkIf (!generalCfg.debug) "";
       "udev.log_level" = mkIf (!generalCfg.debug) 3;
@@ -85,7 +91,7 @@ in {
 
     # Enable sound.
     sound.enable = false;
-    services.pipewire = {
+    services.pipewire = mkIf (!generalCfg.minimal) {
       enable = true;
       pulse.enable = true;
       jack.enable = true;
@@ -104,7 +110,7 @@ in {
     programs.xwayland.enable = true;
 
     # Hardware-agnostic audio denoising
-    systemd.user.services.pipewire-noise-filter = {
+    systemd.user.services.pipewire-noise-filter = mkIf cfg.audio.noise-filter.enable {
       serviceConfig = {
         ExecStart = [
           "${pkgs.pipewire}/bin/pipewire -c ${filterConfig}"
@@ -127,25 +133,25 @@ in {
 
     hardware.opengl.driSupport = true;
     # For 32 bit applications
-    hardware.opengl.driSupport32Bit = true;
+    hardware.opengl.driSupport32Bit = mkIf (!generalCfg.minimal) (mkDefault true);
 
     # programs.gnupg.agent.pinentryFlavor = "qt";
 
     environment.systemPackages = with pkgs; [
-      myFirefox
       chromium
       p7zip
-      vlc
       glxinfo
       vdpauinfo
       libva-utils
     ]
-    ++ [
+    ++ (optionals (!generalCfg.minimal) [
+      myFirefox
       spotify
       nextcloud-client
       libreoffice-fresh
       unstable.kotatogram-desktop
-    ];
+      vlc
+    ]);
 
     programs.chromium = {
       enable = true;
@@ -187,8 +193,8 @@ in {
     };
 
 
-    programs.steam.enable = true;
-    hardware.steam-hardware.enable = true;
+    programs.steam.enable = !generalCfg.minimal;
+    hardware.steam-hardware.enable = !generalCfg.minimal;
     programs.steam.remotePlay.openFirewall = true;
     environment.variables = {
       "__GL_SHADER_DISK_CACHE" = "true";
@@ -212,12 +218,12 @@ in {
       "steam" "steam-original" "steam-runtime"
     ];
 
-    services.packagekit.enable = true;
+    services.packagekit.enable = mkDefault (!generalCfg.minimal);
     
     networking.networkmanager = {
-      plugins = [
-        pkgs.networkmanager-openvpn
-      ];
+      plugins = []
+        ++ optional (!generalCfg.minimal) pkgs.networkmanager-openvpn
+      ;
     };
   };
 }
