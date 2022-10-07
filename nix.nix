@@ -2,10 +2,15 @@
 with lib;
 with myLib;
 let
+  cfg = config.aviallon.nix;
   generalCfg = config.aviallon.general;
   desktopCfg = config.aviallon.desktop;
 in
 {
+  options.aviallon.nix = {
+    enableCustomSubstituter = mkEnableOption "custom substituter using nix-cache.lesviallon.fr";
+  };
+  
   config = {
 
     system.autoUpgrade.enable = mkDefault true;
@@ -34,8 +39,8 @@ in
       stalled-download-timeout = 20;
     };
 
-    nix.binaryCaches = mkBefore [ "https://nix-cache.lesviallon.fr" ];
-    nix.binaryCachePublicKeys = mkBefore [ "nix-cache.lesviallon.fr-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" ];
+    nix.binaryCaches = mkIf cfg.enableCustomSubstituter (mkBefore [ "https://nix-cache.lesviallon.fr" ]);
+    nix.binaryCachePublicKeys = mkIf cfg.enableCustomSubstituter (mkBefore [ "nix-cache.lesviallon.fr-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" ]);
 
     nix.buildCores = mkIf (generalCfg.cores != null) generalCfg.cores;
     nix.maxJobs = mkIf (generalCfg.cores != null) (math.log2 generalCfg.cores);
