@@ -5,12 +5,12 @@ let
   desktopCfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
 
-  _optimizeAttrs = level:
-    traceValSeq ((myLib.optimizations.makeOptimizationFlags {
-      inherit level;
+  _optimizeAttrs = { lto ? false , ... }@attrs:
+    traceValSeq ((myLib.optimizations.makeOptimizationFlags ({
+      inherit lto;
       cpuArch = generalCfg.cpuArch;
       extraCFlags = cfg.extraCompileFlags;
-    }) // {
+    } // attrs)) // {
     preConfigure = ''
       cmakeFlagsArray+=(
         "-DCMAKE_CXX_FLAGS=$CXXFLAGS"
@@ -22,11 +22,11 @@ let
   });
   optimizedStdenv = pkgs.addAttrsToDerivation _optimizeAttrs pkgs.fastStdenv;
   
-  optimizePkg = {level ? "normal" }: pkg:
+  optimizePkg = {level ? "normal", parallelize ? null, ... }@attrs: pkg:
   (
     if (hasAttr "stdenv" pkg.override.__functionArgs) then
-      trace "Optimized ${getName pkg} with stdenv" pkg.override {
-        stdenv = pkgs.addAttrsToDerivation (_optimizeAttrs level) pkgs.fastStdenv;
+      trace "Optimized ${getName pkg} with stdenv at level ${level} (parallelize: ${toString parallelize})" pkg.override {
+        stdenv = pkgs.addAttrsToDerivation (_optimizeAttrs (attrs // {inherit level parallelize; })) pkgs.fastStdenv;
       }
     else
       warn "Can't optimize ${getName pkg}" pkg
@@ -52,7 +52,9 @@ in
   config = mkIf cfg.enable {
     nixpkgs.overlays = mkBefore [
       (self: super: {
-        htop = optimizePkg {} super.htop;
+        opensshOptimized = optimizePkg { level = "very-unsafe"; lto = true; } super.openssh;
+        #libxslt = optimizePkg { level = "unsafe"; parallelize = generalCfg.cores; lto = true; } super.libxslt;
+        htop = optimizePkg {parallelize = generalCfg.cores; lto = true; } super.htop;
         nano = optimizePkg {level = "unsafe";} super.nano;
         virtmanager = optimizePkg {} super.virtmanager;
         libsForQt5 = super.libsForQt5.overrideScope' (mself: msuper: {
