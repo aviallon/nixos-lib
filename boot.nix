@@ -153,7 +153,7 @@ in
       kernelPatches = []
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
         ++ optional cfg.rtGroupSched.enable customKernelPatches.enableRTGroupSched
-        ++ optional config.aviallon.overlays.optimizations (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpuArch)
+        ++ optional config.aviallon.optimizations.enable (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpuArch)
       ;
 
       loader.grub.enable = cfg.useGrub;

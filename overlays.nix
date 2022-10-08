@@ -79,6 +79,8 @@ in
           enableWideVine = true;
         };
 
+        opensshOptimized = super.opensshOptimized or super.openssh;
+
         scribus = super.scribus.overrideAttrs (old: rec {
           version = "1.5.8";
           sha256 = "sha256-R4Fuj89tBXiP8WqkSZ+X/yJDHHd6d4kUmwqItFHha3Q=";

@@ -3,28 +3,30 @@ with lib;
 let
   cfg = config.aviallon.general;
   desktopCfg = config.aviallon.desktop;
-  buildUserKeyFile = "remote_builder/id_builder";
-  buildUserPubKey = readFile ./nix/id_builder.pub;
-  buildUserKey = readFile ./nix/id_builder;
+  buildUserPubKeyFile = ./nix/id_builder.pub;
+  buildUserKeyFile = ./nix/id_builder;
 
   getSpeed = cores: threads: cores + (threads - cores) / 2;
+
   mkBuildMachine = {
-  hostName,
-  cores,
-  threads ? (cores * 2),
-  features ? [ ],
-  x86ver ? 1 }:
+    hostName,
+    cores,
+    threads ? (cores * 2),
+    features ? [ ],
+    x86ver ? 1
+  }:
   rec {
     inherit hostName;
     system = "x86_64-linux";
     maxJobs = cores / 2;
     sshUser = "builder";
-    sshKey = "/etc/${buildUserKeyFile}";
+    sshKey = toString buildUserKeyFile;
     speedFactor = getSpeed cores threads; 
     supportedFeatures = [ "kvm" "benchmark" ]
       ++ optional (speedFactor > 8) "big-parallel"
       ++ optional (x86ver >= 2) "gccarch-x86-64-v2"
       ++ optional (x86ver >= 3) "gccarch-x86-64-v3"
+      ++ features
     ;
   };
 in
@@ -116,7 +118,6 @@ in
       gcc.tune = cfg.cpuTune;
     };
 
-    environment.etc."${buildUserKeyFile}".text = buildUserKey;
     nix.buildMachines = [
       {
         hostName = "lesviallon.fr";
@@ -130,13 +131,14 @@ in
       isSystemUser = true;
       group = "builder";
       hashedPassword = mkForce null; # Must not have a password!
-      openssh.authorizedKeys.keys = [
-        buildUserPubKey
+      openssh.authorizedKeys.keyFiles = [
+        buildUserKeyFile
       ];
+      shell = pkgs.bashInteractive;
     };
     users.groups.builder = {};
     nix.trustedUsers = [ "builder" ];
-    nix.distributedBuilds = mkDefault false;
+    nix.distributedBuilds = mkDefault true;
   };
 
 }
