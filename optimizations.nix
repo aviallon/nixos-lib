@@ -84,12 +84,9 @@ in
         nano = optimizePkg {level = "unsafe";} super.nano;
         virtmanager = optimizePkg {} super.virtmanager;
         libsForQt5 = super.libsForQt5.overrideScope' (mself: msuper: {
-          kwin = optimizePkg {} msuper.kwin;
-          dolphin = optimizePkg {} msuper.dolphin;
-        });
-        libsForQt514 = super.libsForQt514.overrideScope' (mself: msuper: {
-          kwin = optimizePkg {level = "unsafe"; } msuper.kwin;
-          dolphin = optimizePkg {} msuper.dolphin;
+          plasma5 = msuper.plasma5.overrideScope' (mself: msuper: {
+            kwin = optimizePkg {level = "unsafe"; lto = true; } msuper.kwin;
+          });
         });
         #wayland = optimizePkg super.wayland;
       })
