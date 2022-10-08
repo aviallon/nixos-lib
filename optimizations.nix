@@ -5,35 +5,42 @@ let
   desktopCfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
 
-  _optimizeAttrs = { lto ? false , go ? false, ... }@attrs:
-    traceValSeq (
-    (myLib.optimizations.makeOptimizationFlags ({
-      inherit lto go;
-      cpuArch = generalCfg.cpuArch;
-      cpuTune = generalCfg.cpuTune;
-      extraCFlags = cfg.extraCompileFlags;
-    } // attrs))
-    // {
-      preConfigure = ''
-        cmakeFlagsArray+=(
-          "-DCMAKE_CXX_FLAGS=$CXXFLAGS"
-          "-DCMAKE_C_FLAGS=$CFLAGS"
-        )
-      '';
-    }
-    // (optionalAttrs go {
-      buildInputs = [ pkgs.gccgo ];
-    })
+  _optimizeAttrs = 
+    {
+      lto ? false , 
+      go ? false , 
+      cmake ? true , 
+      cpuArch ? generalCfg.cpuArch , 
+      cpuTune ? generalCfg.cpuTune ,
+      extraCFlags ? cfg.extraCompileFlags ,
+      ...
+    }@attrs:
+      traceValSeq (
+        (myLib.optimizations.makeOptimizationFlags ({
+          inherit lto go cpuArch cpuTune extraCFlags;
+        } // attrs))
+        // (optionalAttrs cmake {
+          preConfigure = ''
+            cmakeFlagsArray+=(
+              "-DCMAKE_CXX_FLAGS=$CXXFLAGS"
+              "-DCMAKE_C_FLAGS=$CFLAGS"
+            )
+          '';
+        })
+        // (optionalAttrs go {
+          nativeBuildInputs = [ pkgs.gccgo ];
+        }
+      )
   );
 
   addAttrs = pkg: attrs: pkg.overrideAttrs (old: traceValSeqN 2 (myLib.attrsets.mergeAttrsRecursive old attrs) );
   
-  optimizePkg = {level ? "normal", ... }@attrs: pkg:
+  optimizePkg = {level ? "normal", useAttrs ? false , ... }@attrs: pkg:
   let
     optimizedAttrs = _optimizeAttrs (attrs // {inherit level; go = (hasAttr "GOARCH" pkg); });
     optStdenv = pkgs.addAttrsToDerivation optimizedAttrs pkgs.fastStdenv;
   in (
-    if (hasAttr "stdenv" pkg.override.__functionArgs) then
+    if (!useAttrs) && (hasAttr "stdenv" pkg.override.__functionArgs) then
       trace "Optimized ${getName pkg} with stdenv at level '${level}'" pkg.override {
         stdenv = optStdenv;
       }
@@ -65,14 +72,19 @@ in
       (self: super: {
         fastStdenv = super.overrideCC super.gccStdenv (super.buildPackages.gcc_latest.overrideAttrs (old:
           let
-            ccAttrs = cc: cc.overrideAttrs (oldAttrs: {
-              configureFlags = (oldAttrs.configureFlags or []) ++ [ "--with-cpu-64=${generalCfg.cpuArch}" "--with-arch-64=${generalCfg.cpuTune}" ];
-            });
-            ccOverrides = cc: cc.override {
-              reproducibleBuild = false;
-            };
+            optimizedAttrs = {}
+              #// _optimizeAttrs { level = "general"; cpuArch = null; cpuTune = null; }
+              // {
+                configureFlags = [
+                  "--with-cpu-64=${generalCfg.cpuArch}" "--with-arch-64=${generalCfg.cpuArch}"
+                  "--with-tune-64=${generalCfg.cpuTune}"
+                  "--with-build-config=bootstrap-lto-lean"
+                ];
+              }
+            ;
+            ccWithProfiling = old.cc.overrideAttrs (_: { buildFlags = [ "profiledbootstrap" ]; } );
           in {
-            cc = ccOverrides (ccAttrs old.cc);
+            cc = addAttrs ccWithProfiling optimizedAttrs;
           }
         ));
       })
