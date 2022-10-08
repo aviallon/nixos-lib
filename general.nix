@@ -131,8 +131,8 @@ in
       isSystemUser = true;
       group = "builder";
       hashedPassword = mkForce null; # Must not have a password!
-      openssh.authorizedKeys.keyFiles = [
-        buildUserKeyFile
+      openssh.authorizedKeys.keys = [
+        (readFile buildUserPubKeyFile)
       ];
       shell = pkgs.bashInteractive;
     };
