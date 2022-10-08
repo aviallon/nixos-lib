@@ -103,6 +103,15 @@ in
         });
         # chromium = self.ungoogled-chromium;
 
+        gccgo11 = super.wrapCC (super.gcc11.cc.override {
+          name = "gccgo11";
+          langCC = true;
+          langC = true;
+          langGo = true;
+          profiledCompiler = false;
+        });
+        gccgo = self.gccgo11;
+
         xwayland = super.xwayland.overrideAttrs (old: {
           buildInputs = old.buildInputs or [] ++ [ super.makeWrapper ];
           postInstall = old.postInstall or "" + ''

@@ -63,6 +63,21 @@ in
   config = mkIf cfg.enable {
     nixpkgs.overlays = mkBefore [
       (self: super: {
+        fastStdenv = super.overrideCC super.gccStdenv (super.buildPackages.gcc_latest.overrideAttrs (old:
+          let
+            ccAttrs = cc: cc.overrideAttrs (oldAttrs: {
+              configureFlags = (oldAttrs.configureFlags or []) ++ [ "--with-cpu-64=${generalCfg.cpuArch}" "--with-arch-64=${generalCfg.cpuTune}" ];
+            });
+            ccOverrides = cc: cc.override {
+              reproducibleBuild = false;
+            };
+          in {
+            cc = ccOverrides (ccAttrs old.cc);
+          }
+        ));
+      })
+    
+      (self: super: {
         opensshOptimized = optimizePkg { level = "very-unsafe"; lto = true; } super.openssh;
         #libxslt = optimizePkg { level = "unsafe"; parallelize = generalCfg.cores; lto = true; } super.libxslt;
         htop = optimizePkg {parallelize = generalCfg.cores; lto = true; } super.htop;
