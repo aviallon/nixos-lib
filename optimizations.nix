@@ -5,29 +5,40 @@ let
   desktopCfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
 
-  _optimizeAttrs = { lto ? false , ... }@attrs:
-    traceValSeq ((myLib.optimizations.makeOptimizationFlags ({
-      inherit lto;
+  _optimizeAttrs = { lto ? false , go ? false, ... }@attrs:
+    traceValSeq (
+    (myLib.optimizations.makeOptimizationFlags ({
+      inherit lto go;
       cpuArch = generalCfg.cpuArch;
+      cpuTune = generalCfg.cpuTune;
       extraCFlags = cfg.extraCompileFlags;
-    } // attrs)) // {
-    preConfigure = ''
-      cmakeFlagsArray+=(
-        "-DCMAKE_CXX_FLAGS=$CXXFLAGS"
-        "-DCMAKE_C_FLAGS=$CFLAGS"
-      )
-    '';
-    doCheck = false;
-    doInstallCheck = false;
-  });
-  optimizedStdenv = pkgs.addAttrsToDerivation _optimizeAttrs pkgs.fastStdenv;
+    } // attrs))
+    // {
+      preConfigure = ''
+        cmakeFlagsArray+=(
+          "-DCMAKE_CXX_FLAGS=$CXXFLAGS"
+          "-DCMAKE_C_FLAGS=$CFLAGS"
+        )
+      '';
+    }
+    // (optionalAttrs go {
+      buildInputs = [ pkgs.gccgo ];
+    })
+  );
+
+  addAttrs = pkg: attrs: pkg.overrideAttrs (old: traceValSeqN 2 (myLib.attrsets.mergeAttrsRecursive old attrs) );
   
-  optimizePkg = {level ? "normal", parallelize ? null, ... }@attrs: pkg:
-  (
+  optimizePkg = {level ? "normal", ... }@attrs: pkg:
+  let
+    optimizedAttrs = _optimizeAttrs (attrs // {inherit level; go = (hasAttr "GOARCH" pkg); });
+    optStdenv = pkgs.addAttrsToDerivation optimizedAttrs pkgs.fastStdenv;
+  in (
     if (hasAttr "stdenv" pkg.override.__functionArgs) then
-      trace "Optimized ${getName pkg} with stdenv at level ${level} (parallelize: ${toString parallelize})" pkg.override {
-        stdenv = pkgs.addAttrsToDerivation (_optimizeAttrs (attrs // {inherit level parallelize; })) pkgs.fastStdenv;
+      trace "Optimized ${getName pkg} with stdenv at level '${level}'" pkg.override {
+        stdenv = optStdenv;
       }
+    else if (hasAttr "overrideAttrs" pkg) then
+      trace "Optimized ${getName pkg} with overrideAttrs at level '${level}'" (addAttrs pkg optimizedAttrs)
     else
       warn "Can't optimize ${getName pkg}" pkg
   );
