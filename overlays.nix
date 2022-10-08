@@ -26,6 +26,7 @@ in
       description = "Wether to enable CPU-specific optimizations for some packages or not";
       type = types.bool;
     };
+    traceCallPackage = mkEnableOption "printing package names each time callPackage is evaluated";
   };
   config = mkIf cfg.enable {
      nix.nixPath =
@@ -36,12 +37,20 @@ in
     ;
 
 
-    nixpkgs.overlays = [
-      (self: super: {
-          inherit unstable;
-          inherit nur;
-      })
-      (self: super: {
+    nixpkgs.overlays = []
+      ++ [(self: super: {
+        inherit unstable;
+        inherit nur;
+      })]
+      ++ optional cfg.traceCallPackage [(self: super: {
+        callPackage = path: overrides:
+          let
+             _pkg = super.callPackage path overrides;
+             _name = _pkg.name or _pkg.pname or "<unknown>";
+          in trace "callPackage ${_name}" _pkg
+        ;
+      })]
+      ++ [(self: super: {
         htop = super.htop.overrideAttrs (old: {
           configureFlags = old.configureFlags ++ [
             "--enable-hwloc"
