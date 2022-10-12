@@ -42,14 +42,14 @@ in
         inherit unstable;
         inherit nur;
       })]
-      ++ optional cfg.traceCallPackage [(self: super: {
+      ++ optional cfg.traceCallPackage (self: super: {
         callPackage = path: overrides:
           let
              _pkg = super.callPackage path overrides;
              _name = _pkg.name or _pkg.pname or "<unknown>";
           in trace "callPackage ${_name}" _pkg
         ;
-      })]
+      })
       ++ [(self: super: {
         htop = super.htop.overrideAttrs (old: {
           configureFlags = old.configureFlags ++ [

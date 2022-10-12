@@ -5,17 +5,19 @@ let
   desktopCfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
 
+  _trace = if cfg.trace then (traceValSeqN 2) else (x: x);
+
   _optimizeAttrs = 
     {
       lto ? false , 
       go ? false , 
-      cmake ? true , 
+      cmake ? false , 
       cpuArch ? generalCfg.cpuArch , 
       cpuTune ? generalCfg.cpuTune ,
       extraCFlags ? cfg.extraCompileFlags ,
       ...
     }@attrs:
-      traceValSeq (
+      _trace (
         (myLib.optimizations.makeOptimizationFlags ({
           inherit lto go cpuArch cpuTune extraCFlags;
         } // attrs))
@@ -33,22 +35,69 @@ let
       )
   );
 
-  addAttrs = pkg: attrs: pkg.overrideAttrs (old: traceValSeqN 2 (myLib.attrsets.mergeAttrsRecursive old attrs) );
-  
-  optimizePkg = {level ? "normal", useAttrs ? false , ... }@attrs: pkg:
-  let
-    optimizedAttrs = _optimizeAttrs (attrs // {inherit level; go = (hasAttr "GOARCH" pkg); });
-    optStdenv = pkgs.addAttrsToDerivation optimizedAttrs pkgs.fastStdenv;
-  in (
-    if (!useAttrs) && (hasAttr "stdenv" pkg.override.__functionArgs) then
-      trace "Optimized ${getName pkg} with stdenv at level '${level}'" pkg.override {
-        stdenv = optStdenv;
-      }
+  addAttrs = pkg: attrs: pkg.overrideAttrs (old: _trace (myLib.attrsets.mergeAttrsRecursive old attrs) );
+
+  recurseOverrideCflags = pkg: { cflags ? compilerFlags, _depth ? 0 }:
+    let
+      deps = pkg.buildInputs or [];
+      depsOverriden = forEach deps (_pkg: recurseOverrideCflags _pkg {
+        inherit cflags;
+        _depth = _depth + 1;
+      });
+    in if isNull pkg then
+      warn "pkg is null" pkg
     else if (hasAttr "overrideAttrs" pkg) then
-      trace "Optimized ${getName pkg} with overrideAttrs at level '${level}'" (addAttrs pkg optimizedAttrs)
+      info "Optimizing '${getName pkg}' at depth ${toString _depth}"
+      (pkg.overrideAttrs (old:
+        let
+          _cflags = 
+            if (! hasAttr "CFLAGS" old) then
+              []
+            else if isList old.CFLAGS then 
+              old.CFLAGS
+            else
+              [ old.CFLAGS ]
+            ;
+        in {
+          buildInputs = depsOverriden;
+          CFLAGS = _cflags ++ cflags;
+        }
+      ))
     else
-      warn "Can't optimize ${getName pkg}" pkg
-  );
+      warn "Couldn't optimize '${getName pkg}'" pkg
+  ;
+
+  
+  optimizePkg = {level ? "normal" , recursive ? 0 , _depth ? 0 , ... }@attrs: pkg:
+    if (hasAttr "overrideAttrs" pkg) then
+      let
+        optimizedAttrs = _optimizeAttrs (attrs // {inherit level; go = (hasAttr "GOARCH" pkg); });
+        _buildInputs = filter (p: ! isNull p ) (pkg.buildInputs or []);
+        _buildInputsOverriden = forEach _buildInputs (_pkg:
+          if (any (n: n == getName _pkg) cfg.blacklist) then
+            warn "Skipping blacklisted '${getName _pkg}'" _pkg
+          else optimizePkg ({}
+                // attrs
+                // {
+                  inherit level recursive;
+                  _depth = _depth + 1;
+                }) _pkg
+        );
+        _pkg =
+          if (recursive > _depth) then
+            pkg.overrideAttrs (old: {}
+              // {
+                buildInputs = _buildInputsOverriden;
+              }
+              // optionalAttrs (hasAttr "CFLAGS" old) {
+                CFLAGS = if (! isList old.CFLAGS ) then [ old.CFLAGS ] else old.CFLAGS;
+              }
+            )
+          else pkg;
+      in trace "Optimized ${getName pkg} with overrideAttrs at level '${level}' (depth: ${toString _depth})" (addAttrs _pkg optimizedAttrs)
+    else
+      warn "Can't optimize ${getName pkg} (depth: ${toString _depth})" pkg
+  ;
 in
 {
   options.aviallon.optimizations = {
@@ -63,6 +112,13 @@ in
       default = [ "-mtune=${generalCfg.cpuTune}" ];
       example = [ "-O2" "-mavx" ];
       description = "Add specific compile flags";
+      type = types.listOf types.str;
+    };
+    trace = mkEnableOption "trace attributes in overriden derivations";
+    blacklist = mkOption {
+      default = [ "cmocka" "libkrb5" "libidn2" "tpm2-tss" ];
+      example = [ "bash" ];
+      description = "Blacklist specific packages from optimizations";
       type = types.listOf types.str;
     };
   };
@@ -90,10 +146,14 @@ in
       })
     
       (self: super: {
-        opensshOptimized = optimizePkg { level = "very-unsafe"; lto = true; } super.openssh;
+        opensshOptimized = optimizePkg { level = "very-unsafe"; recursive = 0; lto = true; } super.openssh;
         #libxslt = optimizePkg { level = "unsafe"; parallelize = generalCfg.cores; lto = true; } super.libxslt;
-        htop = optimizePkg {parallelize = generalCfg.cores; lto = true; } super.htop;
-        nano = optimizePkg {level = "unsafe";} super.nano;
+        htop = optimizePkg {
+            parallelize = generalCfg.cores;
+            lto = true;
+            recursive = 2;
+          } super.htop;
+        nano = optimizePkg {level = "unsafe"; recursive = 99; } super.nano;
         virtmanager = optimizePkg {} super.virtmanager;
         libsForQt5 = super.libsForQt5.overrideScope' (mself: msuper: {
           plasma5 = msuper.plasma5.overrideScope' (mself: msuper: {
