@@ -2,25 +2,50 @@
 with lib;
 let
   cfg = config.aviallon.hardware.intel;
+  generalCfg = config.aviallon.general;
+  laptopCfg = config.aviallon.laptop;
+  devCfg = config.aviallon.developer;
 in
 {
   options.aviallon.hardware.intel = {
     enable = mkEnableOption "Intel GPUs";
+    iHD = mkEnableOption "Use iHD driver instead of i965";
   };
   
   config = mkIf cfg.enable {
     boot.initrd.kernelModules = [ "i915" ];
     hardware.opengl = {
       enable = true;
-      extraPackages = with pkgs; [
-  #      intel-media-driver # LIBVA_DRIVER_NAME=iHD
-        vaapiIntel         # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
-        vaapiVdpau
-        libvdpau-va-gl
+      extraPackages = with pkgs; []
+        ++ [
+          vaapiVdpau
+          libvdpau-va-gl
 
-        intel-graphics-compiler
-        intel-compute-runtime
-      ];
+          intel-graphics-compiler
+          intel-compute-runtime
+        ]
+        ++ optional cfg.iHD intel-media-driver # LIBVA_DRIVER_NAME=iHD
+        ++ optional (!cfg.iHD) vaapiIntel # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
+      ;
+    };
+
+    aviallon.boot.cmdline = {}
+    // optionalAttrs generalCfg.unsafeOptimizations {
+      "i915.mitigations" = "off";
+      "i915.enable_fbc" = 1;
+    }
+    // optionalAttrs laptopCfg.enable {
+      "i915.enable_fbc" = 1;
+      "i915.enable_dc" = 4;
+    }
+    // optionalAttrs (generalCfg.unsafeOptimizations && laptopCfg.enable) {
+      "i915.enable_psr" = 1;
+    }
+    // optionalAttrs devCfg.enable {
+      "i915.enable_gvt" = 1;
+    }
+    // {
+      "i915.fastboot" = 1;
     };
   };
 }

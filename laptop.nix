@@ -28,9 +28,6 @@ in {
     hardware.sensor.iio.enable = mkDefault true;
 
     aviallon.boot.cmdline = {
-      "i915.enable_fbc" = 1;
-      "i915.enable_gvt" = 1;
-
       # Less power consumption vs some performance loss
       "workqueue.power_efficient" = "";
       nohz = "on";

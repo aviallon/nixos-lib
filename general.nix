@@ -91,9 +91,6 @@ in
 
     aviallon.boot.cmdline = mkIf cfg.unsafeOptimizations {
       mitigations = "off";
-      "i915.mitigations" = "off";
-      "i915.enable_dc" = 4;
-      "i915.fastboot" = 1;
     };
 
     powerManagement.cpuFreqGovernor = mkDefault "schedutil";
