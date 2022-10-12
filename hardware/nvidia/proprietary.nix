@@ -15,6 +15,8 @@ in {
         "nvidia"
       ];
 
+      services.xserver.exportConfiguration = true;
+
       hardware.nvidia = {
         powerManagement.enable = true;
         powerManagement.finegrained = mkIf config.hardware.nvidia.prime.offload.enable true;
@@ -22,15 +24,20 @@ in {
         nvidiaSettings = true;
       };
 
-      aviallon.boot.cmdline = mkIf cfg.saveAllVram {
-        NVreg_PreserveVideoMemoryAllocations = 1;
-        NVreg_TemporaryFilePath = "/tmp/nvidia-gpu.vram.img";
+      aviallon.boot.cmdline = {}
+      // {
+        "nvidia-drm.modeset" = 1;
+        "nvidia.NVreg_UsePageAttributeTable" = 1;
+      }
+      // optionalAttrs cfg.saveAllVram {
+        "nvidia.NVreg_PreserveVideoMemoryAllocations" = 1;
+        "nvidia.NVreg_TemporaryFilePath" = "/tmp/nvidia-gpu.vram.img";
       };
 
       aviallon.programs.allowUnfreeList = [
-          "nvidia-x11"
-          "nvidia-settings"
-          "cudatoolkit"
+        "nvidia-x11"
+        "nvidia-settings"
+        "cudatoolkit"
       ];
 
       hardware.opengl.extraPackages = with pkgs; [
