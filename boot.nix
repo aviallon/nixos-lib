@@ -16,6 +16,12 @@ let
         RT_GROUP_SCHED y
       '';
     };
+    enableEnergyModel = {
+      name = "enable-energy-model";
+      patch = null; extraConfig = ''
+        ENERGY_MODEL y
+      '';
+    };
     optimizeForCPUArch = arch: let
       archConfigMap = {
         "k8" = "K8"; "opteron" = "K8"; "athlon64" = "K8"; "athlon-fx" = "K8";
@@ -96,6 +102,8 @@ in
     };
     kvdo.enable = mkEnableOption "dm-kvdo kernel module";
     rtGroupSched.enable = mkEnableOption "RT cgroups";
+    energyModel.enable = mkEnableOption "Energy Model";
+    
     efi = mkOption rec {
       description = "Use EFI bootloader";
       default = builtins.pathExists "/sys/firmware/efi";
@@ -133,7 +141,7 @@ in
     hardware.enableRedistributableFirmware = true;
 
     aviallon.boot.cmdline = {
-      "syscall.x32" = cfg.x32abi.enable;
+      "syscall.x32" = mkIf cfg.x32abi.enable true;
 
       # Reboot after 5 seconds on panic (prevent system lockup)
       "panic" = 5;
@@ -153,6 +161,7 @@ in
       kernelPatches = []
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
         ++ optional cfg.rtGroupSched.enable customKernelPatches.enableRTGroupSched
+        ++ optional cfg.energyModel.enable customKernelPatches.enableEnergyModel
         ++ optional config.aviallon.optimizations.enable (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpuArch)
       ;
 
