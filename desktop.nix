@@ -140,11 +140,11 @@ in {
     environment.systemPackages = with pkgs; [
       chromium
       p7zip
+    ]
+    ++ (optionals (!generalCfg.minimal) [
       glxinfo
       vdpauinfo
       libva-utils
-    ]
-    ++ (optionals (!generalCfg.minimal) [
       myFirefox
       spotify
       nextcloud-client
