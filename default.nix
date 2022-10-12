@@ -13,6 +13,7 @@
     ./hardening.nix
     ./hardware.nix
     ./laptop.nix
+    ./power.nix
     ./overlays.nix
     ./optimizations.nix
     ./non-persistence.nix

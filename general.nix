@@ -51,6 +51,13 @@ in
       description = "Number of physical threads of the machine";
       type = with types; nullOr ints.positive;
     };
+
+    cpuVendor = mkOption {
+      default = null;
+      example = "amd";
+      description = "Vendor of you CPU. Either AMD or Intel";
+      type = types.str;
+    };
     
     cpuArch = mkOption {
       default = "x86-64";
