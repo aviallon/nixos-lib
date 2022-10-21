@@ -7,6 +7,8 @@ in {
     enable = mkEnableOption "enable developer mode on this machine";
   };
   config = mkIf cfg.enable {
+    system.nixos.tags = [ "developer" ];
+  
     environment.systemPackages = with pkgs; [
       tabnine
       numactl
@@ -16,6 +18,9 @@ in {
       hwloc
       bind
       git-cola
+      virt-manager-qt
+      qtemu
+      jetbrains.clion
       # adbfs-rootless
     ];
 
@@ -23,8 +28,21 @@ in {
       dev.enable = true;
     };
 
+    virtualisation.libvirtd = {
+      enable = true;
+      onBoot = "ignore"; # We are doing development, not a server
+      qemu = {
+        package = pkgs.qemu_full;
+        ovmf.enable = true;
+        ovmf.package = pkgs.OVMFFull;
+        swtpm.enable = true;
+      };
+    };
+    virtualisation.spiceUSBRedirection.enable = true; # Quality of life
+    security.virtualisation.flushL1DataCache = "never"; # We do not care, we are on a dev platform
+
     aviallon.programs.allowUnfreeList = [
-      "tabnine"
+      "tabnine" "clion"
     ];
   };
 }
