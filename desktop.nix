@@ -106,6 +106,8 @@ in {
     };
     security.rtkit.enable = true; # Real-time support for pipewire
 
+    security.polkit.enable = true; # Better interactive privilege prompts
+
     # Enable running X11 apps on Wayland
     programs.xwayland.enable = true;
 
