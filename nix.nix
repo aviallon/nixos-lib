@@ -21,11 +21,11 @@ in
     nix.gc.automatic = mkDefault true;
     nix.gc.dates = mkDefault "Monday,Wednesday,Friday,Sunday 03:00:00";
     nix.gc.randomizedDelaySec = "3h";
-    nix.optimise.automatic = mkDefault true;
-    nix.optimise.dates = mkForce [ "Tuesday,Thursday,Saturday 03:00:00" ];
+    nix.optimise.automatic = mkDefault (!config.nix.autoOptimiseStore);
+    nix.optimise.dates = mkDefault [ "Tuesday,Thursday,Saturday 03:00:00" ];
     nix.autoOptimiseStore = mkDefault true;
 
-    nix.daemonIOSchedPriority = 5;
+    nix.daemonIOSchedPriority = 7;
     nix.daemonCPUSchedPolicy = "batch";
     nix.daemonIOSchedClass = "idle";
 
