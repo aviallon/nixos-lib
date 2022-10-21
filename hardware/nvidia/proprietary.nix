@@ -41,11 +41,13 @@ in {
       ];
 
       hardware.opengl.extraPackages = with pkgs; [
+        nvidia-vaapi-driver
         libvdpau-va-gl
         vaapiVdpau
       ];
 
       hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [
+        nvidia-vaapi-driver
         libvdpau-va-gl
         vaapiVdpau
       ];
