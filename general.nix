@@ -11,23 +11,26 @@ let
   mkBuildMachine = {
     hostName,
     cores,
+    system ? "x86_64-linux" ,
     threads ? (cores * 2),
     features ? [ ],
-    x86ver ? 1
-  }:
-  rec {
-    inherit hostName;
-    system = "x86_64-linux";
-    maxJobs = cores / 2;
+    x86ver ? 1 ,
+    ...
+  }@attrs: rec {
+    inherit hostName system;
     sshUser = "builder";
     sshKey = toString buildUserKeyFile;
-    speedFactor = getSpeed cores threads; 
+    speedFactor = getSpeed cores threads;
+    maxJobs = myLib.math.log2 cores;
     supportedFeatures = [ "kvm" "benchmark" ]
+      ++ optional (system == "x86_64-linux") "i686-linux"
       ++ optional (speedFactor > 8) "big-parallel"
       ++ optional (x86ver >= 2) "gccarch-x86-64-v2"
       ++ optional (x86ver >= 3) "gccarch-x86-64-v3"
+      ++ optional (x86ver >= 4) "gccarch-x86-64-v4"
       ++ features
     ;
+    
   };
 in
 {
@@ -123,14 +126,23 @@ in
     };
 
     nix.buildMachines = [
-      {
-        hostName = "lesviallon.fr";
-        system = "x86_64-linux";
-        maxJobs = 2;
-        speedFactor = 4;
-        supportedFeatures = [ "kvm" "benchmark" "big-parallel" ];
-      }
+      (mkBuildMachine {
+        hostName = "luke-skywalker-nixos.local";
+        cores = 8;
+        threads = 16;
+      })
+      (mkBuildMachine {
+        hostName = "cachan.lesviallon.fr";
+        cores = 6;
+        threads = 6;
+      })
     ];
+
+    programs.ssh.extraConfig = ''
+      Host cachan.lesviallon.fr
+        Port 52222
+    '';
+    
     users.users.builder = {
       isSystemUser = true;
       group = "builder";
