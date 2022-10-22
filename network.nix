@@ -57,6 +57,9 @@ in
       ];
     };
     networking.wireless.enable = (cfg.backend != "NetworkManager");
+    networking.wireless.iwd.enable = true;
+    networking.wireless.dbusControlled = true;
+    networking.wireless.athUserRegulatoryDomain = true;
 
     # Must always be false
     networking.useDHCP = false;
