@@ -49,9 +49,12 @@ in {
     services.openssh = {
       enable = true;
       permitRootLogin = mkDefault "prohibit-password";
-      forwardX11 = mkDefault true;
+      forwardX11 = mkDefault config.services.xserver.enable;
       openFirewall = true;
     };
+    programs.ssh.setXAuthLocation = config.services.xserver.enable;
+    programs.ssh.forwardX11 = mkDefault config.services.xserver.enable;
+    security.pam.services.sudo.forwardXAuth = mkDefault true; # Easier to start GUI programs as root
     
     networking.firewall.allowedTCPPorts = [ 22 ]
       ++ optionals config.services.printing.enable [ 631 139 445 ];
