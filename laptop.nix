@@ -35,6 +35,10 @@ in {
       pcie_aspm = mkIf cfg.tweaks.pcieAspmForce "force";
     };
 
+    hardware.fancontrol = {
+      enable = mkIf (! isNull config.hardware.fancontrol.config) true;
+    };
+
 
     systemd.services.aspm-force-enable = let
       aspm_enable = pkgs.callPackage ./packages/aspm_enable { };
