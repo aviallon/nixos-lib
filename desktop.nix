@@ -88,6 +88,18 @@ in {
     };
     boot.initrd.verbose = generalCfg.debug;
     boot.consoleLogLevel = mkIf (!generalCfg.debug) 1;
+    
+    console.earlySetup = true; # Prettier console
+    fonts.enableDefaultFonts = mkIf (!generalCfg.minimal) true;
+
+    hardware.acpilight.enable = mkIf (!generalCfg.minimal) true;
+    hardware.opentabletdriver.enable = mkIf (!generalCfg.minimal) true;
+
+    hardware.bluetooth = mkIf (!generalCfg.minimal) {
+      enable = true;
+      package = pkgs.bluezFull;
+    };
+
 
     # Enable sound.
     sound.enable = false;
