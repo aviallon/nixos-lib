@@ -23,7 +23,7 @@ in
     nix.gc.randomizedDelaySec = "3h";
     nix.optimise.automatic = mkDefault (!config.nix.autoOptimiseStore);
     nix.optimise.dates = mkDefault [ "Tuesday,Thursday,Saturday 03:00:00" ];
-    nix.autoOptimiseStore = mkDefault true;
+    nix.settings.auto-optimise-store  = mkDefault true;
 
     nix.daemonIOSchedPriority = 7;
     nix.daemonCPUSchedPolicy = "batch";
@@ -31,19 +31,23 @@ in
 
   
     nix.package = mkIf (strings.versionOlder pkgs.nix.version "2.7") pkgs.nix_2_7;
-    
-    nix.extraOptions = myLib.config.toNix {
-      builders-use-substitutes = true;
-      experimental-features = [ "nix-command" "flakes"];
-      download-attempts = 5;
-      stalled-download-timeout = 20;
-    };
 
-    nix.binaryCaches = mkIf cfg.enableCustomSubstituter (mkBefore [ "https://nix-cache.lesviallon.fr" ]);
-    nix.binaryCachePublicKeys = mkIf cfg.enableCustomSubstituter (mkBefore [ "nix-cache.lesviallon.fr-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" ]);
+    nix.settings.system-features = [ "big-parallel" "kvm" "benchmark" ]
+      ++ optional ( ! isNull generalCfg.cpuArch ) "gccarch-${generalCfg.cpuArch}"
+    ;
 
-    nix.buildCores = mkIf (generalCfg.cores != null) generalCfg.cores;
-    nix.maxJobs = mkIf (generalCfg.cores != null) (math.log2 generalCfg.cores);
+    nix.settings.builders-use-substitutes = true;
+    nix.settings.experimental-features = []
+      ++ optionals ( strings.versionOlder "2.4" pkgs.nix.version ) [ "nix-command" "flakes" ];
+
+    nix.settings.download-attempts = 5;
+    nix.settings.stalled-download-timeout = 20;
+
+    nix.settings.substituters = mkIf cfg.enableCustomSubstituter (mkBefore [ "https://nix-cache.lesviallon.fr" ]);
+    nix.settings.trusted-public-keys = mkIf cfg.enableCustomSubstituter (mkBefore [ "nix-cache.lesviallon.fr-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" ]);
+
+    nix.settings.cores = mkIf (generalCfg.cores != null) generalCfg.cores;
+    nix.settings.max-jobs = mkIf (generalCfg.cores != null) (math.log2 generalCfg.cores);
 
   };
 }
