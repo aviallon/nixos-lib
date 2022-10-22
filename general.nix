@@ -125,6 +125,13 @@ in
       gcc.tune = cfg.cpuTune;
     };
 
+    # zram is so usefull, we should always have it enabled.
+    zramSwap = {
+      enable = true;
+      priority = 10000;
+      memoryPercent = 100;
+      algorithm = "zstd";
+    };
     nix.buildMachines = [
       (mkBuildMachine {
         hostName = "luke-skywalker-nixos.local";
