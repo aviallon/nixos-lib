@@ -11,19 +11,22 @@ let
   mkBuildMachine = {
     hostName,
     cores,
-    system ? "x86_64-linux" ,
+    systems ? [ "x86_64-linux" ] ,
     threads ? (cores * 2),
     features ? [ ],
     x86ver ? 1 ,
     ...
-  }@attrs: rec {
-    inherit hostName system;
+  }@attrs: let
+    speedFactor = getSpeed cores threads;
+  in {
+    inherit hostName speedFactor;
+    systems = systems
+      ++ optional (any (s: s == "x86_64-linux") systems) "i686-linux"
+    ;
     sshUser = "builder";
     sshKey = toString buildUserKeyFile;
-    speedFactor = getSpeed cores threads;
     maxJobs = myLib.math.log2 cores;
     supportedFeatures = [ "kvm" "benchmark" ]
-      ++ optional (system == "x86_64-linux") "i686-linux"
       ++ optional (speedFactor > 8) "big-parallel"
       ++ optional (x86ver >= 2) "gccarch-x86-64-v2"
       ++ optional (x86ver >= 3) "gccarch-x86-64-v3"
