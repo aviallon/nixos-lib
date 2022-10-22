@@ -132,6 +132,9 @@ in
       memoryPercent = 100;
       algorithm = "zstd";
     };
+
+    environment.noXlibs = mkIf (cfg.minimal && (!desktopCfg.enable)) true;
+
     nix.buildMachines = [
       (mkBuildMachine {
         hostName = "luke-skywalker-nixos.local";
