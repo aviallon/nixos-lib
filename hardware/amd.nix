@@ -54,5 +54,12 @@ in
       amdvlk
       mesa
     ];
+
+    # Make rocblas and rocfft work
+    nix.settings.extra-sandbox-paths = [
+      "/dev/kfd?"
+      "/sys/devices/virtual/kfd?"
+      "/dev/dri/renderD128?"
+    ];
   };
 }
