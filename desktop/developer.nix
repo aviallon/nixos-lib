@@ -41,8 +41,16 @@ in {
     virtualisation.spiceUSBRedirection.enable = true; # Quality of life
     security.virtualisation.flushL1DataCache = "never"; # We do not care, we are on a dev platform
 
+    virtualisation.virtualbox.host.enable = true;
+    virtualisation.virtualbox.host.enableExtensionPack = true;
+
+    environment.extraOutputsToInstall = [
+      "doc" "info" "devdoc"
+    ];
+
     aviallon.programs.allowUnfreeList = [
       "tabnine" "clion"
+      "Oracle_VM_VirtualBox_Extension_Pack" "virtualbox"
     ];
   };
 }
