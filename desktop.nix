@@ -62,7 +62,7 @@ in {
 
     aviallon.network.backend = mkDefault "NetworkManager";
 
-    boot.kernelPackages = pkgs.linuxKernel.packages.linux_xanmod;
+    aviallon.boot.kernel = pkgs.linuxKernel.kernels.linux_xanmod;
 
     # Enable the X11 windowing system.
     services.xserver.enable = true;

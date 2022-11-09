@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, options, ... }:
 with lib;
 let
   customKernelPatches = {
@@ -81,8 +81,7 @@ let
   allowUnfree = (types.isType types.attrs config.nixpkgs.config)
                 && (hasAttr "allowUnfree" config.nixpkgs.config)
                 && (getAttr "allowUnfree" config.nixpkgs.config);
-in
-{
+in {
 
   options.aviallon.boot = {
     enable = mkOption {
@@ -130,6 +129,13 @@ in
       example = { "i915.fastboot" = true; };
       type = types.attrsOf (types.oneOf [ types.bool types.int types.str (types.listOf types.str) ]);
     };
+
+    kernel = mkOption {
+      description = "Linux kernel to use";
+      default = options.boot.kernelPackages.default.kernel;
+      example = "pkgs.kernel";
+      type = types.package;
+    };
   };
 
   config = {
@@ -157,6 +163,8 @@ in
     boot = {
       initrd.kernelModules = [ ];
       initrd.availableKernelModules = [ "ehci_pci" ];
+
+      kernelPackages = pkgs.linuxPackagesFor cfg.kernel;
 
       kernelPatches = []
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
