@@ -89,9 +89,8 @@ in
     ];
 
     programs.ccache.enable = true;
-    programs.ccache.packageNames = [  ];
     
-    nix.sandboxPaths = [
+    nix.settings.extra-sandbox-paths = [
       (toString config.programs.ccache.cacheDir)
     ];
 
