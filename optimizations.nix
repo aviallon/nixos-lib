@@ -80,6 +80,7 @@ let
                 // attrs
                 // {
                   inherit level recursive;
+                  parallelize = null;
                   _depth = _depth + 1;
                 }) _pkg
         );
