@@ -29,15 +29,12 @@ in {
 
     aviallon.boot.cmdline = {
       # Less power consumption vs some performance loss
-      "workqueue.power_efficient" = "";
+      "workqueue.power_efficient" = "1";
       nohz = "on";
 
       pcie_aspm = mkIf cfg.tweaks.pcieAspmForce "force";
     };
 
-    hardware.fancontrol = {
-      enable = mkIf (! isNull config.hardware.fancontrol.config) true;
-    };
 
 
     systemd.services.aspm-force-enable = let
