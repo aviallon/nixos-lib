@@ -138,18 +138,18 @@ in
 
     environment.noXlibs = mkIf (cfg.minimal && (!desktopCfg.enable)) true;
 
-    nix.buildMachines = [
-      (mkBuildMachine {
+    nix.buildMachines = []
+      ++ optional false (mkBuildMachine {
         hostName = "luke-skywalker-nixos.local";
         cores = 8;
         threads = 16;
       })
-      (mkBuildMachine {
+      ++ optional false (mkBuildMachine {
         hostName = "cachan.lesviallon.fr";
         cores = 6;
         threads = 6;
       })
-    ];
+    ;
 
     programs.ssh.extraConfig = ''
       Host cachan.lesviallon.fr
@@ -166,7 +166,7 @@ in
       shell = pkgs.bashInteractive;
     };
     users.groups.builder = {};
-    nix.trustedUsers = [ "builder" ];
+    nix.settings.trusted-users = [ "builder" ];
     nix.distributedBuilds = mkDefault true;
   };
 

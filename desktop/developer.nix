@@ -34,15 +34,18 @@ in {
       qemu = {
         package = pkgs.qemu_full;
         ovmf.enable = true;
-        ovmf.package = pkgs.OVMFFull;
+        ovmf.packages = [ pkgs.OVMFFull ];
         swtpm.enable = true;
       };
     };
     virtualisation.spiceUSBRedirection.enable = true; # Quality of life
     security.virtualisation.flushL1DataCache = "never"; # We do not care, we are on a dev platform
 
-    virtualisation.virtualbox.host.enable = true;
-    virtualisation.virtualbox.host.enableExtensionPack = true;
+    virtualisation.virtualbox = {
+      host.enable = true;
+      host.enableExtensionPack = true;
+      host.enableHardening = false; # Causes kernel build failures
+    };
 
     environment.extraOutputsToInstall = [
       "doc" "info" "devdoc"

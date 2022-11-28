@@ -117,7 +117,7 @@ in
     };
     trace = mkEnableOption "trace attributes in overriden derivations";
     blacklist = mkOption {
-      default = [ "cmocka" "libkrb5" "libidn2" "tpm2-tss" ];
+      default = [ "cmocka" "libkrb5" "libidn2" "tpm2-tss" "libxcrypt" ];
       example = [ "bash" ];
       description = "Blacklist specific packages from optimizations";
       type = types.listOf types.str;
@@ -156,11 +156,6 @@ in
           } super.htop;
         nano = optimizePkg {level = "unsafe"; recursive = 99; } super.nano;
         virtmanager = optimizePkg {} super.virtmanager;
-        libsForQt5 = super.libsForQt5.overrideScope' (mself: msuper: {
-          plasma5 = msuper.plasma5.overrideScope' (mself: msuper: {
-            kwin = optimizePkg {level = "unsafe"; lto = true; } msuper.kwin;
-          });
-        });
         #wayland = optimizePkg super.wayland;
       })
     ];

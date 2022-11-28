@@ -13,7 +13,6 @@ let
         prefs
       );
 in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
-    forceWayland = true;
     cfg = {
       smartcardSupport = true;
       pipewireSupport = true;

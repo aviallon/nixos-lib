@@ -209,7 +209,7 @@ in {
       "spotify"
       "spotify-unwrapped"
 
-      "steam" "steam-original" "steam-runtime"
+      "steam" "steam-original" "steam-runtime" "steam-run"
     ];
 
     services.packagekit.enable = mkDefault (!generalCfg.minimal);

@@ -81,47 +81,6 @@ in
 
         opensshOptimized = super.opensshOptimized or super.openssh;
 
-        scribus = super.scribus.overrideAttrs (old: rec {
-          version = "1.5.8";
-          sha256 = "sha256-R4Fuj89tBXiP8WqkSZ+X/yJDHHd6d4kUmwqItFHha3Q=";
-          src = super.fetchurl {
-            url = "mirror://sourceforge/${old.pname}/${old.pname}-devel/${old.pname}-${version}.tar.xz";
-            inherit sha256;
-          };
-          patches = with super; [
-            # For Poppler 22.02
-            (fetchpatch {
-              url = "https://github.com/scribusproject/scribus/commit/85c0dff3422fa3c26fbc2e8d8561f597ec24bd92.patch";
-              sha256 = "YR0ii09EVU8Qazz6b8KAIWsUMTwPIwO8JuQPymAWKdw=";
-            })
-            (fetchpatch {
-              url = "https://github.com/scribusproject/scribus/commit/f19410ac3b27e33dd62105746784e61e85b90a1d.patch";
-              sha256 = "JHdgntYcioYatPeqpmym3c9dORahj0CinGOzbGtA4ds=";
-            })
-            (fetchpatch {
-              url = "https://github.com/scribusproject/scribus/commit/e013e8126d2100e8e56dea5b836ad43275429389.patch";
-              sha256 = "+siPNtJq9Is9V2PgADeQJB+b4lkl5g8uk6zKBu10Jqw=";
-            })
-            (fetchpatch {
-              url = "https://github.com/scribusproject/scribus/commit/48263954a7dee0be815b00f417ae365ab26cdd85.patch";
-              sha256 = "1WE9kALFw79bQH88NUafXaZ1Y/vJEKTIWxlk5c+opsQ=";
-            })
-            (fetchpatch {
-              url = "https://github.com/scribusproject/scribus/commit/f2237b8f0b5cf7690e864a22ef7a63a6d769fa36.patch";
-              sha256 = "FXpLoX/a2Jy3GcfzrUUyVUfEAp5wAy2UfzfVA5lhwJw=";
-            })
-          ];
-        });
-        # chromium = self.ungoogled-chromium;
-
-        gccgo11 = super.wrapCC (super.gcc11.cc.override {
-          name = "gccgo11";
-          langCC = true;
-          langC = true;
-          langGo = true;
-          profiledCompiler = false;
-        });
-        gccgo = self.gccgo11;
 
         xwayland = super.xwayland.overrideAttrs (old: {
           buildInputs = old.buildInputs or [] ++ [ super.makeWrapper ];

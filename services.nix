@@ -139,7 +139,7 @@ in {
       Storage = "volatile";
     };
 
-    services.ananicy.enable = true;
+    services.ananicy.enable = false;
     services.ananicy.package = pkgs.ananicy-cpp;
     services.ananicy.settings = {
       loglevel = "info";

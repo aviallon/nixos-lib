@@ -21,7 +21,7 @@ in
     nix.gc.automatic = mkDefault true;
     nix.gc.dates = mkDefault "Monday,Wednesday,Friday,Sunday 03:00:00";
     nix.gc.randomizedDelaySec = "3h";
-    nix.optimise.automatic = mkDefault (!config.nix.autoOptimiseStore);
+    nix.optimise.automatic = mkDefault (!config.nix.settings.auto-optimise-store);
     nix.optimise.dates = mkDefault [ "Tuesday,Thursday,Saturday 03:00:00" ];
     nix.settings.auto-optimise-store  = mkDefault true;
 
