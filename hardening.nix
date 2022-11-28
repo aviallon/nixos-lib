@@ -55,9 +55,9 @@ in
     aviallon.boot.cmdline = {
       "lsm" = [ "landlock" ]
         ++ optional cfg.hardcore "lockdown"
+        ++ [ "yama" ]
         # Apparmor https://wiki.archlinux.org/title/AppArmor#Installation
         ++ optionals config.security.apparmor.enable [ "apparmor" ]
-        ++ [ "yama" ]
         ++ [ "bpf" ]
       ;
       "lockdown" = if cfg.hardcore then "confidentiality" else "integrity";
@@ -66,7 +66,8 @@ in
       vsyscall = mkIf cfg.hardcore "xonly";
     } // (ifEnable cfg.expensive {
       # Slab/slub sanity checks, redzoning, and poisoning
-      "slub_debug" = "FZP";
+      "init_on_alloc" = 1;
+      "init_on_free" = 1;
 
       # Overwrite free'd memory
       "page_poison" = 1;
@@ -84,9 +85,6 @@ in
 
       # https://lwn.net/Articles/420403/
       "kernel.kptr_restrict" = mkOverride 999 2;
-
-      # Can have dire impact on performance if BPF network filtering is used.
-      "net.core.bpf_jit_enable" = mkIf cfg.expensive (mkOverride 999 false);
 
       # Can be used by developers. Should be disabled on regular desktops.
       # https://www.kernel.org/doc/html/latest/trace/ftrace.html
