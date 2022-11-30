@@ -20,6 +20,9 @@ in {
       git-cola
       virt-manager-qt
       qtemu
+      parted
+      gparted
+      
       jetbrains.clion
       # adbfs-rootless
     ];
