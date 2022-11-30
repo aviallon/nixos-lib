@@ -187,6 +187,7 @@ in {
         "eimadpbcbfnmbkopoojfekhnkhdbieeh" # Dark Reader
       ];
       extraOpts = {
+        "PlatformHEVCDecoderSupport" = true;
         "BrowserSignin" = 0;
         "SyncDisabled" = true;
         "PasswordManagerEnabled" = true;
