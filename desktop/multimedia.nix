@@ -10,6 +10,7 @@ in {
       obs-studio
       scribus
       yt-dlp
+      jellyfin-media-player
     ];
   };
 }
