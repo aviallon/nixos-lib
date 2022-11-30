@@ -15,7 +15,7 @@ in
 
     system.autoUpgrade.enable = mkDefault true;
     system.autoUpgrade.allowReboot = mkIf (!desktopCfg.enable) (mkDefault true);
-    system.autoUpgrade.dates = "Sunday *-*-* 00:00";
+    system.autoUpgrade.dates = "Sunday *-*-* 02:00";
 
 
     nix.gc.automatic = mkDefault true;
