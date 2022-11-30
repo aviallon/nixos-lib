@@ -41,6 +41,9 @@ in {
       discover
       akonadi
       kmail
+      kdepim-addons
+      kdepim-runtime
+      
       korganizer
       dolphin
       kio-fuse
@@ -55,7 +58,6 @@ in {
 
     xdg.portal = {
       enable = mkDefault true;      
-      gtkUsePortal = mkDefault true;
       extraPortals = with pkgs; [
         xdg-desktop-portal-gtk
       ];

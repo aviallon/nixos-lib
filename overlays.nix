@@ -53,17 +53,18 @@ in
       ++ [(self: super: {
         htop = super.htop.overrideAttrs (old: {
           configureFlags = old.configureFlags ++ [
-            "--enable-hwloc"
+            "--enable-affinity"
+            "--enable-delayacct"
+            "--enable-capabilities"
           ];
         
           nativeBuildInputs = old.nativeBuildInputs ++ (with super; [
             pkg-config
           ]);
           buildInputs = old.buildInputs ++ (with super; [
-            libunwind
             libcap
+            libunwind
             libnl
-            hwloc
           ]);
         });
         steam = super.steam.override {
