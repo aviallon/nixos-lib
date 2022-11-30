@@ -150,9 +150,8 @@ in
         opensshOptimized = optimizePkg { level = "very-unsafe"; recursive = 0; lto = true; } super.openssh;
         #libxslt = optimizePkg { level = "unsafe"; parallelize = generalCfg.cores; lto = true; } super.libxslt;
         htop = optimizePkg {
-            parallelize = generalCfg.cores;
+            level = "unsafe";
             lto = true;
-            recursive = 2;
           } super.htop;
         nano = optimizePkg {level = "unsafe"; recursive = 99; } super.nano;
         virtmanager = optimizePkg {} super.virtmanager;
