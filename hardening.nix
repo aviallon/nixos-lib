@@ -47,6 +47,8 @@ in
 
     aviallon.hardening.expensive = mkIf cfg.hardcore (mkForce true);
 
+    security.sudo.execWheelOnly = true;
+
     services.openssh.permitRootLogin = "prohibit-password";
 
     security.apparmor.enable = true;
