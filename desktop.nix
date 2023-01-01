@@ -224,6 +224,13 @@ in {
     ];
 
     services.packagekit.enable = mkDefault (!generalCfg.minimal);
+    security.sudo.extraConfig =
+      ''
+      # Keep X-related variables for better GUI integration
+      Defaults:root,%wheel env_keep+=XAUTHORITY
+      Defaults:root,%wheel env_keep+=DISPLAY
+      ''
+    ;
     
     networking.networkmanager = {
       plugins = []
