@@ -171,7 +171,7 @@ in {
       spotify
       nextcloud-client
       libreoffice-fresh
-      unstable.kotatogram-desktop
+      tdesktop
       vlc
     ]);
 
