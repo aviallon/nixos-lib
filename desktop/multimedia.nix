@@ -11,6 +11,8 @@ in {
       scribus
       yt-dlp
       jellyfin-media-player
+
+      nur.repos.wolfangaukang.vdhcoapp
     ];
   };
 }
