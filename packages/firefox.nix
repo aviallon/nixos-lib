@@ -88,12 +88,15 @@ in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
       "toolkit.telemetry.newProfilePing.enabled" = false;
       "toolkit.telemetry.firstShutdownPing.enabled" = false;
       "toolkit.telemetry.bhrPing.enabled" = false;
+      "network.trr.confirmation_telemetry_enabled" = false;
+      "toolkit.telemetry.pioneer-new-studies-available" = false;
+      "toolkit.telemetry.updatePing.enabled" = false;
       "security.protectionspopup.recordEventTelemetry" = false;
       "security.identitypopup.recordEventTelemetry" = false;
       "security.certerrors.recordEventTelemetry" = false;
       "security.app_menu.recordEventTelemetry" = false;
-      "privacy.trackingprotection.origin_telemetry.enabled" = false;
       "browser.ping-centre.telemetry" = false;
+      "browser.urlbar.eventTelemetry.enabled" = false;
       "browser.newtabpage.activity-stream.telemetry" = false;
       "browser.newtabpage.activity-stream.feeds.telemetry" = false;
       "browser.newtabpage.activity-stream.telemetry.structuredIngestion.endpoint" = "";
@@ -102,10 +105,27 @@ in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
       "browser.safebrowsing.provider.google.gethashURL" = "";
       "browser.safebrowsing.provider.google.reportURL" = "";
       "browser.safebrowsing.provider.google.updateURL" = "";
+      "browser.safebrowsing.provider.google.lists" = "";
+      "browser.safebrowsing.provider.google.reportMalwareMistakeURL" = "";
+      "browser.safebrowsing.provider.google.reportPhishMistakeURL" = "";
+
+      "browser.safebrowsing.provider.google4.lists" = "";
       "browser.safebrowsing.provider.google4.dataSharingURL" = "";
       "browser.safebrowsing.provider.google4.gethashURL" = "";
       "browser.safebrowsing.provider.google4.reportURL" = "";
       "browser.safebrowsing.provider.google4.updateURL" = "";
+      "browser.safebrowsing.provider.google4.advisoryURL" = "";
+      "browser.safebrowsing.provider.google4.dataSharing.enabled" = false;
+      "browser.safebrowsing.provider.google4.reportMalwareMistakeURL" = "";
+      "browser.safebrowsing.provider.google4.reportPhishMistakeURL" = "";
+
+      "browser.safebrowsing.downloads.enabled" = false;
+      "browser.safebrowsing.malware.enabled" = false;
+      "browser.safebrowsing.passwords.enabled" = false;
+      "browser.safebrowsing.phishing.enabled" = false;
+
+      #"privacy.trackingprotection.origin_telemetry.enabled" = false;
+
     } + "\n" + genPrefList {} {
       "intl.accept_languages" =	"fr-fr,en-us,en";
       "intl.locale.requested" = "fr,en-US";
@@ -113,6 +133,8 @@ in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
       "general.autoScroll" = true; # Middleclick scrolling
 
       "privacy.trackingprotection.enabled" = true;
+      "privacy.trackingprotection.fingerprinting.enabled" = true;
+      "privacy.trackingprotection.cryptomining.enabled" = true;
 
       "browser.shell.didSkipDefaultBrowserCheckOnFirstRun" = true;
 
@@ -122,5 +144,10 @@ in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
       "media.rdd-ffmpeg.enabled" = true;
       "media.rdd-ffvpx.enabled" = true;
       "media.rdd-opus.enabled" = true;
+
+      "widget.use-xdg-desktop-portal.file-picker" = 1;
+      "widget.use-xdg-desktop-portal.location" = 1;
+      "widget.use-xdg-desktop-portal.mime-handler" = 1;
+      "widget.use-xdg-desktop-portal.settings" = 1;
     });
   }
