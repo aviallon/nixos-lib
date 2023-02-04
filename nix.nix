@@ -25,9 +25,15 @@ in
     nix.optimise.dates = mkDefault [ "Tuesday,Thursday,Saturday 03:00:00" ];
     nix.settings.auto-optimise-store  = mkDefault true;
 
-    nix.daemonIOSchedPriority = 7;
-    nix.daemonCPUSchedPolicy = "batch";
-    nix.daemonIOSchedClass = "idle";
+    systemd.services.nix-daemon = {
+      serviceConfig = {
+        Nice = 19;
+        CPUSchedulingPolicy = mkForce "batch";
+        IOSchedulingClass = mkForce "idle";
+        IOAccounting = true;
+        IOWeight = 1024 / 10;
+      };
+    };
 
   
     nix.package = mkIf (strings.versionOlder pkgs.nix.version "2.7") pkgs.nix_2_7;
