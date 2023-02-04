@@ -13,4 +13,12 @@ in
     ./hardware/intel.nix
   ];
 
+    environment.systemPackages = []
+      ++ optional (cfg.amd.enable && cfg.nvidia.enable) pkgs.nvtop
+      ++ optional cfg.amd.enable pkgs.nvtop-amd
+      ++ optional cfg.nvidia.enable pkgs.nvtop-nvidia
+    ;
+
+  };
+
 }
