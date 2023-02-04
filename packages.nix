@@ -8,9 +8,7 @@ let
 in
 {
   imports = [
-    ./programs/nano.nix
-    ./programs/git.nix
-    ./programs/htop.nix
+    ./programs
     ./overlays.nix
     (mkRenamedOptionModule [ "aviallon" "programs" "compileFlags" ] [ "aviallon" "optimizations" "extraCompileFlags" ])
   ];
