@@ -29,6 +29,8 @@ in {
 
     documentation = {
       dev.enable = true;
+      nixos.enable = true;
+      man.enable = true;
     };
 
     virtualisation.libvirtd = {

@@ -110,8 +110,6 @@ in
     };
 
     documentation.nixos.includeAllModules = true;
-    documentation.nixos.enable = true;
-    documentation.dev.enable = true;
     documentation.man.generateCaches = true;
 
 
