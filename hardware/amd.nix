@@ -9,6 +9,11 @@ in
   options.aviallon.hardware.amd = {
     enable = mkEnableOption "AMD gpus";
     useProprietary = mkEnableOption "Use proprietary AMDGPU Pro";
+    defaultVulkanImplementation = mkOption {
+      description = "Wether to use RADV or AMDVLK by default";
+      type = with types; enum [ "amdvlk" "radv" ];
+      default = "radv";
+    };
   };
   
   config = mkIf (cfg.enable) {
@@ -44,15 +49,20 @@ in
     ];
 
     hardware.opengl.enable = true;
-    hardware.opengl.extraPackages = with pkgs; mkIf (!cfg.useProprietary) [
+    hardware.opengl.extraPackages = with pkgs; mkIf (!cfg.useProprietary) (mkAfter [
       rocm-opencl-icd
       rocm-opencl-runtime
+      mesa
       amdvlk
-    ];
+    ]);
+
+    environment.variables = {
+      "AMD_VULKAN_ICD" = strings.toUpper cfg.defaultVulkanImplementation;
+    };
 
     hardware.opengl.extraPackages32 = with pkgs.driversi686Linux; mkIf (!cfg.useProprietary) [
-      amdvlk
       mesa
+      amdvlk
     ];
 
     # Make rocblas and rocfft work
