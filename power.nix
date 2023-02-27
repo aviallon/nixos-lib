@@ -96,7 +96,6 @@ in {
   config = mkIf cfg.enable {
     systemd.targets.ac-power = {
       description = "Target is active when AC is plugged-in.";
-      wantedBy = [ "multi-user.target" ];
       conflicts = [ "battery-power.target" ];
       unitConfig = {
         ConditionACPower = true;
@@ -105,16 +104,18 @@ in {
     
     systemd.targets.battery-power = {
       description = "Target is active when power is drawn from a battery.";
-      wantedBy = [ "multi-user.target" ];
       conflicts = [ "ac-power.target" ];
+      unitConfig = {
+        ConditionACPower = false;
+      };
     };
 
     services.udev.extraRules = ''
-      KERNEL=="AC*", SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="${pkgs.systemd}/bin/systemctl stop ac-power.target"
-      KERNEL=="AC*", SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="${pkgs.systemd}/bin/systemctl start ac-power.target"
+      ACTION!="remove", KERNEL=="AC*", SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="${pkgs.systemd}/bin/systemctl stop ac-power.target"
+      ACTION!="remove", KERNEL=="AC*", SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="${pkgs.systemd}/bin/systemctl start ac-power.target"
       
-      KERNEL=="BAT*", SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", RUN+="${pkgs.systemd}/bin/systemctl start battery-power.target"
-      KERNEL=="BAT*", SUBSYSTEM=="power_supply", ATTR{status}=="Charging", RUN+="${pkgs.systemd}/bin/systemctl stop battery-power.target"
+      ACTION!="remove", KERNEL=="BAT*", SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", RUN+="${pkgs.systemd}/bin/systemctl start battery-power.target"
+      ACTION!="remove", KERNEL=="BAT*", SUBSYSTEM=="power_supply", ATTR{status}=="Charging", RUN+="${pkgs.systemd}/bin/systemctl stop battery-power.target"
     '';
   
     systemd.services.undervolt-intel = {
