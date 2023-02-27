@@ -28,6 +28,7 @@ in
       "amdgpu.cik_support" = 1;
       "amdgpu.freesync_video" = 1;
       "amdgpu.mes" = mkIf generalCfg.unsafeOptimizations 1;
+      "amdgpu.ppfeaturemask" = mkIf generalCfg.unsafeOptimizations "0xfff7ffff";
     };
 
     environment.systemPackages = with pkgs; []
@@ -47,6 +48,8 @@ in
       "amdgpu"
       "radeon"
     ];
+
+    programs.corectrl.enable = mkIf generalCfg.unsafeOptimizations true;
 
     hardware.opengl.enable = true;
     hardware.opengl.extraPackages = with pkgs; mkIf (!cfg.useProprietary) (mkAfter [
