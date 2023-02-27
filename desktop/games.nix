@@ -23,6 +23,12 @@ in {
       lutris
     ];
 
+    boot.kernel.sysctl = {
+
+      # Fixes crash in Hogwarts Legacy when using Floo network (https://steamcommunity.com/app/990080/discussions/0/3773490215223050912/)
+      "vm.max_map_count" = 512 * 1024;
+    };
+
     programs.gamemode = {
       settings = {
         general = {
