@@ -43,6 +43,17 @@ in {
       };
       enable = true;
     };
+    security.wrappers = {
+      gamemoderun = {
+        source = "${pkgs.gamemode}/bin/gamemoderun";
+        owner = "root";
+        group = "gamers";
+        capabilities = "cap_sys_nice=eip";
+        permissions = "u+rx,g+x,o=";
+      };
+    };
+
+    users.groups.gamers = { };
 
     programs.steam.enable = !generalCfg.minimal;
     hardware.steam-hardware.enable = !generalCfg.minimal;
