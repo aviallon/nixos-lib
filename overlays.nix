@@ -101,6 +101,7 @@ in
           });
         in withTensorflow;
 
+        amdctl = super.callPackage ./packages/amdctl.nix {};
 
         myFirefox = (import ./packages/firefox.nix { pkgs = self; inherit lib; });
       })
