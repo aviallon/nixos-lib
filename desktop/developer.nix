@@ -22,9 +22,15 @@ in {
       qtemu
       parted
       gparted
-      
+      cpu-x
+      nix-index
+      lm_sensors
+
+      libsForQt5.kdevelop
       jetbrains.clion
       # adbfs-rootless
+
+      amdctl
     ];
 
     documentation = {
