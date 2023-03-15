@@ -136,10 +136,12 @@ in
     environment.noXlibs = mkIf (cfg.minimal && (!desktopCfg.enable)) true;
 
     nix.buildMachines = []
-      ++ optional false (mkBuildMachine {
-        hostName = "luke-skywalker-nixos.local";
-        cores = 8;
-        threads = 16;
+      # luke-skywalker-nixos
+      ++ optional (config.networking.hostName != "luke-skywalker-nixos") (mkBuildMachine {
+        hostName = "2a01:e0a:18e:8670:ae71:8e51:19af:91a4";
+        cores = 16;
+        threads = 32;
+        x86ver = 3;
       })
       ++ optional false (mkBuildMachine {
         hostName = "cachan.lesviallon.fr";
