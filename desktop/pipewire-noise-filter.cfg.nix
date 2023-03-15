@@ -21,10 +21,7 @@ context.spa-libs = {
 context.modules = [
     {   name = libpipewire-module-rtkit
         args = {
-            #nice.level   = -11
-            #rt.prio      = 88
-            #rt.time.soft = 200000
-            #rt.time.hard = 200000
+            nice.level   = -11
         }
         flags = [ ifexists nofail ]
     }

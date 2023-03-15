@@ -4,7 +4,7 @@
     ./general.nix
     ./nix.nix
     ./boot.nix
-    ./desktop.nix
+    ./desktop
     ./home-manager.nix
     ./network.nix
     ./packages.nix

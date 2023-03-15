@@ -68,6 +68,11 @@ in {
       "MESA_GLSL_CACHE_DIR" = cfg.graphics.shaderCache.path + "/mesa";
     };
 
+
+    aviallon.programs.allowUnfreeList = [
+      "steam" "steam-original" "steam-runtime" "steam-run"
+    ];
+
     systemd.tmpfiles.rules = [
       (mkTmpDir (cfg.graphics.shaderCache.path + "/nvidia") cfg.graphics.shaderCache.cleanupInterval)
       (mkTmpDir (cfg.graphics.shaderCache.path + "/mesa") cfg.graphics.shaderCache.cleanupInterval)
