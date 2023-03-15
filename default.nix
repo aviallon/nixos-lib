@@ -11,7 +11,7 @@
     ./services.nix
     ./filesystems.nix
     ./hardening.nix
-    ./hardware.nix
+    ./hardware
     ./laptop.nix
     ./power.nix
     ./overlays.nix

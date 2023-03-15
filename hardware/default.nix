@@ -9,10 +9,15 @@ in
   options.aviallon.hardware = {  };
 
   imports = [
-    ./hardware/amd.nix
-    ./hardware/nvidia.nix
-    ./hardware/intel.nix
+    ./amd
+    ./nvidia
+    ./intel
   ];
+
+  config = {
+    boot.binfmt.emulatedSystems = [
+      "armv7l-linux"
+    ];
 
     environment.systemPackages = []
       ++ optional (cfg.amd.enable && cfg.nvidia.enable) pkgs.nvtop
