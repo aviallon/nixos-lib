@@ -3,7 +3,7 @@ with lib;
 let
     cfg = config.aviallon.desktop;
 in {
-  config = mkIf cfg.enable {
+  config = mkIf (cfg.enable && (cfg.environment == "plasma")) {
     # Enable the Plasma 5 Desktop Environment.
     services.xserver.desktopManager.plasma5 = {
       enable = true;
@@ -54,10 +54,11 @@ in {
       plasma-pa
       ark
       kolourpaint
+      krdc
     ];
 
     xdg.portal = {
-      enable = mkDefault true;      
+      enable = mkDefault true;
       extraPortals = with pkgs; [
         xdg-desktop-portal-gtk
       ];
