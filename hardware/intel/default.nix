@@ -11,6 +11,10 @@ in
     enable = mkEnableOption "Intel GPUs";
     iHD = mkEnableOption "Use iHD driver instead of i965";
   };
+
+  imports = [
+    ./cpu.nix
+  ];
   
   config = mkIf cfg.enable {
     boot.initrd.kernelModules = [ "i915" ];
