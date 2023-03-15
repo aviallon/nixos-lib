@@ -4,7 +4,7 @@ let
   cfg = config.aviallon.hardware.amd;
   devCfg = config.aviallon.developer;
   generalCfg = config.aviallon.general;
-  myMesa = pkgs.mesa;
+  myMesa = if generalCfg.unsafeOptimizations then pkgs.mesaOptimized else pkgs.mesa;
 in {
   options.aviallon.hardware.amd = {
     enable = mkEnableOption "AMD gpus";
