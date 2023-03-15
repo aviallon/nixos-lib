@@ -117,7 +117,14 @@ in
     };
     trace = mkEnableOption "trace attributes in overriden derivations";
     blacklist = mkOption {
-      default = [ "cmocka" "libkrb5" "libidn2" "tpm2-tss" "libxcrypt" ];
+      default = [ # Broken
+                  "cmocka" "libkrb5" "libidn2" "tpm2-tss" "libxcrypt"
+                  "libomxil-bellagio" "wayland" "wayland-protocols"
+                  "openssl" "libXt"
+
+                  # Very slow
+                  "llvm" "clang" "clang-wrapper" "valgrind" "rustc"
+                ];
       example = [ "bash" ];
       description = "Blacklist specific packages from optimizations";
       type = types.listOf types.str;
