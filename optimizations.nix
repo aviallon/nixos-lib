@@ -160,6 +160,12 @@ in
             lto = true;
           } super.htop;
         nano = optimizePkg {level = "unsafe"; recursive = 99; } super.nano;
+        mesaOptimized = optimizePkg {
+          level = "slower";
+          recursive = 1;
+          lto = true;
+          extraCFlags = cfg.extraCompileFlags;
+        } super.mesa;
       })
     ];
   };
