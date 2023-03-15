@@ -78,6 +78,16 @@ in
           '';
         });
 
+        power-profiles-daemon = super.power-profiles-daemon.overrideAttrs (old: {
+          patches = [
+            # ACPI cpufreq support
+            (super.fetchpatch {
+              url = "https://gitlab.freedesktop.org/hadess/power-profiles-daemon/-/commit/7ccd832b96d2a0ac8911587d3fa9d18e19bd5587.diff";
+              sha256 = "sha256-UTfbUN/rHUFJ8eXOL3P8LCkBr+TySbEer9ti2e0kAiU=";
+            })
+          ];
+        });
+
         ffmpeg-full = let
           withLto = super.ffmpeg-full.override { enableLto = false; rav1e = self.rav1e; };
           withTensorflow = withLto.overrideAttrs (old: {
