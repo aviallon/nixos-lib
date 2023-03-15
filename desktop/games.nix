@@ -54,7 +54,7 @@ in {
       enable = true;
     };
     security.wrappers = {
-      gamemoderun = {
+      my-gamemoderun = {
         source = "${pkgs.gamemode}/bin/gamemoderun";
         owner = "root";
         group = "gamers";
