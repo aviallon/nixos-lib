@@ -9,6 +9,13 @@ in {
   options = {
     aviallon.desktop.gaming = {
       enable = mkEnableOption "gaming features";
+      emulation = mkEnableOption "console emulators";
+      yuzu.package = mkOption {
+        description = "Yuzu switch emulator package";
+        type = with types; package;
+        example = pkgs.yuzu-early-access;
+        default = pkgs.yuzu-mainline;
+      };
     };
   };
   
@@ -22,6 +29,8 @@ in {
       #gamescope
       mangohud
       lutris
+    ] ++ optionals cfg.gaming.emulation [
+      cfg.gaming.yuzu.package
     ];
 
     boot.kernel.sysctl = {
