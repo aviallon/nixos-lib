@@ -16,6 +16,9 @@ in {
     };
   };
 
+  imports = [
+    ./cpu.nix
+  ];
   
   config = mkIf (cfg.enable) {
     boot.initrd.kernelModules = [ "amdgpu" ];
