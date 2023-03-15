@@ -15,6 +15,7 @@ in {
   config = mkIf cfg.gaming.enable {
     assertions = [
       { assertion = cfg.gaming.enable -> cfg.enable; message = "Gaming features requires desktop to be enabled"; }
+      { assertion = cfg.gaming.enable -> !generalCfg.minimal; message = "Gaming features are incompatible with minimal mode"; }
     ];
   
     environment.systemPackages = with pkgs; [
