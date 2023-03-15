@@ -8,5 +8,6 @@ with lib;
     ./plasma.nix
     ./games.nix
     ./browser.nix
+    ./gnome.nix
   ];
 }
