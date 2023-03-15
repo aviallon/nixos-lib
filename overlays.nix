@@ -2,15 +2,6 @@
 with lib;
 let
   cfg = config.aviallon.overlays;
-  unstable = import (fetchGit {
-    url = "https://github.com/NixOS/nixpkgs.git";
-    rev = "c573e3eaa8717fbabab3f9a58bfed637fb441eac";
-    ref = "nixos-unstable";
-  }) {
-    config = config.nixpkgs.config // { allowUnfree = true; } ;
-    overlays = config.nixpkgs.overlays;
-  };
-  nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/master.tar.gz") { inherit pkgs; };
 in
 {
   options.aviallon.overlays = {
@@ -38,10 +29,6 @@ in
 
 
     nixpkgs.overlays = []
-      ++ [(self: super: {
-        inherit unstable;
-        inherit nur;
-      })]
       ++ optional cfg.traceCallPackage (self: super: {
         callPackage = path: overrides:
           let

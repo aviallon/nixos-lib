@@ -10,6 +10,7 @@ in
   imports = [
     ./programs
     ./overlays.nix
+    ./packages/unstable.nix
     (mkRenamedOptionModule [ "aviallon" "programs" "compileFlags" ] [ "aviallon" "optimizations" "extraCompileFlags" ])
   ];
 
@@ -52,7 +53,6 @@ in
       rsync
       par2cmdline # .par2 archive verification
       python3
-      veracrypt
       parallel
       coreutils-full
       nmap
@@ -83,7 +83,6 @@ in
     };
 
     aviallon.programs.allowUnfreeList = [
-      "veracrypt"
     ];
 
     programs.ccache.enable = true;
