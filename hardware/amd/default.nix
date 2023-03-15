@@ -4,8 +4,8 @@ let
   cfg = config.aviallon.hardware.amd;
   devCfg = config.aviallon.developer;
   generalCfg = config.aviallon.general;
-in
-{
+  myMesa = pkgs.mesa;
+in {
   options.aviallon.hardware.amd = {
     enable = mkEnableOption "AMD gpus";
     useProprietary = mkEnableOption "Use proprietary AMDGPU Pro";
@@ -15,6 +15,7 @@ in
       default = "radv";
     };
   };
+
   
   config = mkIf (cfg.enable) {
     boot.initrd.kernelModules = [ "amdgpu" ];
@@ -26,9 +27,10 @@ in
       # for Sea Islands (CIK ie. GCN 2) cards
       "radeon.cik_support" = 0;
       "amdgpu.cik_support" = 1;
-      "amdgpu.freesync_video" = 1;
-      "amdgpu.mes" = mkIf generalCfg.unsafeOptimizations 1;
+
       "amdgpu.ppfeaturemask" = mkIf generalCfg.unsafeOptimizations "0xfff7ffff";
+      "amdgpu.freesync_video" = 1;
+      #"amdgpu.mes" = mkIf generalCfg.unsafeOptimizations 1;
     };
 
     environment.systemPackages = with pkgs; []
@@ -37,8 +39,6 @@ in
       ]
       ++ optionals devCfg.enable ([]
         ++ [ rocminfo ]
-        ++ optional (hasAttr "hipify-perl" pkgs) pkgs.hipify-perl
-        ++ optional (hasAttr "tensorflow2-rocm" pkgs) pkgs.tensorflow2-rocm
       )
     ;
 
@@ -51,22 +51,24 @@ in
 
     programs.corectrl.enable = mkIf generalCfg.unsafeOptimizations true;
 
-    hardware.opengl.enable = true;
-    hardware.opengl.extraPackages = with pkgs; mkIf (!cfg.useProprietary) (mkAfter [
-      rocm-opencl-icd
-      rocm-opencl-runtime
-      mesa
-      amdvlk
-    ]);
+    hardware.opengl = {
+      enable = true;
+      package = with pkgs; myMesa.drivers;
+      extraPackages = with pkgs; mkIf (!cfg.useProprietary) (mkAfter [
+        rocm-opencl-icd
+        rocm-opencl-runtime
+        (hiPrio myMesa)
+        amdvlk
+      ]);
+      extraPackages32 = with pkgs.driversi686Linux; mkIf (!cfg.useProprietary) [
+        mesa
+        amdvlk
+      ];
+    };
 
     environment.variables = {
       "AMD_VULKAN_ICD" = strings.toUpper cfg.defaultVulkanImplementation;
     };
-
-    hardware.opengl.extraPackages32 = with pkgs.driversi686Linux; mkIf (!cfg.useProprietary) [
-      mesa
-      amdvlk
-    ];
 
     # Make rocblas and rocfft work
     nix.settings.extra-sandbox-paths = [
