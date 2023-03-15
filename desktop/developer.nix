@@ -29,6 +29,7 @@ in {
 
     documentation = {
       dev.enable = true;
+      nixos.includeAllModules = true;
       nixos.enable = true;
       man.enable = true;
     };

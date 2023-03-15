@@ -109,7 +109,6 @@ in
       enableSSHSupport = true;
     };
 
-    documentation.nixos.includeAllModules = true;
     documentation.man.generateCaches = true;
 
 
