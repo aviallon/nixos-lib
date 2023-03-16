@@ -72,6 +72,19 @@ let
     if (hasAttr "overrideAttrs" pkg) then
       let
         optimizedAttrs = _optimizeAttrs (attrs // {inherit level; go = (hasAttr "GOARCH" pkg); });
+        _nativeBuildInputs = filter (p: ! isNull p) (pkg.nativeBuildInputs or []);
+        _nativeBuildInputsOverriden = forEach _nativeBuildInputs (_pkg:
+          let
+            _pkgName = getName _pkg;
+            hasOverride = any (n: n == _pkgName) (attrNames cfg.overrideMap);
+            _overridePkg = if hasOverride then cfg.overrideMap.${_pkgName} else null;
+          in
+            if hasOverride then
+              warn "Replacing build dependency '${_pkgName}' by '${getName _overridePkg}'" _overridePkg
+            else
+              _pkg
+        );
+              
         _buildInputs = filter (p: ! isNull p ) (pkg.buildInputs or []);
         _buildInputsOverriden = forEach _buildInputs (_pkg:
           if (any (n: n == getName _pkg) cfg.blacklist) then
@@ -89,6 +102,7 @@ let
             pkg.overrideAttrs (old: {}
               // {
                 buildInputs = _buildInputsOverriden;
+                nativeBuildInputs = _nativeBuildInputsOverriden;
               }
               // optionalAttrs (hasAttr "CFLAGS" old) {
                 CFLAGS = if (! isList old.CFLAGS ) then [ old.CFLAGS ] else old.CFLAGS;
@@ -128,6 +142,19 @@ in
       example = [ "bash" ];
       description = "Blacklist specific packages from optimizations";
       type = types.listOf types.str;
+    };
+    overrideMap = mkOption {
+      type = with types; attrsOf package;
+      default = {
+      };
+      example = literalExpression
+        ''
+          {
+            ninja = pkgs.ninja-samurai;
+            cmake = pkgs.my-cmake-override;
+          }
+        '';
+      description = mdDoc "Allow overriding packages found in `nativeBuildInputs` with custom packages.";
     };
   };
 
