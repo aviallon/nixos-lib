@@ -15,11 +15,12 @@ let
       cpuArch ? generalCfg.cpuArch , 
       cpuTune ? generalCfg.cpuTune ,
       extraCFlags ? cfg.extraCompileFlags ,
+      cpuCores ? generalCfg.cores ,
       ...
     }@attrs:
       _trace (
         (myLib.optimizations.makeOptimizationFlags ({
-          inherit lto go cpuArch cpuTune extraCFlags;
+          inherit lto go cpuArch cpuTune extraCFlags cpuCores;
         } // attrs))
         // (optionalAttrs cmake {
           preConfigure = ''
