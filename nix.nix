@@ -16,6 +16,30 @@ in
     system.autoUpgrade.enable = mkDefault true;
     system.autoUpgrade.allowReboot = mkIf (!desktopCfg.enable) (mkDefault true);
     system.autoUpgrade.dates = "Sunday *-*-* 02:00";
+    system.autoUpgrade.operation = "boot";
+    system.autoUpgrade.persistent = true;
+    system.autoUpgrade.rebootWindow = {
+      lower = "01:00";
+      upper = "05:00";
+    };
+    systemd.services.nixos-upgrade = {
+      unitConfig = {
+        ConditionCPUPressure = "user.slice:15%";
+        ConditionMemoryPressure = "user.slice:50%";
+        ConditionIOPressure = "user.slice:50%";
+      };
+      serviceConfig = {
+        Nice = 19;
+        CPUSchedulingPolicy = "idle";
+        IOSchedulingClass = "idle";
+        IOAccounting = true;
+        IOWeight = 1024 / 10;
+        CPUWeight = 1;
+        CPUQuota = (toString (generalCfg.cores * 80)) + "%";
+        Type = mkOverride 20 "simple";
+      };
+    };
+
 
 
     nix.gc.automatic = mkDefault true;
