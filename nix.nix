@@ -22,6 +22,21 @@ in
       lower = "01:00";
       upper = "05:00";
     };
+
+    system.build.nixos-rebuild = let
+      nixos-rebuild = pkgs.nixos-rebuild.override { nix = config.nix.package.out; };
+      nixos-rebuild-inhibit = pkgs.writeShellScriptBin "nixos-rebuild" ''
+        exec ${config.systemd.package}/bin/systemd-inhibit --what=shutdown:sleep --mode=delay \
+          --who="NixOS rebuild" \
+          --why="NixOS must finish rebuilding configuration or work would be lost." \
+          -- ${nixos-rebuild}/bin/nixos-rebuild "$@"
+        '';
+    in mkOverride 20 nixos-rebuild-inhibit;
+
+    environment.systemPackages = [
+      (hiPrio config.system.build.nixos-rebuild)
+    ];
+    
     systemd.services.nixos-upgrade = {
       unitConfig = {
         ConditionCPUPressure = "user.slice:15%";
