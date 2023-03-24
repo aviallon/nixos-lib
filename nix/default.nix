@@ -1,0 +1,6 @@
+{ config, ... }:
+{
+  imports = [
+    ./nix.nix
+  ];
+}

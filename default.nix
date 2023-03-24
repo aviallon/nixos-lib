@@ -2,7 +2,7 @@
 {
   imports = [
     ./general.nix
-    ./nix.nix
+    ./nix
     ./boot.nix
     ./desktop
     ./home-manager.nix
