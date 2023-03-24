@@ -15,7 +15,7 @@
     ./laptop.nix
     ./power.nix
     ./overlays.nix
-    ./optimizations.nix
+    ./optimizations
     ./non-persistence.nix
   ];
 }

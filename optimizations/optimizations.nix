@@ -160,7 +160,7 @@ in
   };
 
   config = mkIf cfg.enable {
-    nixpkgs.overlays = mkBefore [
+    nixpkgs.overlays = mkAfter [
       (self: super: {
         fastStdenv = super.overrideCC super.gccStdenv (super.buildPackages.gcc_latest.overrideAttrs (old:
           let
@@ -194,6 +194,12 @@ in
           lto = true;
           extraCFlags = cfg.extraCompileFlags;
         } super.mesa;
+        optipngOptimized = optimizePkg {
+          level = "unsafe";
+          lto = true;
+          recursive = 1;
+          parallelize = generalCfg.cores;
+        } super.optipng;
       })
     ];
   };
