@@ -72,14 +72,6 @@ in
       programs.bash.enable = mkDefault true;
       qt.enable = mkDefault true;
       services.kdeconnect.enable = mkDefault true;
-      programs.powerline-go = {
-        enable = mkDefault true;
-        modules = [ "host" "ssh" "cwd" "gitlite" "jobs" "exit" ];
-        #modulesRight = [ "venv" "git" ];
-        newline = mkDefault true;
-      };
-
-      # nixpkgs.config.allowUnfree = mkDefault true;
 
       imports = [
         (import (getUserCfgPath u) {
