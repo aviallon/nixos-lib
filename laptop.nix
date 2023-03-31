@@ -35,6 +35,11 @@ in {
       pcie_aspm = mkIf cfg.tweaks.pcieAspmForce "force";
     };
 
+    systemd.services.nixos-upgrade = {
+      unitConfig = {
+        ConditionACPower = true;
+      };
+    };
 
 
     systemd.services.aspm-force-enable = let
