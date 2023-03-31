@@ -145,7 +145,7 @@ in {
       serviceConfig = {
         RemainAfterExit = true;
       };
-      wantedBy = [ "multi-user.target" "ac-power.target" ];
+      wantedBy = [ "ac-power.target" ];
       description = "Set power limit of Intel CPUs with supported firmware. AC mode.";
       partOf = [ "ac-power.target" ];
       enable = (cfg.powerLimit.enable || cfg.temperature.enable) && (generalCfg.cpuVendor == "intel");
@@ -157,10 +157,13 @@ in {
         + optionalString (! isNull cfg.powerLimit.battery.cpuBoost ) " --power-limit-short ${toString cfg.powerLimit.battery.cpuBoost} 0.1"
         + optionalString (! isNull cfg.temperature.battery.cpu ) " --temp ${toString cfg.temperature.battery.cpu}"
       ;
+      unitConfig = {
+        ConditionACPower = false;
+      };
       serviceConfig = {
         RemainAfterExit = true;
       };
-      wantedBy = [ "multi-user.target" "battery-power.target" ];
+      wantedBy = [ "battery-power.target" ];
       description = "Set power limit of Intel CPUs with supported firmware. Battery mode.";
       partOf = [ "battery-power.target" ];
       enable = (cfg.powerLimit.enable || cfg.temperature.enable) && (generalCfg.cpuVendor == "intel");
