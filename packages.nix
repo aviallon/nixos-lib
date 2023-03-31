@@ -10,7 +10,6 @@ in
   imports = [
     ./programs
     ./overlays.nix
-    ./packages/unstable.nix
     ./packages/flatpak.nix
     (mkRenamedOptionModule [ "aviallon" "programs" "compileFlags" ] [ "aviallon" "optimizations" "extraCompileFlags" ])
   ];

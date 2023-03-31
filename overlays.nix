@@ -1,7 +1,8 @@
-{config, pkgs, options, lib, ...}:
+{config, pkgs, options, lib, nixpkgs-unstable, ...}:
 with lib;
 let
   cfg = config.aviallon.overlays;
+  unstable = nixpkgs-unstable;
 in
 {
   options.aviallon.overlays = {
