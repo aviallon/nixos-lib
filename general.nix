@@ -119,12 +119,6 @@ in
     ];
 
 
-    nixpkgs.localSystem.system = builtins.currentSystem;
-    nixpkgs.localSystem.platform  = lib.systems.platforms.pc // {
-      gcc.arch = cfg.cpuArch;
-      gcc.tune = cfg.cpuTune;
-    };
-
     # zram is so usefull, we should always have it enabled.
     zramSwap = {
       enable = true;
