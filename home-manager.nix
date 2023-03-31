@@ -1,4 +1,4 @@
-{config, pkgs, lib, utils, ...}:
+{config, pkgs, lib, utils, home-manager, ...}:
 with lib;
 let
   cfg = config.aviallon.home-manager;
@@ -8,12 +8,7 @@ let
   userCfg = u: config.users.users.${u};
   getUserCfgPath = u: "${(userCfg u).home}/.config/nixpkgs/home.nix";
 
-  homeManager = fetchGit {
-    url = "https://github.com/nix-community/home-manager";
-    ref = "release-22.05";
-  };
-
-  homeManagerNixos = import "${homeManager}/nixos" {
+  homeManagerNixos = home-manager.nixosModules.home-manager {
     inherit config;
     inherit pkgs;
     inherit lib;
@@ -72,18 +67,6 @@ in
       programs.bash.enable = mkDefault true;
       qt.enable = mkDefault true;
       services.kdeconnect.enable = mkDefault true;
-
-      imports = [
-        (import (getUserCfgPath u) {
-          config = config.home-manager;
-          pkgs = (import <nixpkgs> {
-            config = (hmUserCfg u).nixpkgs.config;
-            # overlays = ifEnable ((hmUserCfg u).nixpkgs ? overlays) (hmUserCfg u).nixpkgs.overlays;
-          });
-          inherit lib;
-        })
-      ];
-            
     });
   };
 }
