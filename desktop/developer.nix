@@ -18,6 +18,7 @@ in {
       hwloc
       bind
       git-cola
+      gitFull
       virt-manager-qt
       qtemu
       parted
