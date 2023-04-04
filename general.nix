@@ -108,6 +108,19 @@ in
       enable = true;
       enableSSHSupport = true;
     };
+    
+    systemd.user.services.gpg-agent = let
+      pinentrySwitcher = pkgs.callPackage ./packages/pinentry.nix {};
+      cfg = config.programs.gnupg;
+    in {
+      restartTriggers = [ pinentrySwitcher ];
+      restartIfChanged = true;
+    
+      serviceConfig.ExecStart = [ "" ''
+        ${cfg.package}/bin/gpg-agent --supervised \
+          --pinentry-program ${pinentrySwitcher}/bin/pinentry
+        '' ];
+    };
 
     documentation.man.generateCaches = true;
 
