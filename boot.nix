@@ -105,10 +105,16 @@ in {
     
     efi = mkOption rec {
       description = "Use EFI bootloader";
-      default = builtins.pathExists "/sys/firmware/efi";
-      example = !default;
-      type = types.bool;
+      example = true;
+      type = with types; bool;
     };
+    legacy = mkOption rec {
+      description = "Use legacy bootloader";
+      default = !cfg.efi;
+      example = true;
+      type = with types; bool;
+    };
+    
     configurationLimit = mkOption {
       description = "Maximum number of generations in the boot menu";
       default = 30;
@@ -138,11 +144,18 @@ in {
     };
   };
 
-  config = {
-    boot.kernelParams = toCmdlineList cfg.cmdline;
-  } // (mkIf cfg.enable {
-    boot.kernelParams = toCmdlineList cfg.cmdline;
+  config = mkMerge [
+  {
+    assertions = [
+      { assertion = cfg.efi -> !cfg.legacy;
+        message = "exactly one of aviallon.boot.efi and aviallon.boot.legacy must be set";
+      }
+    ];
 
+    boot.kernelParams = toCmdlineList cfg.cmdline;
+  } 
+  (mkIf cfg.enable {
+  
     hardware.enableAllFirmware = allowUnfree;
     hardware.enableRedistributableFirmware = true;
 
@@ -196,5 +209,6 @@ in {
         efi.canTouchEfiVariables = mkDefault true;
       };
     };
-  });
+  })
+  ];
 }
