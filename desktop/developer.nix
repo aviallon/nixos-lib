@@ -18,7 +18,6 @@ in {
       hwloc
       bind
       git-cola
-      gitFull
       virt-manager-qt
       qtemu
       parted
@@ -33,6 +32,8 @@ in {
 
       amdctl
     ];
+
+    programs.git.package = pkgs.gitFull;
 
     documentation = {
       dev.enable = true;
