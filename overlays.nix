@@ -87,7 +87,7 @@ in
           ];
         });
 
-        ffmpeg-full = let
+        myFFmpeg = let
           withLto = super.ffmpeg-full.override { enableLto = false; rav1e = self.rav1e; };
           withTensorflow = withLto.overrideAttrs (old: {
             CFLAGS = (old.CFLAGS or "") + " -march=${config.aviallon.general.cpuArch}";

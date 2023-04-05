@@ -9,7 +9,7 @@ let
 in {
   config = mkIf (cfg.enable && !generalCfg.minimal) {
     environment.systemPackages = with pkgs; [
-      ffmpeg-full
+      myFFmpeg
       krita
       obs-studio
       scribus
