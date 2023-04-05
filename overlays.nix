@@ -69,9 +69,8 @@ in
 
         opensshOptimized = super.opensshOptimized or super.openssh;
 
-
         xwayland = super.xwayland.overrideAttrs (old: {
-          buildInputs = old.buildInputs or [] ++ [ super.makeWrapper ];
+          nativeBuildInputs = old.nativeBuildInputs or [] ++ [ super.makeWrapper ];
           postInstall = old.postInstall or "" + ''
             # Force EGL Stream support
             wrapProgram $out/bin/Xwayland --add-flags "-eglstream"
