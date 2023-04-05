@@ -135,10 +135,11 @@ in
       default = [ # Broken
                   "cmocka" "libkrb5" "libidn2" "tpm2-tss" "libxcrypt"
                   "libomxil-bellagio" "wayland" "wayland-protocols"
-                  "openssl" "libXt"
+                  "openssl" "libXt" "intel-media-sdk"
+                  "zlib"
 
                   # Very slow
-                  "llvm" "clang" "clang-wrapper" "valgrind" "rustc"
+                  "llvm" "clang" "clang-wrapper" "valgrind" "rustc" "tensorflow"
                 ];
       example = [ "bash" ];
       description = "Blacklist specific packages from optimizations";
