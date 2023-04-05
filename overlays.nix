@@ -1,8 +1,7 @@
-{config, pkgs, options, lib, nixpkgs-unstable, ...}:
+{config, pkgs, options, lib, ...}:
 with lib;
 let
   cfg = config.aviallon.overlays;
-  unstable = nixpkgs-unstable;
 in
 {
   options.aviallon.overlays = {
@@ -100,6 +99,9 @@ in
         in withTensorflow;
 
         amdctl = super.callPackage ./packages/amdctl.nix {};
+
+        # Use bleeding-edge linux firmware
+        linux-firmware = super.unstable.linux-firmware;
 
         myFirefox = (import ./packages/firefox.nix { pkgs = self; inherit lib; });
       })
