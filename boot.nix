@@ -26,7 +26,7 @@ let
       archConfigMap = {
         "k8" = "K8"; "opteron" = "K8"; "athlon64" = "K8"; "athlon-fx" = "K8";
         "k8-sse3" = "K8SSE3"; "opteron-sse3" = "K8SSE3"; "athlon64-sse3" = "K8SSE3";
-        "znver1" = "ZEN"; "znver2" = "ZEN2"; "znver3" = "ZEN3";
+        "znver1" = "ZEN"; "znver2" = "ZEN2"; "znver3" = "ZEN3"; "znver4" = "ZEN3";
         "bdver1" = "BULLDOZER"; "bdver2" = "PILEDRIVER"; "bdver3" = "STEAMROLLER"; "bdver4" = "EXCAVATOR";
         "barcelona" = "BARCELONA"; "amdfam10" = "BARCELONA";
         "btver1" = "BOBCAT"; "btver2" = "JAGUAR";
