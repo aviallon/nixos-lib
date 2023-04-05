@@ -201,6 +201,11 @@ in
           recursive = 1;
           parallelize = generalCfg.cores;
         } super.optipng;
+        myFFmpeg = optimizePkg {
+          level = "normal";
+          lto = false;
+          recursive = 1;
+        } super.myFFmpeg;
       })
     ];
   };

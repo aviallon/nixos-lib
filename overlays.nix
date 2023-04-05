@@ -88,11 +88,9 @@ in
         });
 
         myFFmpeg = let
-          withLto = super.ffmpeg-full.override { enableLto = false; rav1e = self.rav1e; };
-          withTensorflow = withLto.overrideAttrs (old: {
-            CFLAGS = (old.CFLAGS or "") + " -march=${config.aviallon.general.cpuArch}";
-            LDFLAGS = (old.LDFLAGS or "") + " -march=${config.aviallon.general.cpuArch}";
-            buildInputs = (old.buildInputs or []) ++ [ super.libtensorflow-bin ];
+          withUnfree = super.unstable.ffmpeg-full.override { withUnfree = true; };
+          withTensorflow = withUnfree.overrideAttrs (old: {
+            buildInputs = (old.buildInputs or []) ++ [ super.libtensorflow ];
             configureFlags = (old.configureFlags or []) ++ [ "--enable-libtensorflow" ];
           });
         in withTensorflow;
@@ -121,6 +119,8 @@ in
       "unrar" "ark"
       "chromium-unwrapped" "chrome-widevine-cdm"
       "ungoogled-chromium" "chromium" # because of widevine
+
+      "ffmpeg-full" # Because of unfree codecs
     ];
   }; 
 }
