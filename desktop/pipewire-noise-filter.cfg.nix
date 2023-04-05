@@ -10,7 +10,7 @@ writeText "pipewire-noise-filter.cfg"  ''
 # start with pipewire -c filter-chain/source-rnnoise.conf
 #
 context.properties = {
-    log.level        = 0
+    log.level        = 1
 }
 
 context.spa-libs = {
