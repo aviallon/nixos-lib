@@ -24,6 +24,7 @@
       fetch.negotiationAlgorithm = "skipping";
       fetch.parallel = config.aviallon.general.cpuCores;
       gpg.program = "${pkgs.gnupg}/bin/gpg";
+      format.pretty = "format:%C(yellow)%H (%t)%Creset %Cblue%aN (%cN)%Creset%Cred% G?%Creset - %Cgreen%ar%Creset %d %n    %s%n";
     };
   };
 }
