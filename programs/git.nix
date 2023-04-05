@@ -15,6 +15,7 @@
       commit.gpgSign = lib.mkDefault true;
       diff = {
         algorithm = "histogram";
+        renames = true;
       };
       feature = {
         manyFiles = true;
