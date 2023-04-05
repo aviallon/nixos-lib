@@ -21,7 +21,7 @@
       };
       fetch.prune = true;
       fetch.negotiationAlgorithm = "skipping";
-      fetch.parallel = 6;
+      fetch.parallel = config.aviallon.general.cpuCores;
       gpg.program = "${pkgs.gnupg}/bin/gpg";
     };
   };
