@@ -148,6 +148,7 @@ in
     overrideMap = mkOption {
       type = with types; attrsOf package;
       default = {
+        stdenv = pkgs.fastStdenv;
       };
       example = literalExpression
         ''
