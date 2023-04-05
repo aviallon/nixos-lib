@@ -18,7 +18,7 @@ in {
 
       jamesdsp # Audio post-processing
 
-      #nur.repos.wolfangaukang.vdhcoapp
+      nur.repos.wolfangaukang.vdhcoapp
     ];
 
 
