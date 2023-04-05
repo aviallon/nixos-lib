@@ -104,32 +104,8 @@ in
     # Some programs need SUID wrappers, can be configured further or are
     # started in user sessions.
     programs.mtr.enable = true;
-    programs.gnupg.agent = {
-      enable = true;
-      enableSSHSupport = true;
-    };
     
-    systemd.user.services.gpg-agent = let
-      pinentrySwitcher = pkgs.callPackage ./packages/pinentry.nix {};
-      cfg = config.programs.gnupg;
-    in {
-      restartTriggers = [ pinentrySwitcher ];
-      restartIfChanged = true;
-    
-      serviceConfig.ExecStart = [ "" ''
-        ${cfg.package}/bin/gpg-agent --supervised \
-          --pinentry-program ${pinentrySwitcher}/bin/pinentry
-        '' ];
-    };
-
     documentation.man.generateCaches = true;
-
-
-    environment.shellInit = concatStringsSep "\n" [
-      ''export GPG_TTY="$(tty)"''
-      ''gpg-connect-agent /bye''
-      ''export SSH_AUTH_SOCK="/run/user/$UID/gnupg/S.gpg-agent.ssh"''
-    ];
 
 
     # zram is so usefull, we should always have it enabled.

@@ -183,14 +183,6 @@ in {
       };
     };
 
-    programs.gnupg = {
-      agent.enable = true;
-      dirmngr.enable = true;
-      agent.pinentryFlavor = "curses";
-      agent.enableSSHSupport = true;
-      agent.enableExtraSocket = true;
-      agent.enableBrowserSocket = true;
-    };
     programs.ssh.startAgent = false;
 
     # SmartCards

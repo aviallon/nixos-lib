@@ -2,5 +2,6 @@
 {
   imports = [
     ./jupyterhub.nix
+    ./gnupg.nix
   ];
 }
