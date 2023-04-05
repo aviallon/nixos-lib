@@ -78,6 +78,11 @@ in {
       "MESA_GLSL_CACHE_DIR" = cfg.graphics.shaderCache.path + "/mesa";
     };
 
+    programs.steam.package = pkgs.steam.override {
+      extraPkgs = pkgs: [
+        pkgs.gamescope
+      ];
+    };
 
     aviallon.programs.allowUnfreeList = [
       "steam" "steam-original" "steam-runtime" "steam-run"
