@@ -59,9 +59,6 @@ in {
 
     xdg.portal = {
       enable = mkDefault true;
-      extraPortals = with pkgs; [
-        xdg-desktop-portal-gtk
-      ];
     };
 
   };
