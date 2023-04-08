@@ -3,38 +3,6 @@ with lib;
 let
   cfg = config.aviallon.general;
   desktopCfg = config.aviallon.desktop;
-  buildUserPubKeyFile = ./nix/id_builder.pub;
-  buildUserKeyFile = ./nix/id_builder;
-
-  getSpeed = cores: threads: cores + (threads - cores) / 2;
-
-  mkBuildMachine = {
-    hostName,
-    cores,
-    systems ? [ "x86_64-linux" ] ,
-    threads ? (cores * 2),
-    features ? [ ],
-    x86ver ? 1 ,
-    ...
-  }@attrs: let
-    speedFactor = getSpeed cores threads;
-  in {
-    inherit hostName speedFactor;
-    systems = systems
-      ++ optional (any (s: s == "x86_64-linux") systems) "i686-linux"
-    ;
-    sshUser = "builder";
-    sshKey = toString buildUserKeyFile;
-    maxJobs = myLib.math.log2 cores;
-    supportedFeatures = [ "kvm" "benchmark" ]
-      ++ optional (speedFactor > 8) "big-parallel"
-      ++ optional (x86ver >= 2) "gccarch-x86-64-v2"
-      ++ optional (x86ver >= 3) "gccarch-x86-64-v3"
-      ++ optional (x86ver >= 4) "gccarch-x86-64-v4"
-      ++ features
-    ;
-    
-  };
 in
 {
   imports = [
@@ -117,39 +85,6 @@ in
     };
 
     environment.noXlibs = mkIf (cfg.minimal && (!desktopCfg.enable)) true;
-
-    nix.buildMachines = []
-      # luke-skywalker-nixos
-      ++ optional (config.networking.hostName != "luke-skywalker-nixos") (mkBuildMachine {
-        hostName = "2a01:e0a:18e:8670:ae71:8e51:19af:91a4";
-        cores = 16;
-        threads = 32;
-        x86ver = 3;
-      })
-      ++ optional false (mkBuildMachine {
-        hostName = "cachan.lesviallon.fr";
-        cores = 6;
-        threads = 6;
-      })
-    ;
-
-    programs.ssh.extraConfig = ''
-      Host cachan.lesviallon.fr
-        Port 52222
-    '';
-    
-    users.users.builder = {
-      isSystemUser = true;
-      group = "builder";
-      hashedPassword = mkForce null; # Must not have a password!
-      openssh.authorizedKeys.keys = [
-        (readFile buildUserPubKeyFile)
-      ];
-      shell = pkgs.bashInteractive;
-    };
-    users.groups.builder = {};
-    nix.settings.trusted-users = [ "builder" ];
-    nix.distributedBuilds = mkDefault true;
   };
 
 }
