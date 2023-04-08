@@ -36,7 +36,7 @@ in {
     };
 
     environment.systemPackages = with pkgs; with libsForQt5; [
-      skanlite
+      skanpage
       packagekit-qt
       discover
       akonadi
