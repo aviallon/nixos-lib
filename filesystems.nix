@@ -76,16 +76,16 @@ in
 
     aviallon.filesystems.udevRules = mkBefore (concatLists [
       (optional (!(builtins.isNull cfg.hddScheduler))
-        ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
+        ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
       )
       (optional (!(builtins.isNull cfg.slowFlashScheduler))
         ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]*|nvme[0-9]*n[0-9]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"''
       )
       (optional (!(builtins.isNull cfg.nvmeScheduler))
-        ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]*", ATTR{queue/scheduler}="${cfg.nvmeScheduler}"''
+        ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]", ATTR{queue/scheduler}="${cfg.nvmeScheduler}"''
       )
       (optional cfg.queuePriority
-        ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ATTR{device/ncq_prio_supported}=="1", ATTR{device/ncq_prio_enable}="1"''
+        ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]", ATTR{device/ncq_prio_supported}=="1", ATTR{device/ncq_prio_enable}="1"''
       )
     ]);
 
