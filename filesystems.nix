@@ -79,7 +79,30 @@ in
         ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
       )
       (optional (!(builtins.isNull cfg.slowFlashScheduler))
-        ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]*|nvme[0-9]*n[0-9]*|mmcblk[0-9]*", ATTR{queue/rotational}=="0", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"''
+        ''
+        SUBSYSTEM!="block", GOTO="end"
+        KERNEL!="sd[a-z]|nvme[0-9]*n[0-9]*|mmcblk[0-9]", GOTO="end"
+        ATTR{queue/rotational}!="0", GOTO="end"
+        
+        ACTION!="remove", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"
+
+        # If possible, disable back_seek_penalty as it is effectively null on SSDs
+        ACTION!="remove", TEST=="queue/iosched/back_seek_penalty", ATTR{queue/iosched/back_seek_penalty}="0"
+
+        # BEGIN: NCQ disabled
+          ACTION!="remove", ATTR{device/queue_depth}!="1", GOTO="no_ncq_end"
+
+          # Increase maximum requests in software queue
+          ACTION!="remove", ATTR{queue/nr_requests}="256"
+
+          # If possible, prefer throughput over latency
+          ACTION!="remove", TEST=="queue/iosched/low_latency", ATTR{queue/iosched/low_latency}="1"
+
+          LABEL="no_ncq_end"
+        # END: NCQ disabledf
+        
+        LABEL="end"
+        ''
       )
       (optional (!(builtins.isNull cfg.nvmeScheduler))
         ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]", ATTR{queue/scheduler}="${cfg.nvmeScheduler}"''
