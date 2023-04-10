@@ -46,6 +46,7 @@ in {
             dash-to-dock
             dash-to-dock-toggle
             dash-to-dock-animator
+            tray-icons-reloaded
           ])
         ;
         systemd.packages = with pkgs; [
@@ -53,6 +54,7 @@ in {
           gnomeExtensions.dash-to-dock
           gnomeExtensions.dash-to-dock-animator
           gnomeExtensions.dash-to-dock-toggle
+          gnomeExtensions.tray-icons-reloaded
         ];
     };
 }
