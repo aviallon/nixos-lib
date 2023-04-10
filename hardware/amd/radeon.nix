@@ -17,7 +17,7 @@ in {
     ];
 
     services.xserver.videoDrivers = [
-      "radeon"
+      "modesetting"
     ];
 
     environment.variables = {};
