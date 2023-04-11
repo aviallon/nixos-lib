@@ -34,6 +34,10 @@ in {
             enable = mkDefault true;
         };
 
+        programs.chromium.extensions = [
+          "gphhapmejobijbbhgpjhcjognlahblep" # Gnome Shell integration
+        ];
+
         environment.systemPackages = with pkgs; []
           ++ [
             guake
