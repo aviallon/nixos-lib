@@ -22,6 +22,10 @@ in {
         "${pkgs.plasma-browser-integration}/etc/chromium/native-messaging-hosts/org.kde.plasma.browser_integration.json";
     };
 
+    programs.chromium.extensions = [
+      "cimiefiiaegbelhefglklhhakcgmhkai" # Plasma Browser Integration
+    ];
+
     # Prevents blinking cursor
     services.xserver.displayManager.sddm = {
       enable = true;
@@ -34,6 +38,7 @@ in {
         };
       };
     };
+
 
     environment.systemPackages = with pkgs; with libsForQt5; [
       skanpage
