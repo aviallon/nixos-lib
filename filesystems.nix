@@ -119,6 +119,12 @@ in
     };
 
     boot.tmpOnTmpfs = true;
+    boot.tmpOnTmpfsSize =
+      let
+        hasSwap = length config.swapDevices > 0;
+      in
+        if hasSwap then "150%" else "75%"
+      ;
 
     services.smartd = {
       enable = mkDefault true;
