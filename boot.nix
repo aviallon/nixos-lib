@@ -150,6 +150,9 @@ in {
       { assertion = cfg.efi -> !cfg.legacy;
         message = "exactly one of aviallon.boot.efi and aviallon.boot.legacy must be set";
       }
+      { assertion = cfg.legacy -> cfg.useGrub;
+        message = "Using GRUB is mandatory for legacy BIOS";
+      }
     ];
 
     boot.kernelParams = toCmdlineList cfg.cmdline;
@@ -170,8 +173,6 @@ in {
       "lpj" = mkIf (cfg.loops_per_jiffies > 0) cfg.loops_per_jiffies;
 
     };
-
-    aviallon.boot.useGrub = mkIf (!cfg.efi) (mkForce true);
 
     boot = {
       initrd.kernelModules = [ ];
