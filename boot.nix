@@ -75,6 +75,8 @@ let
         else
           "${key}=${toCmdlineValue value}"
       ) set;
+
+  isXanmod = kernel: ! isNull (strings.match ".*(xanmod).*" kernel.modDirVersion);
   
   cfg = config.aviallon.boot;
   generalCfg = config.aviallon.general;
@@ -184,7 +186,7 @@ in {
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
         ++ optional cfg.rtGroupSched.enable customKernelPatches.enableRTGroupSched
         ++ optional cfg.energyModel.enable customKernelPatches.enableEnergyModel
-        ++ optional config.aviallon.optimizations.enable (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpuArch)
+        ++ optional (isXanmod cfg.kernel && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpuArch)
       ;
 
       loader.grub.enable = cfg.useGrub;
