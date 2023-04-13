@@ -22,6 +22,16 @@ let
         ENERGY_MODEL y
       '';
     };
+    amdClusterId = {
+      name = "cluster-id-amd";
+      patch = pkgs.fetchpatch {
+        url = "https://lkml.org/lkml/diff/2023/4/10/479/1";
+        hash = "sha256-bpe+iWYQldlGiIlWr4XPbIBPQBetEjfRKZ0Te2I14dk=";
+      };
+      extraConfig = ''
+        SCHED_CLUSTER y
+      '';
+    };
     optimizeForCPUArch = arch: let
       archConfigMap = {
         "k8" = "K8"; "opteron" = "K8"; "athlon64" = "K8"; "athlon-fx" = "K8";
@@ -104,6 +114,7 @@ in {
     kvdo.enable = mkEnableOption "dm-kvdo kernel module";
     rtGroupSched.enable = mkEnableOption "RT cgroups";
     energyModel.enable = mkEnableOption "Energy Model";
+    amdClusterId.enable = mkEnableOption "Energy Model";
     
     efi = mkOption rec {
       description = "Use EFI bootloader";
@@ -186,8 +197,10 @@ in {
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
         ++ optional cfg.rtGroupSched.enable customKernelPatches.enableRTGroupSched
         ++ optional cfg.energyModel.enable customKernelPatches.enableEnergyModel
+        ++ optional cfg.amdClusterId.enable customKernelPatches.amdClusterId
         ++ optional (isXanmod cfg.kernel && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpuArch)
       ;
+
 
       loader.grub.enable = cfg.useGrub;
       loader.grub = {
