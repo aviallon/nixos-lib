@@ -200,7 +200,6 @@ in {
       loader.systemd-boot = {
         enable = cfg.efi && (!cfg.useGrub);
         configurationLimit = cfg.configurationLimit; 
-        consoleMode = "auto";
       };
 
       loader.generic-extlinux-compatible = {
