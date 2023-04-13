@@ -29,7 +29,8 @@ in
         exec ${config.systemd.package}/bin/systemd-inhibit --what=shutdown:sleep --mode=block \
           --who="NixOS rebuild" \
           --why="NixOS must finish rebuilding configuration or work would be lost." \
-          -- ${nixos-rebuild}/bin/nixos-rebuild "$@"
+          -- \
+            ${pkgs.coreutils}/bin/nice -n 19 -- ${nixos-rebuild}/bin/nixos-rebuild "$@"
         '';
     in mkOverride 20 nixos-rebuild-inhibit;
 
