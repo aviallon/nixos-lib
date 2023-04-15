@@ -5,6 +5,7 @@ let
   desktopCfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
 
+  addAttrs = myLib.optimizations.addAttrs;
   _trace = if cfg.trace then (traceValSeqN 2) else (x: x);
 
   _optimizeAttrs = 
@@ -36,7 +37,6 @@ let
       )
   );
 
-  addAttrs = pkg: attrs: pkg.overrideAttrs (old: _trace (myLib.attrsets.mergeAttrsRecursive old attrs) );
 
   recurseOverrideCflags = pkg: { cflags ? compilerFlags, _depth ? 0 }:
     let
