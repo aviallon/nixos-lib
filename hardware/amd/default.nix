@@ -33,6 +33,7 @@ in {
     hardware.opengl = {
       enable = true;
       package = with pkgs; myMesa.drivers;
+      package32 = with pkgs; myMesa.drivers;
       extraPackages = with pkgs; mkIf (!cfg.useProprietary) (mkAfter [
         (hiPrio myMesa)
       ]);
