@@ -191,7 +191,7 @@ in {
       initrd.kernelModules = [ ];
       initrd.availableKernelModules = [ "ehci_pci" ];
 
-      kernelPackages = pkgs.linuxPackagesFor cfg.kernel;
+      kernelPackages = mkOverride 2 (pkgs.linuxPackagesFor cfg.kernel);
 
       kernelPatches = []
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
