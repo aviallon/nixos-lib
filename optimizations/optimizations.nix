@@ -119,7 +119,23 @@ in {
             lto = false;
             recursive = 1;
           } super.myFFmpeg;
+
+        man-db_optimized = optimizePkg {
+            level = "moderately-unsafe";
+            lto = true;
+            recursive = 1;
+          } super.man-db;
+
+        mandoc_optimized = optimizePkg {
+            level = "moderately-unsafe";
+            lto = true;
+            recursive = 1;
+          } super.mandoc;
       })
     ];
+
+
+    documentation.man.man-db.package = pkgs.man-db_optimized;
+    documentation.man.mandoc.package = pkgs.mandoc_optimized;
   };
 }
