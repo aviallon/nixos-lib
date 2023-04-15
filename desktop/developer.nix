@@ -66,7 +66,7 @@ in {
     };
 
     environment.extraOutputsToInstall = [
-      "doc" "info" "devdoc"
+      "doc" "info" "dev" "debug" "static"
     ];
 
     aviallon.programs.allowUnfreeList = [
