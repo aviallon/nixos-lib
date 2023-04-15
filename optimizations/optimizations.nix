@@ -15,38 +15,6 @@ let
       blacklist ? cfg.blacklist,
       overrideMap ? cfg.overrideMap,
       ...
-
-
-  recurseOverrideCflags = pkg: { cflags ? compilerFlags, _depth ? 0 }:
-    let
-      deps = pkg.buildInputs or [];
-      depsOverriden = forEach deps (_pkg: recurseOverrideCflags _pkg {
-        inherit cflags;
-        _depth = _depth + 1;
-      });
-    in if isNull pkg then
-      warn "pkg is null" pkg
-    else if (hasAttr "overrideAttrs" pkg) then
-      info "Optimizing '${getName pkg}' at depth ${toString _depth}"
-      (pkg.overrideAttrs (old:
-        let
-          _cflags = 
-            if (! hasAttr "CFLAGS" old) then
-              []
-            else if isList old.CFLAGS then 
-              old.CFLAGS
-            else
-              [ old.CFLAGS ]
-            ;
-        in {
-          buildInputs = depsOverriden;
-          CFLAGS = _cflags ++ cflags;
-        }
-      ))
-    else
-      warn "Couldn't optimize '${getName pkg}'" pkg
-  ;
-
     }@attrs: pkg:
       myLib.optimizations.optimizePkg pkg ({
         inherit cpuCores cpuTune cpuArch extraCFlags blacklist overrideMap;
