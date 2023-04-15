@@ -25,6 +25,10 @@ in {
       cpu-x
       nix-index
       lm_sensors
+      gh # GitHub CLI
+
+      linux-manual
+      linuxHeaders
 
       libsForQt5.kdevelop
       jetbrains.clion
