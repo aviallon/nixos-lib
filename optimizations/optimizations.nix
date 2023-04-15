@@ -184,29 +184,37 @@ in
       })
     
       (self: super: {
-        opensshOptimized = optimizePkg { level = "very-unsafe"; recursive = 0; lto = true; } super.openssh;
+        opensshOptimized = optimizePkg {
+            level = "very-unsafe";
+            recursive = 0;
+            lto = true;
+          } super.openssh;
         htop = optimizePkg {
-            level = "unsafe";
+            level = "slower";
             lto = true;
           } super.htop;
-        nano = optimizePkg {level = "unsafe"; recursive = 99; } super.nano;
+        nano = optimizePkg {
+            level = "slower";
+            recursive = 99;
+            lto = true;
+          } super.nano;
         mesaOptimized = optimizePkg {
-          level = "slower";
-          recursive = 1;
-          lto = true;
-          extraCFlags = cfg.extraCompileFlags;
-        } super.mesa;
+            level = "slower";
+            recursive = 1;
+            lto = true;
+            extraCFlags = cfg.extraCompileFlags;
+          } super.mesa;
         optipngOptimized = optimizePkg {
-          level = "unsafe";
-          lto = true;
-          recursive = 1;
-          parallelize = generalCfg.cores;
-        } super.optipng;
+            level = "unsafe";
+            lto = true;
+            recursive = 1;
+            parallelize = generalCfg.cores;
+          } super.optipng;
         myFFmpeg = optimizePkg {
-          level = "normal";
-          lto = false;
-          recursive = 1;
-        } super.myFFmpeg;
+            level = "normal";
+            lto = false;
+            recursive = 1;
+          } super.myFFmpeg;
       })
     ];
   };
