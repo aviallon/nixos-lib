@@ -6,36 +6,15 @@ let
   generalCfg = config.aviallon.general;
 
   addAttrs = myLib.optimizations.addAttrs;
-  _trace = if cfg.trace then (traceValSeqN 2) else (x: x);
 
-  _optimizeAttrs = 
-    {
-      lto ? false , 
-      go ? false , 
-      cmake ? false , 
-      cpuArch ? generalCfg.cpuArch , 
-      cpuTune ? generalCfg.cpuTune ,
-      extraCFlags ? cfg.extraCompileFlags ,
-      cpuCores ? generalCfg.cores ,
+  optimizePkg = {
+      cpuCores ? generalCfg.cores,
+      cpuArch ? generalCfg.cpuArch,
+      cpuTune ? generalCfg.cpuTune,
+      extraCFlags ? cfg.extraCompileFlags,
+      blacklist ? cfg.blacklist,
+      overrideMap ? cfg.overrideMap,
       ...
-    }@attrs:
-      _trace (
-        (myLib.optimizations.makeOptimizationFlags ({
-          inherit lto go cpuArch cpuTune extraCFlags cpuCores;
-        } // attrs))
-        // (optionalAttrs cmake {
-          preConfigure = ''
-            cmakeFlagsArray+=(
-              "-DCMAKE_CXX_FLAGS=$CXXFLAGS"
-              "-DCMAKE_C_FLAGS=$CFLAGS"
-            )
-          '';
-        })
-        // (optionalAttrs go {
-          nativeBuildInputs = [ pkgs.gccgo ];
-        }
-      )
-  );
 
 
   recurseOverrideCflags = pkg: { cflags ? compilerFlags, _depth ? 0 }:
@@ -68,54 +47,11 @@ let
       warn "Couldn't optimize '${getName pkg}'" pkg
   ;
 
-  
-  optimizePkg = {level ? "normal" , recursive ? 0 , _depth ? 0 , ... }@attrs: pkg:
-    if (hasAttr "overrideAttrs" pkg) then
-      let
-        optimizedAttrs = _optimizeAttrs (attrs // {inherit level; go = (hasAttr "GOARCH" pkg); });
-        _nativeBuildInputs = filter (p: ! isNull p) (pkg.nativeBuildInputs or []);
-        _nativeBuildInputsOverriden = forEach _nativeBuildInputs (_pkg:
-          let
-            _pkgName = getName _pkg;
-            hasOverride = any (n: n == _pkgName) (attrNames cfg.overrideMap);
-            _overridePkg = if hasOverride then cfg.overrideMap.${_pkgName} else null;
-          in
-            if hasOverride then
-              warn "Replacing build dependency '${_pkgName}' by '${getName _overridePkg}'" _overridePkg
-            else
-              _pkg
-        );
-              
-        _buildInputs = filter (p: ! isNull p ) (pkg.buildInputs or []);
-        _buildInputsOverriden = forEach _buildInputs (_pkg:
-          if (any (n: n == getName _pkg) cfg.blacklist) then
-            warn "Skipping blacklisted '${getName _pkg}'" _pkg
-          else optimizePkg ({}
-                // attrs
-                // {
-                  inherit level recursive;
-                  parallelize = null;
-                  _depth = _depth + 1;
-                }) _pkg
-        );
-        _pkg =
-          if (recursive > _depth) then
-            pkg.overrideAttrs (old: {}
-              // {
-                buildInputs = _buildInputsOverriden;
-                nativeBuildInputs = _nativeBuildInputsOverriden;
-              }
-              // optionalAttrs (hasAttr "CFLAGS" old) {
-                CFLAGS = if (! isList old.CFLAGS ) then [ old.CFLAGS ] else old.CFLAGS;
-              }
-            )
-          else pkg;
-      in trace "Optimized ${getName pkg} with overrideAttrs at level '${level}' (depth: ${toString _depth})" (addAttrs _pkg optimizedAttrs)
-    else
-      warn "Can't optimize ${getName pkg} (depth: ${toString _depth})" pkg
-  ;
-in
-{
+    }@attrs: pkg:
+      myLib.optimizations.optimizePkg pkg ({
+        inherit cpuCores cpuTune cpuArch extraCFlags blacklist overrideMap;
+      } // attrs);
+in {
   options.aviallon.optimizations = {
     enable = mkOption {
       default = true;
