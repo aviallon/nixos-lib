@@ -86,6 +86,7 @@ in
     ;
 
     nix.settings.builders-use-substitutes = true;
+    nix.settings.substitute = true;
     nix.settings.experimental-features = []
       ++ optionals ( strings.versionOlder "2.4" pkgs.nix.version ) [ "nix-command" "flakes" ];
 
