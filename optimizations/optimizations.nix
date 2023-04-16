@@ -8,9 +8,9 @@ let
   addAttrs = myLib.optimizations.addAttrs;
 
   optimizePkg = {
-      cpuCores ? generalCfg.cores,
-      cpuArch ? generalCfg.cpuArch,
-      cpuTune ? generalCfg.cpuTune,
+      cpuCores ? generalCfg.cpu.threads,
+      cpuArch ? generalCfg.cpu.arch,
+      cpuTune ? generalCfg.cpu.tune,
       extraCFlags ? cfg.extraCompileFlags,
       blacklist ? cfg.blacklist,
       overrideMap ? cfg.overrideMap,
