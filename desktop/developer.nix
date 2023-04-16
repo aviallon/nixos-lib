@@ -25,6 +25,7 @@ in {
       cpu-x
       nix-index
       lm_sensors
+      ethtool
       gh # GitHub CLI
 
       linux-manual man-pages man-pages-posix
