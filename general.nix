@@ -10,6 +10,7 @@ in
     (mkRenamedOptionModule [ "aviallon" "general" "cpuVendor" ] [ "aviallon" "general" "cpu" "vendor" ])
     (mkRenamedOptionModule [ "aviallon" "general" "cpuArch" ] [ "aviallon" "general" "cpu" "arch" ])
     (mkRenamedOptionModule [ "aviallon" "general" "cpuTune" ] [ "aviallon" "general" "cpu" "tune" ])
+    (mkRenamedOptionModule [ "aviallon" "general" "cores" ] [ "aviallon" "general" "cpu" "threads" ])
   ];
 
   options.aviallon.general = {
@@ -22,14 +23,14 @@ in
 
     minimal = mkEnableOption "minimal installation";
     
-    cores = mkOption {
-      default = null;
-      example = 4;
-      description = "Number of physical threads of the machine";
-      type = with types; nullOr ints.positive;
-    };
-
     cpu = {
+      threads = mkOption {
+        default = null;
+        example = 4;
+        description = "Number of physical threads of the machine";
+        type = with types; nullOr ints.positive;
+      };
+    
       vendor = mkOption {
         default = null;
         example = "amd";
