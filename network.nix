@@ -47,6 +47,12 @@ in
       };
     };
 
+    services.udev.extraRules = concatStringsSep "\n" [
+      (optionalString (!config.aviallon.laptop.enable) ''
+      ACTION=="add", SUBSYSTEM=="net", NAME=="enp*", RUN+="${pkgs.ethtool}/bin/ethtool -s $name wol gu"
+      '')
+    ];
+
     services.unbound.enable = (cfg.dns == "unbound");
 
     networking.networkmanager = {
