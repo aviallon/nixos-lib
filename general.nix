@@ -7,6 +7,9 @@ in
 {
   imports = [
     (mkRemovedOptionModule [ "aviallon" "general" "flakes" "enable" ] "Flakes are now enabled by default")
+    (mkRenamedOptionModule [ "aviallon" "general" "cpuVendor" ] [ "aviallon" "general" "cpu" "vendor" ])
+    (mkRenamedOptionModule [ "aviallon" "general" "cpuArch" ] [ "aviallon" "general" "cpu" "arch" ])
+    (mkRenamedOptionModule [ "aviallon" "general" "cpuTune" ] [ "aviallon" "general" "cpu" "tune" ])
   ];
 
   options.aviallon.general = {
@@ -26,24 +29,26 @@ in
       type = with types; nullOr ints.positive;
     };
 
-    cpuVendor = mkOption {
-      default = null;
-      example = "amd";
-      description = "Vendor of you CPU. Either AMD or Intel";
-      type = types.str;
-    };
+    cpu = {
+      vendor = mkOption {
+        default = null;
+        example = "amd";
+        description = "Vendor of you CPU. Either AMD or Intel";
+        type = types.str;
+      };
     
-    cpuArch = mkOption {
-      default = "x86-64";
-      example = "x86-64-v2";
-      description = "Set CPU arch used in overlays, ...";
-      type = types.str;
-    };
-    cpuTune = mkOption {
-      default = "generic";
-      example = "sandybridge";
-      description = "Set CPU tuning for compilers";
-      type = types.str;
+      arch = mkOption {
+        default = "x86-64";
+        example = "x86-64-v2";
+        description = "Set CPU arch used in overlays, ...";
+        type = types.str;
+      };
+      tune = mkOption {
+        default = "generic";
+        example = "sandybridge";
+        description = "Set CPU tuning for compilers";
+        type = types.str;
+      };
     };
     unsafeOptimizations = mkEnableOption "unsafe system tuning";
     debug = mkEnableOption "debug-specific configuration";
