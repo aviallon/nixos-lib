@@ -27,7 +27,8 @@ in {
       lm_sensors
       gh # GitHub CLI
 
-      linux-manual
+      linux-manual man-pages man-pages-posix
+      
       linuxHeaders
 
       libsForQt5.kdevelop
