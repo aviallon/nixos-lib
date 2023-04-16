@@ -69,10 +69,6 @@ in
 
     powerManagement.cpuFreqGovernor = mkDefault "schedutil";
 
-    # Some programs need SUID wrappers, can be configured further or are
-    # started in user sessions.
-    programs.mtr.enable = true;
-    
     # zram is so usefull, we should always have it enabled.
     zramSwap = {
       enable = true;
