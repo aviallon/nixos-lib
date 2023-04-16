@@ -26,7 +26,7 @@ in
     system.build.nixos-rebuild = let
       nixos-rebuild = pkgs.nixos-rebuild.override { nix = config.nix.package.out; };
       nixos-rebuild-inhibit = pkgs.writeShellScriptBin "nixos-rebuild" ''
-        exec ${config.systemd.package}/bin/systemd-inhibit --what=shutdown:sleep --mode=block \
+        exec ${config.systemd.package}/bin/systemd-inhibit --what=idle:shutdown --mode=block \
           --who="NixOS rebuild" \
           --why="NixOS must finish rebuilding configuration or work would be lost." \
           -- \
