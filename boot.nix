@@ -130,7 +130,7 @@ in {
     
     configurationLimit = mkOption {
       description = "Maximum number of generations in the boot menu";
-      default = 30;
+      default = 3;
       example = null;
       type = types.int;
     };

@@ -71,6 +71,8 @@ in {
       "doc" "info" "dev" "debug" "static"
     ];
 
+    aviallon.boot.configurationLimit = mkDefault 10;
+
     aviallon.programs.allowUnfreeList = [
       "tabnine" "clion"
       "Oracle_VM_VirtualBox_Extension_Pack" "virtualbox"
