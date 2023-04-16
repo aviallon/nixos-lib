@@ -79,7 +79,10 @@ in
     nix.package = mkIf (strings.versionOlder pkgs.nix.version "2.7") pkgs.nix_2_7;
 
     nix.settings.system-features = [ "big-parallel" "kvm" "benchmark" ]
-      ++ optional ( ! isNull generalCfg.cpuArch ) "gccarch-${generalCfg.cpuArch}"
+      ++ optional ( ! isNull generalCfg.cpu.arch ) "gccarch-${generalCfg.cpu.arch}"
+      ++ optional ( generalCfg.cpu.x86.level >= 2 ) "gccarch-x86-64-v2"
+      ++ optional ( generalCfg.cpu.x86.level >= 3 ) "gccarch-x86-64-v3"
+      ++ optional ( generalCfg.cpu.x86.level >= 4 ) "gccarch-x86-64-v4"
     ;
 
     nix.settings.builders-use-substitutes = true;

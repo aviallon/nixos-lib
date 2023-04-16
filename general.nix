@@ -38,7 +38,12 @@ in
       };
     
       arch = mkOption {
-        default = "x86-64";
+        default = 
+          if cfg.cpu.x86.level >= 2 then
+            "x86-64-v${toString cfg.cpu.x86.level}"
+          else
+            "x86-64"
+          ;
         example = "x86-64-v2";
         description = "Set CPU arch used in overlays, ...";
         type = types.str;
@@ -48,6 +53,15 @@ in
         example = "sandybridge";
         description = "Set CPU tuning for compilers";
         type = types.str;
+      };
+      
+      x86 = {
+        level = mkOption {
+          default = 1;
+          example = 3;
+          description = "Set supported x86-64 level";
+          type = with types; addCheck int (n: n >= 1 && n <= 4);
+        };
       };
     };
     unsafeOptimizations = mkEnableOption "unsafe system tuning";
