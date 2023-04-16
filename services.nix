@@ -51,7 +51,22 @@ in {
       permitRootLogin = mkDefault "prohibit-password";
       forwardX11 = mkDefault config.services.xserver.enable;
       openFirewall = true;
+      startWhenNeeded = true;
     };
+
+    systemd.services."ssh-inhibit-sleep@" = {
+      description = "Inhibit sleep when SSH connections are active";
+      bindsTo = [ "sshd@%i.service" ];
+      script = ''
+        exec ${pkgs.systemd}/bin/systemd-inhibit --mode block --what sleep \
+          --who "ssh session $1" \
+          --why "remote session still active" \
+          ${pkgs.coreutils}/bin/sleep infinity
+      '';
+      scriptArgs = "%I";
+      wantedBy = [ "sshd@.service" ];
+    };
+    
     programs.ssh.setXAuthLocation = config.services.xserver.enable;
     programs.ssh.forwardX11 = mkDefault config.services.xserver.enable;
     security.pam.services.sudo.forwardXAuth = mkDefault true; # Easier to start GUI programs as root
