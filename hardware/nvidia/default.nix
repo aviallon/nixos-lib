@@ -8,12 +8,12 @@ in {
     ./vgpu.nix
     ./proprietary.nix
     ./opensource.nix
+    ( mkRenamedOptionModule [ "aviallon" "hardware" "nvidia" "saveAllVram" ] [ "aviallon" "hardware" "nvidia" "proprietary" "saveAllVram" ] )
   ];
 
   options.aviallon.hardware.nvidia = {
     enable = mkEnableOption "enable Nvidia hardware config";
     useProprietary = mkEnableOption "nvidia proprietary drivers";
-    saveAllVram = mkEnableOption "back up all VRAM in /tmp before going to sleep. May reduce artifacts after resuming";
   };
 
   config = mkIf cfg.enable {

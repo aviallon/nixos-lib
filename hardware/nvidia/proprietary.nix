@@ -21,10 +21,14 @@ in {
         example = 28;
         type = types.int;
       };
+      saveAllVram = mkEnableOption "back up all VRAM in /var/tmp before going to sleep. May reduce artifacts after resuming";
     };
   };
   
   config = mkIf (cfg.enable && cfg.useProprietary) {
+
+    assertions = [];
+  
     boot.initrd.kernelModules = [
       "nvidia"
       "nvidia_drm"
@@ -44,8 +48,10 @@ in {
     services.xserver.exportConfiguration = true;
 
     hardware.nvidia = {
-      powerManagement.enable = true;
-      powerManagement.finegrained = mkIf config.hardware.nvidia.prime.offload.enable true;
+      powerManagement = mkIf (config.hardware.nvidia.prime.offload.enable || cfg.proprietary.saveAllVram) {
+        enable = true;
+        finegrained = true;
+      };
       modesetting.enable = true;
       nvidiaSettings = true;
     };
@@ -55,8 +61,8 @@ in {
         "nvidia-drm.modeset" = 1;
         "nvidia.NVreg_UsePageAttributeTable" = 1;
       }
-      // optionalAttrs cfg.saveAllVram {
-        "nvidia.NVreg_PreserveVideoMemoryAllocations" = 1;
+      // {
+        "nvidia.NVreg_PreserveVideoMemoryAllocations" = toValue cfg.proprietary.saveAllVram;
         "nvidia.NVreg_TemporaryFilePath" = "/var/tmp/nvidia-gpu.vram.img";
       }
     ;
