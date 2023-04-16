@@ -73,9 +73,6 @@ in
     # started in user sessions.
     programs.mtr.enable = true;
     
-    documentation.man.generateCaches = true;
-
-
     # zram is so usefull, we should always have it enabled.
     zramSwap = {
       enable = true;
