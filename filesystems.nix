@@ -70,7 +70,6 @@ in
       resume = mkIf (! isNull resumeDeviceLabel) (mkDefault "LABEL=${resumeDeviceLabel}");
     };
 
-    fileSystems."/boot".neededForBoot = mkDefault true;
 
     boot.supportedFilesystems = [ "ntfs" "ext4" "vfat" "exfat" ];
 
