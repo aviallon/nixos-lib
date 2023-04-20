@@ -117,6 +117,35 @@ in
         });
       })
 
+      (final: prev: {
+        jetbrains = prev.jetbrains // {
+          pycharm-professional-fhs = (
+          let
+            unwrapped = final.jetbrains.pycharm-professional;
+          in prev.buildFHSUserEnv rec {
+            name = "pycharm-professional";
+            targetPkgs = pkgs: (with pkgs; [
+              glibc
+
+              python3Full
+              python311
+              python310Full
+              python39Full
+              python38Full
+              python37Full
+            
+              jetbrains.pycharm-professional
+            ]);
+
+            # symlink shared assets, including icons and desktop entries
+            extraInstallCommands = ''
+              ln -s "${unwrapped}/share" "$out/"
+            '';
+
+            runScript = "${unwrapped}/bin/pycharm-professional";
+          });
+        };
+      })
     ];
 
     aviallon.programs.allowUnfreeList = [
