@@ -40,7 +40,7 @@ in {
                   "cmocka" "libkrb5" "libidn2" "tpm2-tss" "libxcrypt"
                   "libomxil-bellagio" "wayland" "wayland-protocols"
                   "openssl" "libXt" "intel-media-sdk"
-                  "zlib"
+                  "zlib" "alsa-lib" "glib" "lcms2"
 
                   # Very slow
                   "llvm" "clang" "clang-wrapper" "valgrind" "rustc" "tensorflow"
