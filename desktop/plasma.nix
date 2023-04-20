@@ -36,6 +36,9 @@ in {
         X11 = {
           MinimumVT = mkOverride 50 1;
         };
+        General = {
+          DisplayServer = "wayland";
+        };
       };
     };
 
