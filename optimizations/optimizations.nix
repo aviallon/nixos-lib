@@ -131,6 +131,14 @@ in {
             lto = true;
             recursive = 1;
           } super.mandoc;
+
+        jetbrains = super.jetbrains // {
+          jdk = optimizePkg {
+              level = "moderately-unsafe";
+              lto = true;
+              recursive = 1;
+            } super.jetbrains.jdk;
+        };
       })
     ];
 
