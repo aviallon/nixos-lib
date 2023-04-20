@@ -35,7 +35,7 @@ in {
       "nvidia_uvm"
       "nvidia_modeset"
     ];
-    # boot.blacklistedKernelModules = [ "nouveau" ];
+
     services.xserver.videoDrivers = [
       "nvidia"
     ];
