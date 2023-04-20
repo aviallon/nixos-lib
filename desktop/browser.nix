@@ -21,6 +21,8 @@ in {
         "cjpalhdlnbpafiamejdnhcphjbkeiagm;https://clients2.google.com/service/update2/crx" # Ublock Origin
         "fihnjjcciajhdojfnbdddfaoknhalnja" # I don't care about cookies
         "eimadpbcbfnmbkopoojfekhnkhdbieeh" # Dark Reader
+
+        "lkbebcjgcmobigpeffafkodonchffocl;https://gitlab.com/magnolia1234/bypass-paywalls-chrome-clean/-/raw/master/updates.xml" # Bypass Paywalls
       ];
       extraOpts = {
         "PlatformHEVCDecoderSupport" = true;
