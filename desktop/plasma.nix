@@ -65,6 +65,10 @@ in {
       krdc
     ];
 
+    environment.profileRelativeSessionVariables = {
+      QT_PLUGIN_PATH = mkForce []; # Remove as it causes many issues when pulling one package from nixos-unstable
+    };
+
     xdg.portal = {
       enable = mkDefault true;
     };
