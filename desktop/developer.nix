@@ -26,6 +26,7 @@ in {
       nix-index
       lm_sensors
       ethtool
+      vulkan-tools
       gh # GitHub CLI
 
       linux-manual man-pages man-pages-posix
