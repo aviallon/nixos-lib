@@ -9,6 +9,7 @@ in
 {
   options.aviallon.nix = {
     enableCustomSubstituter = mkEnableOption "custom substituter using nix-cache.lesviallon.fr";
+    contentAddressed = mkEnableOption "experimental content-addressed derivations";
   };
   
   config = {
@@ -87,14 +88,20 @@ in
 
     nix.settings.builders-use-substitutes = true;
     nix.settings.substitute = true;
-    nix.settings.experimental-features = []
-      ++ optionals ( strings.versionOlder "2.4" pkgs.nix.version ) [ "nix-command" "flakes" ];
+    nix.settings.experimental-features = [ "nix-command" "flakes" ]
+      ++ optional cfg.contentAddressed "ca-derivations";
 
     nix.settings.download-attempts = 5;
     nix.settings.stalled-download-timeout = 20;
 
-    nix.settings.substituters = mkIf cfg.enableCustomSubstituter (mkBefore [ "https://nix-cache.lesviallon.fr" ]);
-    nix.settings.trusted-public-keys = mkIf cfg.enableCustomSubstituter (mkBefore [ "nix-cache.lesviallon.fr-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY=" ]);
+    nix.settings.substituters = mkBefore ([]
+      ++ optional cfg.enableCustomSubstituter "https://nix-cache.lesviallon.fr"
+      ++ optional cfg.contentAddressed "https://cache.ngi0.nixos.org/"
+    );
+    nix.settings.trusted-public-keys = mkBefore ([]
+      ++ optional cfg.enableCustomSubstituter "nix-cache.lesviallon.fr-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
+      ++ optional cfg.contentAddressed "cache.ngi0.nixos.org-1:KqH5CBLNSyX184S9BKZJo1LxrxJ9ltnY2uAs5c/f1MA="
+    );
 
     nix.settings.cores = mkIf (generalCfg.cores != null) generalCfg.cores;
     nix.settings.max-jobs = mkIf (generalCfg.cores != null) (math.log2 generalCfg.cores);
