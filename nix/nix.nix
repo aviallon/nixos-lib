@@ -1,4 +1,4 @@
-{config, pkgs, lib, myLib, ...}:
+{config, pkgs, lib, myLib, nixpkgs, nixpkgs-unstable, ...}:
 with lib;
 with myLib;
 let
@@ -98,6 +98,11 @@ in
 
     nix.settings.cores = mkIf (generalCfg.cores != null) generalCfg.cores;
     nix.settings.max-jobs = mkIf (generalCfg.cores != null) (math.log2 generalCfg.cores);
+
+    nix.registry = {
+      nixpkgs.flake = nixpkgs;
+      nixpkgs-unstable.flake = nixpkgs-unstable;
+    };
 
   };
 }
