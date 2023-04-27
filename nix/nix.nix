@@ -104,5 +104,10 @@ in
       nixpkgs-unstable.flake = nixpkgs-unstable;
     };
 
+    nix.nixPath = mkBefore [
+      "nixpkgs=${nixpkgs.outPath}"
+      "nixos-config=/etc/nixos/configuration.nix"
+    ];
+
   };
 }

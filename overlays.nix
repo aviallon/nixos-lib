@@ -21,8 +21,6 @@ in
   };
   config = mkIf cfg.enable {
      nix.nixPath =
-      # Prepend default nixPath values.
-      options.nix.nixPath.default ++
       # Append our nixpkgs-overlays.
       [ "nixpkgs-overlays=/etc/nixos/overlays-compat/" ]
     ;
