@@ -12,6 +12,7 @@ in
     ./amd
     ./nvidia
     ./intel
+    ./mesa.nix
   ];
 
   config = {

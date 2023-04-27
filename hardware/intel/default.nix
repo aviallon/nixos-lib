@@ -51,5 +51,6 @@ in
     // {
       "i915.fastboot" = 1;
     };
+    aviallon.hardware.mesa.enable = mkDefault true;
   };
 }

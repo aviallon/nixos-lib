@@ -14,5 +14,6 @@ in {
       "nouveau.config" = "NvBoost=1";
     };
 
+    aviallon.hardware.mesa.enable = mkDefault true;
   };
 }
