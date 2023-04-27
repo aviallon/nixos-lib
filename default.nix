@@ -17,5 +17,6 @@
     ./overlays.nix
     ./optimizations
     ./non-persistence.nix
+    ./windows
   ];
 }
