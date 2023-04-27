@@ -5,6 +5,7 @@ let
 in {
   options.aviallon.developer = {
     enable = mkEnableOption "enable developer mode on this machine";
+    virtualbox.unstable = mkEnableOption "use unstable virtualbox";
   };
   config = mkIf cfg.enable {
     system.nixos.tags = [ "developer" ];
@@ -67,6 +68,13 @@ in {
       host.enableExtensionPack = true;
       host.enableHardening = false; # Causes kernel build failures
     };
+
+    nixpkgs.overlays = []
+      ++ optional cfg.virtualbox.unstable (final: prev: {
+        virtualbox = final.unstable.virtualbox;
+        virtualboxExtpack = final.unstable.virtualboxExtpack;
+      })
+    ;
 
     environment.extraOutputsToInstall = [
       "doc" "info" "dev" "debug" "static"
