@@ -12,12 +12,12 @@ in {
       type = types.bool;
       description = "Wether to enable power related tuning";
     };
-    /*policy = mkOption {
+    policy = mkOption {
       default = "performance";
       example = "efficiency";
       description = "What to optimize towards";
-      type = types.either [ "performance" "efficiency" ];
-    };*/
+      type = types.enum [ "performance" "efficiency" ];
+    };
     powerLimit = {
       enable = mkEnableOption "power limiting";
       ac = {
