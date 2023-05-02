@@ -1,9 +1,11 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, options, ... }:
 with lib;
 let
   cfg = config.aviallon.hardware.mesa;
   devCfg = config.aviallon.developer;
   generalCfg = config.aviallon.general;
+  optimizationsCfg = config.aviallon.optimizations;
+  optimizePkg = optimizationsCfg.optimizePkg;
   packageWithDefaults = types.package // {
     merge = loc: defs:
       let res = mergeDefaultOption loc defs;
@@ -26,28 +28,42 @@ in {
       example = false;
     };
     package = mkOption {
-      internal = true;
       default = pkgs.mesa;
       type = packageWithDefaults;
       description = "What mesa package to use";
     };
     package32 = mkOption {
-      internal = true;
       default = pkgs.driversi686Linux.mesa;
       type = packageWithDefaults;
       description = "What mesa package to use";
+    };
+
+    internal.package = mkOption {
+      internal = true;
+      type = packageWithDefaults;
+      default = cfg.package;
+    };
+    
+    internal.package32 = mkOption {
+      internal = true;
+      type = packageWithDefaults;
+      default = cfg.package32;
     };
   };
 
   config = mkIf cfg.enable {
     programs.corectrl.enable = mkDefault config.hardware.opengl.enable;
 
-    aviallon.hardware.mesa.package = mkIf cfg.optimized pkgs.mesaOptimized;
-    #aviallon.hardware.mesa.package32 = mkIf (mkDefault cfg.optimized pkgs.driversi686Linux.mesaOptimized);
+    aviallon.hardware.mesa.internal = mkIf cfg.optimized {
+      package = mkDefault (
+        optimizePkg { } cfg.package);
+      package32 = mkDefault (
+        optimizePkg { } cfg.package32);
+    };
 
     hardware.opengl = {
-      package = with pkgs; cfg.package.drivers;
-      package32 = with pkgs; cfg.package32.drivers;
+      package = with pkgs; cfg.internal.package.drivers;
+      package32 = with pkgs; cfg.internal.package32.drivers;
     };
   };
 }
