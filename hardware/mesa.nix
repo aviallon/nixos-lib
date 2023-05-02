@@ -27,6 +27,12 @@ in {
       description = "Wether to enable (unsafe) mesa optimizations";
       example = false;
     };
+    unstable = mkOption {
+      default = false;
+      type = types.bool;
+      description = "Wether or not to use mesa from nixpkgs-unstable";
+      example = config.aviallon.general.unsafeOptimizations;
+    };
     package = mkOption {
       default = pkgs.mesa;
       type = packageWithDefaults;
@@ -53,6 +59,9 @@ in {
 
   config = mkIf cfg.enable {
     programs.corectrl.enable = mkDefault config.hardware.opengl.enable;
+
+    aviallon.hardware.mesa.package = mkIf cfg.unstable pkgs.unstable.mesa;
+    aviallon.hardware.mesa.package32 = mkIf cfg.unstable pkgs.unstable.driversi686Linux.mesa;
 
     aviallon.hardware.mesa.internal = mkIf cfg.optimized {
       package = mkDefault (
