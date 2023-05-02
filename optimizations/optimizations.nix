@@ -14,6 +14,9 @@ let
       extraCFlags ? cfg.extraCompileFlags,
       blacklist ? cfg.blacklist,
       overrideMap ? cfg.overrideMap,
+      recursive ? 1,
+      level ? "slower",
+      lto ? cfg.lto,
       ...
     }@attrs: pkg:
       myLib.optimizations.optimizePkg pkg ({
@@ -27,7 +30,11 @@ in {
       description = "Enable aviallon's optimizations";
       type = types.bool;
     };
-    lto = mkEnableOption "enable LTO for some packages";
+    lto = mkOption {
+      description = "Wether to enable LTO for some packages";
+      type = types.bool;
+      default = true;
+    };
     extraCompileFlags = mkOption {
       default = [ "-mtune=${generalCfg.cpuTune}" ];
       example = [ "-O2" "-mavx" ];
