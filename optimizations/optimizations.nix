@@ -41,6 +41,12 @@ in {
       description = "Add specific compile flags";
       type = types.listOf types.str;
     };
+    optimizePkg = mkOption {
+      default = optimizePkg;
+      example = "pkg: pkg.override { stdenv = pkgs.fastStdenv; }";
+      description = "Function used for optimizing packages";
+      type = with types; functionTo (functionTo package);
+    };
     trace = mkEnableOption "trace attributes in overriden derivations";
     blacklist = mkOption {
       default = [ # Broken
@@ -113,7 +119,6 @@ in {
             level = "slower";
             recursive = 1;
             lto = true;
-            extraCFlags = cfg.extraCompileFlags;
           } super.mesa;
         optipngOptimized = optimizePkg {
             level = "unsafe";
