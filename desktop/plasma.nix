@@ -63,6 +63,8 @@ in {
       ark
       kolourpaint
       krdc
+
+      (myFirefox.override { enablePlasmaBrowserIntegration = true; })
     ];
 
     environment.profileRelativeSessionVariables = {

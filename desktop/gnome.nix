@@ -41,6 +41,8 @@ in {
         environment.systemPackages = with pkgs; []
           ++ [
             guake
+
+            (myFirefox.override { enableGnomeExtensions = true; })
           ]
           ++ (with gnome; [
             gnome-software

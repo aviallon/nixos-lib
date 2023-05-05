@@ -1,4 +1,9 @@
-{pkgs, lib,
+{lib,
+firefox-esr-unwrapped,
+wrapFirefox,
+enablePlasmaBrowserIntegration ? false,
+enableGnomeExtensions ? false,
+extraNativeMessengingHosts ? [],
 ...
 }:
 with lib;
@@ -12,12 +17,12 @@ let
         (key: value: ''${prefFuncName}(${builtins.toJSON key}, ${builtins.toJSON value});'' )
         prefs
       );
-in pkgs.wrapFirefox pkgs.firefox-esr-unwrapped {
+in wrapFirefox firefox-esr-unwrapped {
     cfg = {
       smartcardSupport = true;
       pipewireSupport = true;
       ffmpegSupport = true;
-      enablePlasmaBrowserIntegration = true;
+      inherit enablePlasmaBrowserIntegration enableGnomeExtensions extraNativeMessengingHosts;
     };
 
     extraPolicies = {

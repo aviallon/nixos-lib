@@ -4,6 +4,16 @@ let
   cfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
 in {
+  options.aviallon.desktop.browser = {
+    firefox.overrides = mkOption {
+      internal = true;
+      description = "Override firefox package settings";
+      type = types.attrs;
+      default = {};
+      example = { enablePlasmaIntegration = true; };
+    };
+  };
+
   config = mkIf (cfg.enable && !generalCfg.minimal) {
     environment.systemPackages = with pkgs; []
       ++ optionals (!generalCfg.minimal) [

@@ -98,7 +98,7 @@ in
         # Use bleeding-edge linux firmware
         linux-firmware = super.unstable.linux-firmware;
 
-        myFirefox = (import ./packages/firefox.nix { pkgs = self; inherit lib; });
+        myFirefox = (super.callPackage ./packages/firefox.nix config.aviallon.desktop.browser.firefox.overrides);
       })
       (final: prev: {
         # Use our kernel for generating linux man pages
