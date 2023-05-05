@@ -54,6 +54,7 @@ in {
         "lkbebcjgcmobigpeffafkodonchffocl;https://gitlab.com/magnolia1234/bypass-paywalls-chrome-clean/-/raw/master/updates.xml" # Bypass Paywalls
 
         "jmkaglaafmhbcpleggkmaliipiilhldn;https://edge.microsoft.com/extensionwebstorebase/v1/crx" # Video DownloadHelper (Edge)
+        "ldcclmkclhomnpcnccgbgleikchbnecl;https://edge.microsoft.com/extensionwebstorebase/v1/crx" # FastForward (Edge)
       ];
       extraOpts = {
         "PlatformHEVCDecoderSupport" = true;
