@@ -54,6 +54,9 @@ in {
       startWhenNeeded = true;
     };
 
+    # Better reliability and performance
+    services.dbus.implementation = "broker";
+
     systemd.services."ssh-inhibit-sleep@" = {
       description = "Inhibit sleep when SSH connections are active";
       bindsTo = [ "sshd@%i.service" ];
