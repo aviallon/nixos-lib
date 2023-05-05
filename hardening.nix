@@ -108,6 +108,9 @@ in
       (optional cfg.expensive "-a exit,always -F arch=b64 -S execve")
     ];
 
+    environment.systemPackages = with pkgs; [
+      sbctl # Secure Boot keys generation
+    ];
 
     systemd.services.dbus.serviceConfig = mkIf cfg.services.dbus {
       # Hardening
