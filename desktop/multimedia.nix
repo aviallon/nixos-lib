@@ -17,8 +17,6 @@ in {
       jellyfin-media-player
 
       jamesdsp # Audio post-processing
-
-      nur.repos.wolfangaukang.vdhcoapp
     ];
 
 

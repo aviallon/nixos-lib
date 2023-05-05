@@ -3,6 +3,7 @@ with lib;
 let
   cfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
+  vdhcoapp = pkgs.nur.repos.wolfangaukang.vdhcoapp;
 in {
   options.aviallon.desktop.browser = {
     firefox.overrides = mkOption {
@@ -15,16 +16,34 @@ in {
   };
 
   config = mkIf (cfg.enable && !generalCfg.minimal) {
-    environment.systemPackages = with pkgs; []
-      ++ optionals (!generalCfg.minimal) [
+    environment.systemPackages = with pkgs; [
         chromium
-        myFirefox
+        # firefox is added by plasma or gnome
+
+        vdhcoapp
       ];
+
+    aviallon.desktop.browser.firefox.overrides.extraNativeMessengingHosts = [
+      vdhcoapp
+    ];
+
+    environment.etc = with builtins; let
+      vdhcoappManifestFile = unsafeDiscardStringContext (readFile "${vdhcoapp}/etc/chromium/native-messaging-hosts/net.downloadhelper.coapp.json");
+      vdhcoappManifest = fromJSON (toString vdhcoappManifestFile);
+      moddedManifest = toJSON (recursiveUpdate vdhcoappManifest {
+        allowed_origins = vdhcoappManifest.allowed_origins ++ [ "chrome-extension://jmkaglaafmhbcpleggkmaliipiilhldn/" ];
+      });
+      manifestFile = pkgs.writeText "${vdhcoappManifest.name}.json" moddedManifest;
+    in {
+      "chromium/native-messaging-hosts/net.downloadhelper.coapp.json".source =
+        "${manifestFile}";
+    };
 
     programs.chromium = {
       enable = true;
       # https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/enterprise/auto-update
-      # https://clients2.google.com/service/update2/crx?x=id%3D{extension_id}%26v%3D{extension_version}
+      # Chrome Web Store: https://clients2.google.com/service/update2/crx?x=id%3D{extension_id}%26v%3D{extension_version}
+      # Edge Web Store: https://edge.microsoft.com/extensionwebstorebase/v1/crx
       extensions = [
         # "gcbommkclmclpchllfjekcdonpmejbdp;https://clients2.google.com/service/update2/crx" # HTTPS Everywhere
         "mleijjdpceldbelpnpkddofmcmcaknm" # Smart HTTPS
@@ -33,6 +52,8 @@ in {
         "eimadpbcbfnmbkopoojfekhnkhdbieeh" # Dark Reader
 
         "lkbebcjgcmobigpeffafkodonchffocl;https://gitlab.com/magnolia1234/bypass-paywalls-chrome-clean/-/raw/master/updates.xml" # Bypass Paywalls
+
+        "jmkaglaafmhbcpleggkmaliipiilhldn;https://edge.microsoft.com/extensionwebstorebase/v1/crx" # Video DownloadHelper (Edge)
       ];
       extraOpts = {
         "PlatformHEVCDecoderSupport" = true;
