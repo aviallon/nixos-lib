@@ -15,14 +15,12 @@ let
       blacklist ? cfg.blacklist,
       ltoBlacklist ? cfg.lto.blacklist,
       overrideMap ? cfg.overrideMap,
-      recursive ? 1,
-      level ? "slower",
       lto ? cfg.lto,
       stdenv ? null,
       ...
     }@attrs: pkg:
-      myLib.optimizations.optimizePkg pkg ({
-        inherit cpuCores cpuTune cpuArch extraCFlags blacklist overrideMap;
+      myLib.optimizations.optimizePkg pkg (cfg.defaultSettings // {
+        inherit cpuCores cpuTune cpuArch extraCFlags blacklist ltoBlacklist overrideMap stdenv;
       } // attrs);
 in {
   options.aviallon.optimizations = {
@@ -50,6 +48,14 @@ in {
       description = "Add specific compile flags";
       type = types.listOf types.str;
     };
+    defaultSettings = mkOption {
+      default = {
+        recursive = 1;
+        level = "slower";
+      };
+      example = { level = "unsafe"; recursive = 0; };
+      description = mdDoc "Specify default options passed to optimizePkg";
+    };
     optimizePkg = mkOption {
       default = optimizePkg;
       example = "pkg: pkg.override { stdenv = pkgs.fastStdenv; }";
@@ -62,7 +68,7 @@ in {
                   "cmocka" "libkrb5" "libidn2" "tpm2-tss" "libxcrypt"
                   "libomxil-bellagio" "wayland" "wayland-protocols"
                   "openssl" "libXt" "intel-media-sdk"
-                  "zlib" "alsa-lib" "glib" "lcms2"
+                  "zlib" "alsa-lib" "glib" "lcms2" "gconf" "gnome-vfs"
 
                   # Very slow
                   "llvm" "clang" "clang-wrapper" "valgrind" "rustc" "tensorflow"
@@ -110,34 +116,18 @@ in {
     
       (self: super: {
         opensshOptimized = optimizePkg {
-            level = "very-unsafe";
             recursive = 0;
-            lto = true;
           } super.openssh;
         htop = optimizePkg {
-            level = "slower";
-            lto = true;
           } super.htop;
         nano = optimizePkg {
-            level = "slower";
             recursive = 99;
-            lto = true;
           } super.nano;
-        mesaOptimized = optimizePkg {
-            level = "slower";
-            recursive = 1;
-            lto = true;
-          } super.mesa;
         optipngOptimized = optimizePkg {
-            level = "unsafe";
-            lto = true;
-            recursive = 1;
             parallelize = generalCfg.cores;
           } super.optipng;
         myFFmpeg = optimizePkg {
-            level = "normal";
             lto = false;
-            recursive = 1;
           } super.myFFmpeg;
 
         man-db_optimized = optimizePkg {
@@ -154,11 +144,11 @@ in {
 
         jetbrains = super.jetbrains // {
           jdk = optimizePkg {
-              level = "moderately-unsafe";
               lto = true;
               recursive = 1;
             } super.jetbrains.jdk;
         };
+
       })
     ];
 
