@@ -1,4 +1,4 @@
-{ config, pkgs, lib, myLib, ... }:
+{ config, pkgs, options, lib, myLib, ... }:
 with lib;
 let
   cfg = config.aviallon.optimizations;
@@ -98,7 +98,6 @@ in {
         fastStdenv = super.overrideCC super.gccStdenv (super.buildPackages.gcc_latest.overrideAttrs (old:
           let
             optimizedAttrs = {}
-              #// _optimizeAttrs { level = "general"; cpuArch = null; cpuTune = null; }
               // {
                 configureFlags = [
                   "--with-cpu-64=${generalCfg.cpuArch}" "--with-arch-64=${generalCfg.cpuArch}"
@@ -130,18 +129,6 @@ in {
             lto = false;
           } super.myFFmpeg;
 
-        man-db_optimized = optimizePkg {
-            level = "moderately-unsafe";
-            lto = true;
-            recursive = 1;
-          } super.man-db;
-
-        mandoc_optimized = optimizePkg {
-            level = "moderately-unsafe";
-            lto = true;
-            recursive = 1;
-          } super.mandoc;
-
         jetbrains = super.jetbrains // {
           jdk = optimizePkg {
               lto = true;
@@ -151,9 +138,5 @@ in {
 
       })
     ];
-
-
-    documentation.man.man-db.package = pkgs.man-db_optimized;
-    documentation.man.mandoc.package = pkgs.mandoc_optimized;
   };
 }
