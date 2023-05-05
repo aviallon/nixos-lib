@@ -13,10 +13,12 @@ let
       cpuTune ? generalCfg.cpu.tune,
       extraCFlags ? cfg.extraCompileFlags,
       blacklist ? cfg.blacklist,
+      ltoBlacklist ? cfg.lto.blacklist,
       overrideMap ? cfg.overrideMap,
       recursive ? 1,
       level ? "slower",
       lto ? cfg.lto,
+      stdenv ? null,
       ...
     }@attrs: pkg:
       myLib.optimizations.optimizePkg pkg ({
@@ -30,10 +32,17 @@ in {
       description = "Enable aviallon's optimizations";
       type = types.bool;
     };
-    lto = mkOption {
-      description = "Wether to enable LTO for some packages";
-      type = types.bool;
-      default = true;
+    lto = {
+      enable = mkOption {
+        description = "Wether to enable LTO for some packages";
+        type = types.bool;
+        default = true;
+      };
+      blacklist = mkOption {
+        description = "Packages to blacklist from LTO";
+        type = types.listOf types.str;
+        default = [ "x265" "cpio" "cups" "gtk+3" "which" ];
+      };
     };
     extraCompileFlags = mkOption {
       default = [ "-mtune=${generalCfg.cpuTune}" ];
@@ -65,7 +74,6 @@ in {
     overrideMap = mkOption {
       type = with types; attrsOf package;
       default = {
-        stdenv = pkgs.fastStdenv;
       };
       example = literalExpression
         ''
