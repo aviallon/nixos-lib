@@ -27,12 +27,12 @@ in {
       };
       cpuThreads = mkOption {
         type = with types; ints.positive;
-        default = generalCfg.cores or 4;
+        default = generalCfg.cpu.threads or 4;
         description = "How many threads to use for hashing.";
       };
       ioThreads = mkOption {
         type = with types; ints.positive;
-        default = myLib.math.log2 generalCfg.cores or 4;
+        default = myLib.math.log2 generalCfg.cpu.threads or 4;
         description = "How many threads to use for IO operations";
       };
       interval = mkOption {

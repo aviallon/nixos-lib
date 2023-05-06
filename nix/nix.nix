@@ -52,7 +52,7 @@ in
         IOAccounting = true;
         IOWeight = 1024 / 10;
         CPUWeight = 1;
-        CPUQuota = (toString (generalCfg.cores * 80)) + "%";
+        CPUQuota = (toString (generalCfg.cpu.threads * 80)) + "%";
         Type = mkOverride 20 "simple";
       };
     };
@@ -103,8 +103,8 @@ in
       ++ optional cfg.contentAddressed "cache.ngi0.nixos.org-1:KqH5CBLNSyX184S9BKZJo1LxrxJ9ltnY2uAs5c/f1MA="
     );
 
-    nix.settings.cores = mkIf (generalCfg.cores != null) generalCfg.cores;
-    nix.settings.max-jobs = mkIf (generalCfg.cores != null) (math.log2 generalCfg.cores);
+    nix.settings.cores = mkIf (generalCfg.cpu.threads != null) generalCfg.cpu.threads;
+    nix.settings.max-jobs = mkIf (generalCfg.cpu.threads != null) (math.log2 generalCfg.cpu.threads);
 
     nix.registry = {
       nixpkgs.flake = nixpkgs;

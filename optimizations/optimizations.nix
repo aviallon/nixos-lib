@@ -100,8 +100,8 @@ in {
             optimizedAttrs = {}
               // {
                 configureFlags = [
-                  "--with-cpu-64=${generalCfg.cpuArch}" "--with-arch-64=${generalCfg.cpuArch}"
-                  "--with-tune-64=${generalCfg.cpuTune}"
+                  "--with-cpu-64=${generalCfg.cpu.arch}" "--with-arch-64=${generalCfg.cpu.arch}"
+                  "--with-tune-64=${generalCfg.cpu.tune}"
                   "--with-build-config=bootstrap-lto-lean"
                 ];
               }
@@ -123,7 +123,7 @@ in {
             recursive = 99;
           } super.nano;
         optipngOptimized = optimizePkg {
-            parallelize = generalCfg.cores;
+            parallelize = generalCfg.cpu.threads;
           } super.optipng;
         myFFmpeg = optimizePkg {
             lto = false;

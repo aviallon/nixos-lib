@@ -130,7 +130,7 @@ in {
       };
       wantedBy = [ "multi-user.target" ];
       description = "Undervolt Intel CPUs with supported firmware.";
-      enable = cfg.undervolt.cpu.enable && (generalCfg.cpuVendor == "intel");
+      enable = cfg.undervolt.cpu.enable && (generalCfg.cpu.vendor == "intel");
     };
 
     systemd.services.intel-powerlimit-ac = {
@@ -148,7 +148,7 @@ in {
       wantedBy = [ "ac-power.target" ];
       description = "Set power limit of Intel CPUs with supported firmware. AC mode.";
       partOf = [ "ac-power.target" ];
-      enable = (cfg.powerLimit.enable || cfg.temperature.enable) && (generalCfg.cpuVendor == "intel");
+      enable = (cfg.powerLimit.enable || cfg.temperature.enable) && (generalCfg.cpu.vendor == "intel");
     };
     
     systemd.services.intel-powerlimit-battery = {
@@ -166,7 +166,7 @@ in {
       wantedBy = [ "battery-power.target" ];
       description = "Set power limit of Intel CPUs with supported firmware. Battery mode.";
       partOf = [ "battery-power.target" ];
-      enable = (cfg.powerLimit.enable || cfg.temperature.enable) && (generalCfg.cpuVendor == "intel");
+      enable = (cfg.powerLimit.enable || cfg.temperature.enable) && (generalCfg.cpu.vendor == "intel");
     };
     
   };

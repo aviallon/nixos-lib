@@ -198,7 +198,7 @@ in {
         ++ optional cfg.rtGroupSched.enable customKernelPatches.enableRTGroupSched
         ++ optional cfg.energyModel.enable customKernelPatches.enableEnergyModel
         ++ optional cfg.amdClusterId.enable customKernelPatches.amdClusterId
-        ++ optional (isXanmod cfg.kernel && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpuArch)
+        ++ optional (isXanmod cfg.kernel && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpu.arch)
       ;
 
 

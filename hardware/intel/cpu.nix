@@ -4,7 +4,7 @@ let
   generalCfg = config.aviallon.general;
   throttledService = "lenovo_fix";
 in {
-  config = mkIf (generalCfg.cpuVendor == "intel") {
+  config = mkIf (generalCfg.cpu.vendor == "intel") {
     aviallon.boot.cmdline = {
       "intel_pstate" = "passive";
     };
