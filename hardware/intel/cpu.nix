@@ -10,14 +10,14 @@ in {
     };
 
     services.throttled.enable = generalCfg.unsafeOptimizations;
-    services.thermald.enable = !generalCfg.unsafeOptimizations;
+    services.thermald.enable = true;
 
     systemd.services.${throttledService} = {
       bindsTo = [ "ac-power.target" ];
       conflicts = [ "thermald.service" ];
     };
 
-    systemd.services.thermald = {
+    systemd.services.thermald = mkIf config.services.thermald.enable {
       wantedBy = [ "battery-power.target" ];
     };
   };
