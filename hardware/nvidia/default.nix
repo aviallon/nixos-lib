@@ -18,6 +18,8 @@ in {
 
   config = mkIf cfg.enable {
     hardware.opengl.driSupport32Bit = true;
+
+    aviallon.programs.nvtop.enable = true;
   };
 
 }

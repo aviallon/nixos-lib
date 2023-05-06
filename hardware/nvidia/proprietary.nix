@@ -56,6 +56,8 @@ in {
       nvidiaSettings = true;
     };
 
+    aviallon.programs.nvtop.nvidia = true;
+
     aviallon.boot.cmdline = {}
       // {
         "nvidia-drm.modeset" = 1;

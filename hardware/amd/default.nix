@@ -27,6 +27,8 @@ in {
   
   config = mkIf cfg.enable {
 
+    aviallon.programs.nvtop.enable = true;
+
     hardware.opengl = {
       enable = true;
     };

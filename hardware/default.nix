@@ -16,13 +16,6 @@ in
   ];
 
   config = {
-
-    environment.systemPackages = []
-      ++ optional (cfg.amd.enable && cfg.nvidia.enable) pkgs.nvtop
-      ++ optional cfg.amd.enable pkgs.nvtop-amd
-      ++ optional cfg.nvidia.enable pkgs.nvtop-nvidia
-    ;
-
     boot.kernel.sysctl = {
 
       # Why: https://www.phoronix.com/news/Ryzen-Segv-Response

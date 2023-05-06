@@ -5,5 +5,6 @@
     ./bash.nix
     ./git.nix
     ./nano.nix
+    ./nvtop.nix
   ];
 }
