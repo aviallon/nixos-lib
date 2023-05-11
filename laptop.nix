@@ -26,6 +26,7 @@ in {
     aviallon.general.unsafeOptimizations = mkOverride 15 true;
 
     hardware.sensor.iio.enable = mkDefault true;
+    location.provider = "geoclue2";
 
     aviallon.boot.cmdline = {
       # Less power consumption vs some performance loss
