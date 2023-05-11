@@ -60,5 +60,17 @@ in {
     services.tlp.enable = (cfg.power-manager == "tlp");
     services.power-profiles-daemon.enable = (cfg.power-manager == "power-profiles-daemon");
     powerManagement.powertop.enable = mkDefault true;
+    systemd.services.powertop = mkIf config.powerManagement.powertop.enable {
+      serviceConfig.ExecStart = let
+        script = pkgs.writeShellScriptBin "powertop-auto-tune" ''
+          ${pkgs.powertop}/bin/powertop --auto-tune
+          HIDDEVICES=$(ls /sys/bus/usb/drivers/usbhid | grep -oE '^[0-9]+-[0-9\.]+' | sort -u)
+          for i in $HIDDEVICES; do
+            echo -n "Enabling " | cat - /sys/bus/usb/devices/$i/product
+            echo 'on' > /sys/bus/usb/devices/$i/power/control
+          done
+        '';
+      in mkOverride 10 "${script}/bin/powertop-auto-tune";
+    };
   };
 }
