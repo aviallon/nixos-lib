@@ -43,7 +43,7 @@ in {
       };
     };
     extraCompileFlags = mkOption {
-      default = [ "-mtune=${generalCfg.cpuTune}" ];
+      default = [ ];
       example = [ "-O2" "-mavx" ];
       description = "Add specific compile flags";
       type = types.listOf types.str;
