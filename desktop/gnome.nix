@@ -42,6 +42,8 @@ in {
           ++ [
             guake
 
+            libreoffice-fresh
+
             (myFirefox.override { enableGnomeExtensions = true; })
           ]
           ++ (with gnome; [

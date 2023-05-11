@@ -72,6 +72,8 @@ in {
       kolourpaint
       krdc
 
+      libreoffice-qt
+
       (myFirefox.override { enablePlasmaBrowserIntegration = true; })
     ];
 

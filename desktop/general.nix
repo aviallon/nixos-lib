@@ -118,10 +118,16 @@ in {
         libva-utils
         spotify
         nextcloud-client
-        libreoffice-fresh
         tdesktop
         vlc
         veracrypt
+
+        # Spell check support
+        hunspell
+        hunspellDicts.fr-any
+        
+        aspell
+        aspellDicts.fr
       ]
     ;
 
