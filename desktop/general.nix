@@ -135,9 +135,13 @@ in {
     services.packagekit.enable = mkDefault (!generalCfg.minimal);
     security.sudo.extraConfig =
       ''
-      # Keep X-related variables for better GUI integration
-      Defaults:root,%wheel env_keep+=XAUTHORITY
+      # Keep X and Wayland related variables for better GUI integration
       Defaults:root,%wheel env_keep+=DISPLAY
+      Defaults:root,%wheel env_keep+=XAUTHORITY
+
+      Defaults:root,%wheel env_keep+=WAYLAND_DISPLAY
+      Defaults:root,%wheel env_keep+=WAYLAND_SOCKET
+      Defaults:root,%wheel env_keep+=XDG_RUNTIME_DIR
       ''
     ;
     
