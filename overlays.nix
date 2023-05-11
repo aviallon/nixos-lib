@@ -67,14 +67,6 @@ in
 
         opensshOptimized = super.opensshOptimized or super.openssh;
 
-        xwayland = super.xwayland.overrideAttrs (old: {
-          nativeBuildInputs = old.nativeBuildInputs or [] ++ [ super.makeWrapper ];
-          postInstall = old.postInstall or "" + ''
-            # Force EGL Stream support
-            wrapProgram $out/bin/Xwayland --add-flags "-eglstream"
-          '';
-        });
-
         power-profiles-daemon = super.power-profiles-daemon.overrideAttrs (old: {
           patches = [
             # ACPI cpufreq support
