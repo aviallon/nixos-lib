@@ -88,7 +88,7 @@ in
 
     nix.settings.builders-use-substitutes = true;
     nix.settings.substitute = true;
-    nix.settings.experimental-features = [ "nix-command" "flakes" ]
+    nix.settings.experimental-features = [ "nix-command" "flakes" "repl-flake" ]
       ++ optional cfg.contentAddressed "ca-derivations";
 
     nix.settings.download-attempts = 5;
