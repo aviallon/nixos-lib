@@ -38,13 +38,15 @@ in {
           "gphhapmejobijbbhgpjhcjognlahblep" # Gnome Shell integration
         ];
 
+        aviallon.desktop.browser.firefox.overrides.enableGnomeExtensions = true;
+
         environment.systemPackages = with pkgs; []
           ++ [
             guake
 
             libreoffice-fresh
-
-            (myFirefox.override { enableGnomeExtensions = true; })
+            
+            myFirefox
           ]
           ++ (with gnome; [
             gnome-software

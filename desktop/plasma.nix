@@ -74,8 +74,10 @@ in {
 
       libreoffice-qt
 
-      (myFirefox.override { enablePlasmaBrowserIntegration = true; })
+      myFirefox
     ];
+
+    aviallon.desktop.browser.firefox.overrides.enablePlasmaBrowserIntegration = true;
 
     environment.profileRelativeSessionVariables = {
       QT_PLUGIN_PATH = mkForce []; # Remove as it causes many issues when pulling one package from nixos-unstable
