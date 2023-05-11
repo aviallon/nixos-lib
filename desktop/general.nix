@@ -3,9 +3,6 @@ with lib;
 let
   cfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
-  filterConfig = pkgs.callPackage ./pipewire-noise-filter.cfg.nix {
-    noiseFilterStrength = cfg.audio.noise-filter.strength;
-  };
 in {
   options.aviallon.desktop = {
     enable = mkOption {
@@ -110,7 +107,6 @@ in {
     # For 32 bit applications
     hardware.opengl.driSupport32Bit = mkIf (!generalCfg.minimal) (mkDefault true);
 
-    # programs.gnupg.agent.pinentryFlavor = "qt";
 
     environment.systemPackages = with pkgs; []
       ++ [
