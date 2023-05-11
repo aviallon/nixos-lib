@@ -3,6 +3,8 @@ with lib;
 let
   cfg = config.aviallon.desktop;
   optimizeCfg = config.aviallon.optimizations;
+  sddmOptimized = optimizeCfg.optimizePkg { recursive = 0; } pkgs.sddm;
+  sddmPackage = if optimizeCfg.enable then sddmOptimized else pkgs.sddm;
 in {
   config = mkIf (cfg.enable && (cfg.environment == "plasma")) {
     # Enable the Plasma 5 Desktop Environment.
@@ -43,10 +45,7 @@ in {
       };
     };
 
-    services.xserver.displayManager.job = let
-      sddmOptimized = optimizeCfg.optimizePkg { recursive = 0; } pkgs.sddm;
-      sddmPackage = if optimizeCfg.enable then sddmOptimized else pkgs.sddm;
-    in {
+    services.xserver.displayManager.job = {
       execCmd = mkForce "exec ${sddmPackage}/bin/sddm";
     };
 
