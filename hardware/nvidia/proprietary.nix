@@ -1,9 +1,13 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, options, ... }:
 with lib;
 let
   cfg = config.aviallon.hardware.nvidia;
   generalCfg = config.aviallon.general;
+  hardwareCfg = config.hardware;
   toValue = x: if x then "1" else "0";
+  xwaylandEGLStream = pkgs.writeShellScriptBin "xwayland" ''
+    exec ${options.programs.xwayland.package.default}/bin/xwayland -eglstream "$@"
+  '';
 in {
   options = {
     aviallon.hardware.nvidia.proprietary = {
@@ -20,6 +24,15 @@ in {
         default = if generalCfg.unsafeOptimizations then 28 else 5;
         example = 28;
         type = types.int;
+      };
+      EGLStream = mkOption {
+        description = "Wether to make some packages use EGLStream instead of GBM when using Wayland";
+        example = true;
+        default = false;
+        defaultText = literalExpression ''
+          versionOlder config.hardware.nvidia.package.version "490.29.05"; # https://www.nvidia.com/download/driverResults.aspx/181159/en-us/
+        '';
+        type = types.bool;
       };
       saveAllVram = mkEnableOption "back up all VRAM in /var/tmp before going to sleep. May reduce artifacts after resuming";
     };
@@ -56,6 +69,10 @@ in {
       nvidiaSettings = true;
     };
 
+    aviallon.hardware.nvidia.proprietary.EGLStream = mkDefault (
+      versionOlder hardwareCfg.nvidia.package.version "490.29.05" # https://www.nvidia.com/download/driverResults.aspx/181159/en-us/
+    );
+
     aviallon.programs.nvtop.nvidia = true;
 
     aviallon.boot.cmdline = {}
@@ -69,6 +86,7 @@ in {
       }
     ;
 
+    programs.xwayland.package = mkIf cfg.proprietary.EGLStream xwaylandEGLStream;
     aviallon.programs.allowUnfreeList = [
       "nvidia-x11"
       "nvidia-settings"
@@ -98,7 +116,7 @@ in {
       "__GL_VRR_ALLOWED" = "1"; # Try to enable G-SYNC VRR if screen AND app is compatible
       "__GL_SYNC_TO_VBLANK" = toValue cfg.proprietary.vsync; 
       "__GL_THREADED_OPTIMIZATIONS" = toValue generalCfg.unsafeOptimizations;
-      "KWIN_DRM_USE_EGL_STREAMS" = "1"; # Make KWin use EGL Streams, because otherwise performance will be horrible.
+      "KWIN_DRM_USE_EGL_STREAMS" = toValue cfg.proprietary.EGLStream; # Make KWin use EGL Streams if needed, because otherwise performance will be horrible.
     };
   };
 }
