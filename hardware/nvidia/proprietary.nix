@@ -67,6 +67,7 @@ in {
       };
       modesetting.enable = true;
       nvidiaSettings = true;
+      package = mkIf generalCfg.unsafeOptimizations config.boot.kernelPackages.nvidiaPackages.beta; # Use bleeding edge version
     };
 
     aviallon.hardware.nvidia.proprietary.EGLStream = mkDefault (
