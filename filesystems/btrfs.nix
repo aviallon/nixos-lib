@@ -9,10 +9,17 @@ let
 in {
   options.aviallon.filesystems.btrfs = {
     enable = mkEnableOption "BTRFS support";
-    autoScrub = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Wether to enable automatic scrubbing";
+    autoScrub = {
+      enable = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Wether to enable automatic scrubbing";
+      };
+      paths = mkOption {
+        type = with types; nonEmptyListOf path;
+        default = btrfsPaths;
+        description = "What paths to scrub. Must be a btrfs mount point.";
+      };
     };
     autoDedup = {
       enable = mkOption {
@@ -43,29 +50,37 @@ in {
     };
   };
 
-
   config = mkIf cfg.enable {
     services.btrfs.autoScrub = {
-      enable = true;
-      fileSystems = [ "/" ];
+      enable = cfg.autoScrub.enable;
+      fileSystems = cfg.autoScrub.paths;
     };
     systemd.services.duperemove = {
       script = ''
       mkdir -p $DATA_DIR
-      exec ${pkgs.duperemove}/bin/duperemove --io-threads=${toString cfg.autoDedup.ioThreads} --cpu-threads=${toString cfg.autoDedup.cpuThreads} -h --dedupe-options=fiemap,same --hashfile=$DATA_DIR/hashes.db -v -Ard "$@"
+      exec ${pkgs.duperemove}/bin/duperemove \
+        --io-threads=${toString cfg.autoDedup.ioThreads} --cpu-threads=${toString cfg.autoDedup.cpuThreads} \
+        --dedupe-options=fiemap,same \
+        --hashfile=$DATA_DIR/hashes.db -h -v -Ard "$@"
       '';
       scriptArgs = concatStringsSep " " cfg.autoDedup.paths;
       # %S : state
       environment = {
         DATA_DIR = "%S/duperemove";
       };
+      unitConfig = {
+        ConditionCPUPressure = "50%";
+        ConditionIOPressure = "30%";
+      };
       serviceConfig = {
         CPUQuota = "50%";
+        CPUWeight = 1;
         Nice = 19;
         MemoryAccounting = true;
         MemoryHigh = "33%";
         MemoryMax = "50%";
         IOWeight = 10;
+        ManagedOOMMemoryPressure = "kill";
       };
       requires = [ "local-fs.target" ];
     };
