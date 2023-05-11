@@ -1,6 +1,10 @@
 { config, pkgs, lib, ... }:
 with lib;
-{
+let
+  gpgNoTTY = pkgs.writeShellScriptBin "gpg-no-tty" ''
+    exec ${pkgs.gnupg}/bin/gpg --batch --no-tty "$@"
+  '';
+in {
   config = {
 
     programs.gnupg = {
@@ -13,10 +17,18 @@ with lib;
     };
 
     environment.shellInit = ''
-      export GPG_TTY="$(tty)"
-      gpg-connect-agent /bye
-      export SSH_AUTH_SOCK="/run/user/$UID/gnupg/S.gpg-agent.ssh"
+      if tty --silent; then
+        export GPG_TTY="$(tty)"
+        gpg-connect-agent /bye
+        export SSH_AUTH_SOCK="/run/user/$UID/gnupg/S.gpg-agent.ssh"
+      else
+        alias gpg=${gpgNoTTY}/bin/gpg-no-tty
+      fi
     '';
+
+    environment.systemPackages = [
+      gpgNoTTY
+    ];
   
     systemd.user.services.gpg-agent = let
       pinentrySwitcher = pkgs.callPackage ../packages/pinentry.nix {};
