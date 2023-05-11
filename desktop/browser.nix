@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, myLib, options, ... }:
 with lib;
 let
   cfg = config.aviallon.desktop;
@@ -13,11 +13,32 @@ in {
       default = {};
       example = { enablePlasmaIntegration = true; };
     };
+    chromium = {
+      package = mkOption {
+        internal = true;
+        type = myLib.types.package';
+        default = pkgs.chromium;
+        example = literalExpression '' pkgs.ungoogled-chromium '';
+      };
+      overrides = mkOption {
+        internal = true;
+        description = "Override chromium package settings";
+        type = types.attrs;
+        default = {};
+        example = { commandLineArgs = [ "--enable-features=UseOzonePlatform" "--ozone-platform=wayland" ]; };
+      };
+      commandLineArgs = mkOption {
+        description = "Override chromium flags";
+        type = with types; listOf str;
+        default = [ "--ozone-platform-hint=auto" ];
+        example = [ "--ozone-platform-hint=auto" "--ignore-gpu-blacklist" ];
+      };
+    };
   };
 
   config = mkIf (cfg.enable && !generalCfg.minimal) {
     environment.systemPackages = with pkgs; [
-        chromium
+        (cfg.browser.chromium.package.override cfg.browser.chromium.overrides)
         # firefox is added by plasma or gnome
 
         vdhcoapp
@@ -39,6 +60,7 @@ in {
         "${manifestFile}";
     };
 
+    aviallon.desktop.browser.chromium.overrides.commandLineArgs = cfg.browser.chromium.commandLineArgs;
     programs.chromium = {
       enable = true;
       # https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/enterprise/auto-update
