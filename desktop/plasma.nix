@@ -3,8 +3,28 @@ with lib;
 let
   cfg = config.aviallon.desktop;
   optimizeCfg = config.aviallon.optimizations;
-  sddmOptimized = optimizeCfg.optimizePkg { recursive = 0; } pkgs.sddm;
-  sddmPackage = if optimizeCfg.enable then sddmOptimized else pkgs.sddm;
+  _sddm = pkgs.sddm.overrideAttrs (old: rec {
+    pname = old.pname + "-git";
+    version = "2023-05-12";
+    src = pkgs.fetchFromGitHub {
+      owner = "sddm";
+      repo = "sddm";
+      rev = "58a35178b75aada974088350f9b89db45f5c3800";
+      sha256 = "sha256-lTfsMUnYu3E2L25FSrMDkh9gB5X2fC0a5rvpMnPph4k=";
+    };
+
+    patches = traceVal (filter (x: hasSuffix "sddm-ignore-config-mtime.patch" x) old.patches);
+
+    nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.docutils ];
+
+    cmakeFlags = old.cmakeFlags ++ [
+      "-DBUILD_MAN_PAGES=ON"
+      "-DSYSTEMD_TMPFILES_DIR=${placeholder "out"}/etc/tmpfiles.d"
+      "-DSYSTEMD_SYSUSERS_DIR=${placeholder "out"}/lib/sysusers.d"
+    ];
+  });
+  sddmOptimized = optimizeCfg.optimizePkg { recursive = 0; } _sddm;
+  sddmPackage = if optimizeCfg.enable then sddmOptimized else _sddm;
 in {
   config = mkIf (cfg.enable && (cfg.environment == "plasma")) {
     # Enable the Plasma 5 Desktop Environment.
@@ -45,6 +65,8 @@ in {
       };
     };
 
+    nixpkgs.overlays = [(final: prev: { mySddm = sddmPackage; } )];
+
     services.xserver.displayManager.job = {
       execCmd = mkForce "exec ${sddmPackage}/bin/sddm";
     };
@@ -70,6 +92,7 @@ in {
       ark
       kolourpaint
       krdc
+      sddm-kcm
 
       libreoffice-qt
 
