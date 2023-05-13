@@ -6,12 +6,18 @@ let
   filterConfig = pkgs.callPackage ./pipewire-noise-filter.cfg.nix {
     noiseFilterStrength = cfg.audio.noise-filter.strength;
   };
+  ffmpeg_4 = config.aviallon.optimizations.optimizePkg { } pkgs.ffmpeg_4;
+  obs-studio = pkgs.obs-studio.override { inherit ffmpeg_4; };
+  myWrapOBS = pkgs.wrapOBS.override { inherit obs-studio; };
 in {
   config = mkIf (cfg.enable && !generalCfg.minimal) {
     environment.systemPackages = with pkgs; [
       myFFmpeg
       krita
-      obs-studio
+      (myWrapOBS { plugins = with obs-studio-plugins; [
+        obs-pipewire-audio-capture
+      ]; })
+      
       scribus
       yt-dlp
       jellyfin-media-player
