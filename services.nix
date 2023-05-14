@@ -39,7 +39,7 @@ in {
     journald.extraConfig = mkOption {
       default = {};
       example = {};
-      type = types.attrs;
+      type = with types; attrsOf (oneOf [ bool int str ]);
       description = "Add extra config to journald with Nix language";
     };
   };
@@ -151,10 +151,10 @@ in {
 
     services.fwupd.enable = true;
 
-    services.journald.extraConfig = journaldConfig cfg.journald.extraConfig;
+    services.journald.extraConfig = mkOverride 2 (journaldConfig cfg.journald.extraConfig);
 
-    aviallon.services.journald.extraConfig = ifEnable generalCfg.unsafeOptimizations {
-      Storage = "volatile";
+    aviallon.services.journald.extraConfig = {
+      Storage = mkIf generalCfg.unsafeOptimizations "volatile";
     };
 
     services.ananicy.enable = false;

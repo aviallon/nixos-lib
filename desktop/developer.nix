@@ -80,6 +80,10 @@ in {
       "doc" "info" "dev" "debug" "static"
     ];
 
+    aviallon.services.journald.extraConfig = {
+      Storage = mkForce "persistent";
+    };
+
     aviallon.boot.configurationLimit = mkDefault 10;
 
     aviallon.programs.allowUnfreeList = [
