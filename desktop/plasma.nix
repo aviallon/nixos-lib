@@ -101,12 +101,24 @@ in {
 
     aviallon.desktop.browser.firefox.overrides.enablePlasmaBrowserIntegration = true;
 
-    environment.profileRelativeSessionVariables = {
-      QT_PLUGIN_PATH = mkForce []; # Remove as it causes many issues when pulling one package from nixos-unstable
-    };
 
-    xdg.portal = {
-      enable = mkDefault true;
+    xdg.portal.enable = mkDefault true;
+    xdg.icons.enable = true;
+
+    systemd.user.services.setup-xdg-cursors = mkIf config.xdg.icons.enable {
+      script = ''
+          [ -d "$HOME/.icons/default" ] || mkdir -p "$HOME/.icons/default"
+          cat >"$HOME/.icons/default/index.theme" <<EOF
+          [icon theme]
+          Inherits=''${XCURSOR_THEME:-breeze_cursors}
+          EOF
+          '';
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      wantedBy = [ "graphical-session-pre.target" ];
+      partOf = [ "graphical-session-pre.target" ];
     };
 
   };
