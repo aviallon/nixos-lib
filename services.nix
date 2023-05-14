@@ -178,15 +178,6 @@ in {
         type = "LowLatency_RT"; }
       { name = "htop";
         type = "LowLatency_RT"; }
-      (ifEnable false { name = "hdapsd";
-        type = "LowLatency_RT";
-        sched = "fifo";
-        rtprio = 99;
-        ioclass = "realtime";
-        ionice = 0;
-        oom_score_adj = -999;
-        nice = -20;
-      })
     ] (x: builtins.toJSON x));
 
 
