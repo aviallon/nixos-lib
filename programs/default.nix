@@ -6,5 +6,6 @@
     ./git.nix
     ./nano.nix
     ./nvtop.nix
+    ./libreoffice.nix
   ];
 }

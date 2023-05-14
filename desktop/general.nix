@@ -138,6 +138,8 @@ in {
       "veracrypt"
     ];
 
+    aviallon.programs.libreoffice.enable = mkIf (!generalCfg.minimal) true;
+
     services.packagekit.enable = mkDefault (!generalCfg.minimal);
     security.sudo.extraConfig =
       ''

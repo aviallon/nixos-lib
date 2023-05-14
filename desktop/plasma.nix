@@ -96,13 +96,12 @@ in {
       krdc
       sddm-kcm
 
-      libreoffice-qt
-
       myFirefox
     ];
 
     aviallon.desktop.browser.firefox.overrides.enablePlasmaBrowserIntegration = true;
 
+    aviallon.programs.libreoffice.qt = true;
 
     xdg.portal.enable = mkDefault true;
     xdg.icons.enable = true;
