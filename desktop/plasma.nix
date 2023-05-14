@@ -13,7 +13,7 @@ let
       sha256 = "sha256-lTfsMUnYu3E2L25FSrMDkh9gB5X2fC0a5rvpMnPph4k=";
     };
 
-    patches = traceVal (filter (x: hasSuffix "sddm-ignore-config-mtime.patch" x) old.patches);
+    patches = filter (x: hasSuffix "sddm-ignore-config-mtime.patch" x) old.patches;
 
     nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.docutils ];
 
@@ -22,6 +22,8 @@ let
       "-DSYSTEMD_TMPFILES_DIR=${placeholder "out"}/etc/tmpfiles.d"
       "-DSYSTEMD_SYSUSERS_DIR=${placeholder "out"}/lib/sysusers.d"
     ];
+
+    outputs = (old.outputs or [ "out" ]) ++ [ "man" ];
   });
   sddmOptimized = optimizeCfg.optimizePkg { recursive = 0; } _sddm;
   sddmPackage = if optimizeCfg.enable then sddmOptimized else _sddm;
