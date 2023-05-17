@@ -3,16 +3,32 @@ with lib;
 let
   cfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
+
   filterConfig = pkgs.callPackage ./pipewire-noise-filter.cfg.nix {
     noiseFilterStrength = cfg.audio.noise-filter.strength;
   };
+
+  # Multimedia Packages
+
+  myFFmpeg = let
+    withUnfree = pkgs.unstable.ffmpeg-full.override { withUnfree = true; };
+    withTensorflow = withUnfree.overrideAttrs (old: {
+      buildInputs = (old.buildInputs or []) ++ [ pkgs.libtensorflow ];
+      configureFlags = (old.configureFlags or []) ++ [ "--enable-libtensorflow" ];
+    });
+  in withTensorflow;
+
+  
+  myFFmpeg_opt = config.aviallon.optimizations.optimizePkg { lto = false; } myFFmpeg;
+
+  
   ffmpeg_4 = config.aviallon.optimizations.optimizePkg { } pkgs.ffmpeg_4;
   obs-studio = pkgs.obs-studio.override { inherit ffmpeg_4; };
   myWrapOBS = pkgs.wrapOBS.override { inherit obs-studio; };
 in {
   config = mkIf (cfg.enable && !generalCfg.minimal) {
     environment.systemPackages = with pkgs; [
-      myFFmpeg
+      myFFmpeg_opt
       krita
       (myWrapOBS { plugins = with obs-studio-plugins; [
         obs-pipewire-audio-capture
@@ -24,6 +40,10 @@ in {
 
       jamesdsp # Audio post-processing
     ];
+
+    nixpkgs.overlays = [(final: prev: {
+      myFFmpeg = myFFmpeg_opt;
+    })];
 
 
     # Enable sound.
