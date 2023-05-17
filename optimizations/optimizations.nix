@@ -71,7 +71,10 @@ in {
                   "zlib" "alsa-lib" "glib" "lcms2" "gconf" "gnome-vfs"
 
                   # Very slow
-                  "llvm" "clang" "clang-wrapper" "valgrind" "rustc" "tensorflow"
+                  "llvm" "clang" "clang-wrapper" "valgrind" "rustc" "tensorflow" "qtwebengine"
+
+                  # Fixable with work, but slow for now
+                  "rapidjson"
                 ];
       example = [ "bash" ];
       description = "Blacklist specific packages from optimizations";
