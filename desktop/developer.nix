@@ -85,6 +85,8 @@ in {
       })
     ;
 
+    console.enable = generalCfg.debug;
+
     environment.extraOutputsToInstall = [
       "doc" "info" "dev" "debug" "static"
     ];
