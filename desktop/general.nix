@@ -119,6 +119,7 @@ in {
         spotify
         nextcloud-client
         tdesktop
+        signal-desktop
         vlc
         veracrypt
 
