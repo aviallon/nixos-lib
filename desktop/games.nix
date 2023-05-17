@@ -1,8 +1,9 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, myLib, ... }:
 with lib;
 let
   cfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
+  optimizePkg = config.aviallon.optimizations.optimizePkg;
   mkTmpDir = dirpath: cleanup: "D ${dirpath} 777 root root ${cleanup}";
 in {
 
@@ -14,7 +15,13 @@ in {
         description = "Yuzu switch emulator package";
         type = with types; package;
         example = pkgs.yuzu-early-access;
-        default = pkgs.yuzu-mainline;
+        default = pkgs.unstable.yuzu-early-access;
+      };
+      ryujinx.package = mkOption {
+        description = "Ryujinx Switch emulator package";
+        type = myLib.types.package';
+        default = pkgs.unstable.ryujinx;
+        example = literalExample "pkgs.unstable.ryujinx";
       };
     };
   };
@@ -30,7 +37,8 @@ in {
       mangohud
       lutris
     ] ++ optionals cfg.gaming.emulation [
-      cfg.gaming.yuzu.package
+      (optimizePkg { recursive = 0; } cfg.gaming.yuzu.package)
+      (optimizePkg { } cfg.gaming.ryujinx.package)
     ];
 
     boot.kernel.sysctl = {
