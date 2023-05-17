@@ -57,7 +57,7 @@ in {
       description = mdDoc "Specify default options passed to optimizePkg";
     };
     optimizePkg = mkOption {
-      default = optimizePkg;
+      default = if cfg.enable then optimizePkg else ({...}: pkg: pkg);
       example = "pkg: pkg.override { stdenv = pkgs.fastStdenv; }";
       description = "Function used for optimizing packages";
       type = with types; functionTo (functionTo package);
