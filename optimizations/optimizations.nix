@@ -130,10 +130,7 @@ in {
           } super.myFFmpeg;
 
         jetbrains = super.jetbrains // {
-          jdk = optimizePkg {
-              lto = true;
-              recursive = 1;
-            } super.jetbrains.jdk;
+          jdk = optimizePkg {} super.jetbrains.jdk;
         };
 
       })
