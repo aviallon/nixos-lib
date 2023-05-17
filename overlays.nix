@@ -55,13 +55,6 @@ in
         ark = super.ark.override {
           unfreeEnableUnrar = true;
         };
-        ungoogled-chromium = super.ungoogled-chromium.override {
-          enableWideVine = true;
-        };
-        chromium = super.chromium.override {
-          enableWideVine = true;
-        };
-
 
         power-profiles-daemon = super.power-profiles-daemon.overrideAttrs (old: {
           patches = [

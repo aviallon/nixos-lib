@@ -52,6 +52,7 @@ in {
     aviallon.desktop.browser.firefox.overrides.extraNativeMessengingHosts = [
       vdhcoapp
     ];
+    aviallon.desktop.browser.chromium.overrides.enableWideVine = true;
 
     environment.etc = with builtins; let
       vdhcoappManifestFile = unsafeDiscardStringContext (readFile "${vdhcoapp}/etc/chromium/native-messaging-hosts/net.downloadhelper.coapp.json");
