@@ -65,7 +65,6 @@ in
           enableWideVine = true;
         };
 
-        opensshOptimized = super.opensshOptimized or super.openssh;
 
         power-profiles-daemon = super.power-profiles-daemon.overrideAttrs (old: {
           patches = [

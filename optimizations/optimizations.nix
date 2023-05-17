@@ -117,9 +117,6 @@ in {
       })
     
       (self: super: {
-        opensshOptimized = optimizePkg {
-            recursive = 0;
-          } super.openssh;
         htop = optimizePkg {
           } super.htop;
         nano = optimizePkg {
