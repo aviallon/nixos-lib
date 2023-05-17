@@ -66,8 +66,6 @@ in
           ];
         });
 
-          });
-
         amdctl = super.callPackage ./packages/amdctl.nix {};
 
 
