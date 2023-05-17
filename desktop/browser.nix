@@ -44,6 +44,11 @@ in {
         vdhcoapp
       ];
 
+
+    nixpkgs.overlays = [(final: prev: {
+      myFirefox = (final.callPackage ../packages/firefox.nix cfg.browser.firefox.overrides);
+    })];
+
     aviallon.desktop.browser.firefox.overrides.extraNativeMessengingHosts = [
       vdhcoapp
     ];

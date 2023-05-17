@@ -76,20 +76,11 @@ in
           ];
         });
 
-        myFFmpeg = let
-          withUnfree = super.unstable.ffmpeg-full.override { withUnfree = true; };
-          withTensorflow = withUnfree.overrideAttrs (old: {
-            buildInputs = (old.buildInputs or []) ++ [ super.libtensorflow ];
-            configureFlags = (old.configureFlags or []) ++ [ "--enable-libtensorflow" ];
           });
-        in withTensorflow;
 
         amdctl = super.callPackage ./packages/amdctl.nix {};
 
-        # Use bleeding-edge linux firmware
-        linux-firmware = super.unstable.linux-firmware;
 
-        myFirefox = (super.callPackage ./packages/firefox.nix config.aviallon.desktop.browser.firefox.overrides);
       })
       (final: prev: {
         # Use our kernel for generating linux man pages

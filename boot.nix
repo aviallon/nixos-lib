@@ -187,6 +187,11 @@ in {
 
     };
 
+    nixpkgs.overlays = [(final: prev: {
+      # Use bleeding-edge linux firmware
+      linux-firmware = prev.unstable.linux-firmware;
+    })];
+
     boot = {
       initrd.kernelModules = [ ];
       initrd.availableKernelModules = [ "ehci_pci" ];
