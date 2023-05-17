@@ -83,8 +83,8 @@ in {
     };
     boot.initrd.verbose = generalCfg.debug;
     boot.consoleLogLevel = mkIf (!generalCfg.debug) 1;
-    
-    console.earlySetup = true; # Prettier console
+
+    console.enable = mkDefault false; # Completly disable console by default
     fonts.enableDefaultFonts = mkIf (!generalCfg.minimal) true;
 
     hardware.acpilight.enable = mkIf (!generalCfg.minimal) true;
