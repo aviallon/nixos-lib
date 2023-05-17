@@ -33,9 +33,10 @@ in {
     ];
   
     environment.systemPackages = with pkgs; [
-      #gamescope
+      gamescope
       mangohud
       lutris
+      bottles
     ] ++ optionals cfg.gaming.emulation [
       (optimizePkg { recursive = 0; } cfg.gaming.yuzu.package)
       (optimizePkg { } cfg.gaming.ryujinx.package)
