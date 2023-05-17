@@ -67,6 +67,13 @@ in {
     };
 
     aviallon.desktop.browser.chromium.overrides.commandLineArgs = cfg.browser.chromium.commandLineArgs;
+    aviallon.desktop.browser.chromium.commandLineArgs = mkIf generalCfg.unsafeOptimizations (options.aviallon.desktop.browser.chromium.commandLineArgs.default ++ [
+      "--ignore-gpu-blacklist"
+      "--enable-gpu-rasterization" "--enable-accelerated-mjpeg-decode"
+      "--enable-accelerated-video" "--canvas-oop-rasterization"
+      "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder" "--disable-features=UseChromeOSDirectVideoDecoder"
+    ]);
+
     programs.chromium = {
       enable = true;
       # https://docs.microsoft.com/en-us/microsoft-edge/extensions-chromium/enterprise/auto-update
