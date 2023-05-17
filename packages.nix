@@ -4,7 +4,9 @@ let
   cfg = config.aviallon.programs;
   desktopCfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
+  optimizeCfg = config.aviallon.optimizations;
 
+  myOpenssh = if optimizeCfg.enable then (optimizeCfg.optimizePkg {} pkgs.openssh) else pkgs.openssh;
 in
 {
   imports = [
@@ -35,12 +37,12 @@ in
 
     nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowUnfreeList;
 
-    environment.systemPackages = with pkgs; with libsForQt5; []
+    environment.systemPackages = with pkgs; []
     ++ [
       vim
       wget
       nano
-      openssh
+      myOpenssh
       psmisc
       pciutils
       ripgrep
@@ -59,21 +61,9 @@ in
       pv
       xxHash
       unzip
-    ]
-    ++ (optionals config.aviallon.developer.enable [
-      schedtool
-      clinfo
-      binutils
-      cpuset
-      gptfdisk # gdisk
-    
-      gcc
-      gnumake
-      cmake
-    ])
-    ;
+    ];
 
-    programs.ssh.package = pkgs.opensshOptimized;
+    programs.ssh.package = myOpenssh;
 
     programs.tmux = {
       enable = true;
@@ -82,8 +72,7 @@ in
       newSession = true;
     };
 
-    aviallon.programs.allowUnfreeList = [
-    ];
+    aviallon.programs.allowUnfreeList = [];
 
     programs.ccache.enable = true;
     

@@ -2,6 +2,7 @@
 with lib;
 let
   cfg = config.aviallon.developer;
+  generalCfg = config.aviallon.general;
 in {
   options.aviallon.developer = {
     enable = mkEnableOption "enable developer mode on this machine";
@@ -30,13 +31,21 @@ in {
       vulkan-tools
       gh # GitHub CLI
 
+      clinfo
+      binutils
+      cpuset
+      gptfdisk # gdisk
+    
+      gcc
+      gnumake
+      cmake
+
       linux-manual man-pages man-pages-posix
       
       linuxHeaders
 
       libsForQt5.kdevelop
-      jetbrains.clion
-      # adbfs-rootless
+      unstable.adbfs-rootless
 
       amdctl
     ];
