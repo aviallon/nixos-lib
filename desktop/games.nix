@@ -87,6 +87,7 @@ in {
     };
 
     programs.steam.package = pkgs.steam.override {
+      withJava = true;
       extraPkgs = pkgs: [
         pkgs.gamescope
       ];

@@ -52,9 +52,6 @@ in
             libnl
           ]);
         });
-        steam = super.steam.override {
-          withJava = true;
-        };
         ark = super.ark.override {
           unfreeEnableUnrar = true;
         };
