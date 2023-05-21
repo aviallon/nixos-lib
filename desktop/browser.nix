@@ -66,6 +66,11 @@ in {
         "${manifestFile}";
     };
 
+    aviallon.programs.allowUnfreeList = [
+      "chromium-unwrapped" "chrome-widevine-cdm"
+      "ungoogled-chromium" "chromium" # because of widevine
+    ];
+
     environment.variables = {
       NIXOS_OZONE_WL = mkIf generalCfg.unsafeOptimizations "1";
     };

@@ -118,8 +118,6 @@ in
 
     aviallon.programs.allowUnfreeList = [
       "unrar" "ark"
-      "chromium-unwrapped" "chrome-widevine-cdm"
-      "ungoogled-chromium" "chromium" # because of widevine
 
       "ffmpeg-full" # Because of unfree codecs
     ];
