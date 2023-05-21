@@ -118,7 +118,7 @@ in {
         libva-utils
         spotify
         nextcloud-client
-        tdesktop
+        unstable.telegram-desktop
         signal-desktop
         vlc
         veracrypt
