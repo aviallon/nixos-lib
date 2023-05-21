@@ -74,6 +74,10 @@ in {
     };
     security.rtkit.enable = true; # Real-time support for pipewire
 
+    aviallon.programs.allowUnfreeList = [
+      "ffmpeg-full" # Because of unfree codecs
+    ];
+
 
     # Hardware-agnostic audio denoising
     systemd.user.services.pipewire-noise-filter = mkIf cfg.audio.noise-filter.enable {

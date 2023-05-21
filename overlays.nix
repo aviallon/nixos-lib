@@ -118,8 +118,6 @@ in
 
     aviallon.programs.allowUnfreeList = [
       "unrar" "ark"
-
-      "ffmpeg-full" # Because of unfree codecs
     ];
   }; 
 }
