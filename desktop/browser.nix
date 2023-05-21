@@ -66,12 +66,21 @@ in {
         "${manifestFile}";
     };
 
+    environment.variables = {
+      NIXOS_OZONE_WL = mkIf generalCfg.unsafeOptimizations "1";
+    };
+
     aviallon.desktop.browser.chromium.overrides.commandLineArgs = cfg.browser.chromium.commandLineArgs;
     aviallon.desktop.browser.chromium.commandLineArgs = mkIf generalCfg.unsafeOptimizations (options.aviallon.desktop.browser.chromium.commandLineArgs.default ++ [
-      "--ignore-gpu-blacklist"
-      "--enable-gpu-rasterization" "--enable-accelerated-mjpeg-decode"
-      "--enable-accelerated-video" "--canvas-oop-rasterization"
-      "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder" "--disable-features=UseChromeOSDirectVideoDecoder"
+      "--flag-switches-begin" 
+        "--ignore-gpu-blacklist"
+        "--enable-gpu-rasterization"
+        "--enable-accelerated-mjpeg-decode"
+        "--enable-accelerated-video"
+        "--canvas-oop-rasterization"
+        "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder"
+        "--disable-features=UseChromeOSDirectVideoDecoder"
+      "--flag-switches-end"
     ]);
 
     programs.chromium = {
