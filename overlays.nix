@@ -5,17 +5,16 @@ let
   cfg = config.aviallon.overlays;
 in
 {
+
+  imports = [
+    (mkRenamedOptionModule [ "aviallon" "overlays" "optimizations" ] [ "aviallon" "optimizations" "enable" ])
+  ];
+
   options.aviallon.overlays = {
     enable = mkOption {
       default = true;
       example = false;
       description = "Wether to enable system-wide overlays or not";
-      type = types.bool;
-    };
-    optimizations = mkOption {
-      default = true;
-      example = false;
-      description = "Wether to enable CPU-specific optimizations for some packages or not";
       type = types.bool;
     };
     traceCallPackage = mkEnableOption "printing package names each time callPackage is evaluated";
