@@ -21,7 +21,7 @@ in {
         description = "Ryujinx Switch emulator package";
         type = myLib.types.package';
         default = pkgs.unstable.ryujinx;
-        example = literalExample "pkgs.unstable.ryujinx";
+        example = literalExpression "pkgs.unstable.ryujinx";
       };
     };
   };
@@ -88,7 +88,6 @@ in {
     };
 
     programs.steam.package = pkgs.steam.override {
-      withJava = true;
       extraPkgs = pkgs: [
         pkgs.gamescope
       ];

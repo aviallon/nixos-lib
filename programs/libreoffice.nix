@@ -40,7 +40,7 @@ in {
     package' = mkOption {
       internal = true;
       description = "Which base (unwrapped) LibreOffice package to use";
-      default = if cfg.qt then pkgs.libreoffice-qt.libreoffice else pkgs.libreoffice-unwrapped;
+      default = if cfg.qt then pkgs.libreoffice-qt.unwrapped else pkgs.libreoffice.unwrapped;
       type = myLib.types.package';
     };
   };
@@ -57,7 +57,7 @@ in {
             }))
         ;
       in pkgs.libreoffice.override {
-          libreoffice = applyOverrides overridesList cfg.package';
+          unwrapped = applyOverrides overridesList cfg.package';
         };
         
 

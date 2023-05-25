@@ -49,7 +49,7 @@ in
 
     security.sudo.execWheelOnly = true;
 
-    services.openssh.permitRootLogin = "prohibit-password";
+    services.openssh.settings.PermitRootLogin = "prohibit-password";
 
     security.apparmor.enable = true;
     services.dbus.apparmor = "enabled";

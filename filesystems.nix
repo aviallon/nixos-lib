@@ -120,8 +120,8 @@ in
       extraRules = concatStringsSep "\n" cfg.udevRules;
     };
 
-    boot.tmpOnTmpfs = true;
-    boot.tmpOnTmpfsSize =
+    boot.tmp.useTmpfs = true;
+    boot.tmp.tmpfsSize =
       let
         hasSwap = length config.swapDevices > 0;
       in

@@ -48,8 +48,10 @@ in {
     # Enable the OpenSSH daemon.
     services.openssh = {
       enable = true;
-      permitRootLogin = mkDefault "prohibit-password";
-      forwardX11 = mkDefault config.services.xserver.enable;
+      settings = {
+        X11Forwarding = mkDefault config.services.xserver.enable;
+        PermitRootLogin = mkDefault "prohibit-password";
+      };
       openFirewall = true;
       startWhenNeeded = true;
     };

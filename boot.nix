@@ -209,7 +209,6 @@ in {
 
       loader.grub.enable = cfg.useGrub;
       loader.grub = {
-        version = 2;
         device = mkIf cfg.efi "nodev";
         efiSupport = cfg.efi;
         configurationLimit = cfg.configurationLimit;

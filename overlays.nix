@@ -1,4 +1,5 @@
 {config, pkgs, options, lib, ...}:
+with builtins;
 with lib;
 let
   cfg = config.aviallon.overlays;
@@ -89,21 +90,30 @@ in
         jetbrains = prev.jetbrains // {
           pycharm-professional-fhs = (
           let
+            myIsDerivation = x:
+              let
+                tryX = tryEval x;
+              in
+                if tryX.success
+                then
+                  isDerivation tryX.value
+                  && !(tryX.value.meta.insecure || tryX.value.meta.broken)
+                else false
+              ;
             unwrapped = final.jetbrains.pycharm-professional;
           in prev.buildFHSUserEnv rec {
             name = "pycharm-professional";
-            targetPkgs = pkgs: (with pkgs; [
-              glibc
+            targetPkgs = pkgs: (with pkgs;
+              [
+                glibc
+                bashInteractive
 
-              python3Full
-              python311
-              python310Full
-              python39Full
-              python38Full
-              python37Full
-            
-              jetbrains.pycharm-professional
-            ]);
+                python3Full
+              
+                jetbrains.pycharm-professional
+              ]
+              ++ filter (x: myIsDerivation x) (attrValues pythonInterpreters)
+            );
 
             # symlink shared assets, including icons and desktop entries
             extraInstallCommands = ''

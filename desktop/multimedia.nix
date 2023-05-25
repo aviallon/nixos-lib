@@ -56,11 +56,6 @@ in {
       alsa.enable = true;
       alsa.support32Bit = mkDefault true;
       wireplumber.enable = true;
-      config.pipewire-pulse = {
-        "context.exec" = [
-          { path = "pactl"; args = ''load-module module-combine-sink sink_name="Sorties combinées"''; }
-        ];
-      };
     };
     environment.etc = {
     	"wireplumber/bluetooth.lua.d/51-bluez-config.lua".text = ''
@@ -71,6 +66,16 @@ in {
     			["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]"
     		}
     	'';
+    	"pipewire/pipewire-pulse.conf.d/combined-outputs.json".text = ''
+    	  {
+          "context.exec": [
+            {
+              "args": "load-module module-combine-sink sink_name=\"Sorties combinées\"",
+              "path": "pactl"
+            }
+          ]
+        }
+      '';
     };
     security.rtkit.enable = true; # Real-time support for pipewire
 

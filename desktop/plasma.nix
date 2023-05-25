@@ -34,7 +34,11 @@ in {
       enable = true;
       runUsingSystemd = true;
       useQtScaling = true;
-      supportDDC = true;
+
+      # Removed in: https://github.com/NixOS/nixpkgs/pull/172078
+      # and: https://github.com/NixOS/nixpkgs/pull/221721
+      # Once this (https://invent.kde.org/plasma/powerdevil/-/issues/19) is solved, make PR to add it back (prehaps by default?)
+      # supportDDC = true;
     };
 
     systemd.tmpfiles.rules = mkAfter [
