@@ -42,6 +42,8 @@ in {
       (optimizePkg { } cfg.gaming.ryujinx.package)
     ];
 
+    aviallon.windows.wine.enable = mkDefault true;
+
     boot.kernel.sysctl = {
 
       # Fixes crash in Hogwarts Legacy when using Floo network (https://steamcommunity.com/app/990080/discussions/0/3773490215223050912/)
