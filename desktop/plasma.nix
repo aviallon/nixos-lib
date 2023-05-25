@@ -69,6 +69,14 @@ in {
       };
     };
 
+    systemd.services.display-manager = {
+      serviceConfig = {
+        Restart = mkOverride 50 "on-failure";
+        TimeoutStopSec = 10;
+        SendSIGHUP = true;
+      };
+    };
+
     nixpkgs.overlays = [(final: prev: { mySddm = sddmPackage; } )];
 
     services.xserver.displayManager.job = {
