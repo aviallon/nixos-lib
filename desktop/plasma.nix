@@ -1,17 +1,12 @@
-{config, pkgs, lib, ...}:
+{config, pkgs, lib, sddm-unstable, ...}:
 with lib;
 let
   cfg = config.aviallon.desktop;
   optimizeCfg = config.aviallon.optimizations;
-  _sddm = pkgs.sddm.overrideAttrs (old: rec {
-    pname = old.pname + "-git";
-    version = "2023-05-12";
-    src = pkgs.fetchFromGitHub {
-      owner = "sddm";
-      repo = "sddm";
-      rev = "58a35178b75aada974088350f9b89db45f5c3800";
-      sha256 = "sha256-lTfsMUnYu3E2L25FSrMDkh9gB5X2fC0a5rvpMnPph4k=";
-    };
+  _sddm_new = pkgs.sddm.overrideAttrs (old: rec {
+    pname = old.pname + "-unstable";
+    version = sddm-unstable.lastModifiedDate;
+    src = sddm-unstable;
 
     patches = filter (x: hasSuffix "sddm-ignore-config-mtime.patch" x) old.patches;
 
@@ -25,9 +20,12 @@ let
 
     outputs = (old.outputs or [ "out" ]) ++ [ "man" ];
   });
+  _sddm = if cfg.sddm.unstable then _sddm_new else pkgs.sddm;
   sddmOptimized = optimizeCfg.optimizePkg { recursive = 0; } _sddm;
   sddmPackage = if optimizeCfg.enable then sddmOptimized else _sddm;
 in {
+  options.aviallon.desktop.sddm.unstable = mkEnableOption (mdDoc "bleeding-edge SDDM");
+
   config = mkIf (cfg.enable && (cfg.environment == "plasma")) {
     # Enable the Plasma 5 Desktop Environment.
     services.xserver.desktopManager.plasma5 = {
