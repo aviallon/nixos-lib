@@ -56,7 +56,7 @@ in
           unfreeEnableUnrar = true;
         };
 
-        power-profiles-daemon = super.power-profiles-daemon.overrideAttrs (old: {
+        /*power-profiles-daemon = super.power-profiles-daemon.overrideAttrs (old: {
           patches = [
             # ACPI cpufreq support
             (super.fetchpatch {
@@ -64,7 +64,7 @@ in
               sha256 = "sha256-UTfbUN/rHUFJ8eXOL3P8LCkBr+TySbEer9ti2e0kAiU=";
             })
           ];
-        });
+        });*/
 
         amdctl = super.callPackage ./packages/amdctl.nix {};
 
