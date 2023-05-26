@@ -99,6 +99,7 @@ in
                   && !(tryX.value.meta.insecure || tryX.value.meta.broken)
                 else false
               ;
+            interpreters = pkgs: filter (x: myIsDerivation x) (attrValues pkgs.pythonInterpreters);
             unwrapped = final.jetbrains.pycharm-professional;
           in prev.buildFHSUserEnv rec {
             name = "pycharm-professional";
@@ -111,7 +112,7 @@ in
               
                 jetbrains.pycharm-professional
               ]
-              ++ filter (x: myIsDerivation x) (attrValues pythonInterpreters)
+              ++ trace "Using the following interpreters: ${toString (interpreters pkgs)}" (interpreters pkgs)
             );
 
             # symlink shared assets, including icons and desktop entries
@@ -124,7 +125,6 @@ in
         };
       })
     ];
-
     aviallon.programs.allowUnfreeList = [
       "unrar" "ark"
     ];
