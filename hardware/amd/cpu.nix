@@ -3,6 +3,7 @@ with lib;
 let
   generalCfg = config.aviallon.general;
   cpuIsZen = ! isNull (builtins.match "znver[0-9]" generalCfg.cpu.arch);
+  kernelVersion = getVersion config.boot.kernelPackages.kernel;
 in {
   config = mkIf (generalCfg.cpu.vendor == "amd") {
     boot.kernel.sysctl = {
@@ -13,7 +14,14 @@ in {
     };
 
     aviallon.boot.cmdline = {
-      "amd_pstate" = "passive";
+      "amd_pstate" =
+        if versionAtLeast kernelVersion "6.4" then
+          "guided"
+        else if versionAtLeast kernelVersion "6.3" then
+          "active"
+        else
+          "passive"
+        ;
     } // optionalAttrs (generalCfg.cpu.arch == "znver2") {
       # Required for Zen 2
       "amd_pstate.shared_memory" = 1;
