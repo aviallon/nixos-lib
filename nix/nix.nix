@@ -50,8 +50,8 @@ in
         CPUSchedulingPolicy = "idle";
         IOSchedulingClass = "idle";
         IOAccounting = true;
-        IOWeight = 1024 / 10;
-        CPUWeight = 1;
+        IOWeight = 10;
+        CPUWeight = 10;
         CPUQuota = (toString (generalCfg.cpu.threads * 80)) + "%";
         Type = mkOverride 20 "simple";
       };
@@ -70,9 +70,11 @@ in
       serviceConfig = {
         Nice = 19;
         CPUSchedulingPolicy = mkForce "batch";
+        CPUWeight = 1;
+        CPUQuota = (toString (generalCfg.cpu.threads * 80)) + "%";
         IOSchedulingClass = mkForce "idle";
         IOAccounting = true;
-        IOWeight = 1024 / 10;
+        IOWeight = 1;
       };
     };
 
