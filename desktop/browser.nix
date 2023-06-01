@@ -54,16 +54,11 @@ in {
     ];
     aviallon.desktop.browser.chromium.overrides.enableWideVine = true;
 
-    environment.etc = with builtins; let
-      vdhcoappManifestFile = unsafeDiscardStringContext (readFile "${vdhcoapp}/etc/chromium/native-messaging-hosts/net.downloadhelper.coapp.json");
-      vdhcoappManifest = fromJSON (toString vdhcoappManifestFile);
-      moddedManifest = toJSON (recursiveUpdate vdhcoappManifest {
-        allowed_origins = vdhcoappManifest.allowed_origins ++ [ "chrome-extension://jmkaglaafmhbcpleggkmaliipiilhldn/" ];
-      });
-      manifestFile = pkgs.writeText "${vdhcoappManifest.name}.json" moddedManifest;
+    environment.etc = with builtins; let    
+      vdhcoappManifestFile = "${vdhcoapp}/etc/chromium/native-messaging-hosts/net.downloadhelper.coapp.json";
     in {
       "chromium/native-messaging-hosts/net.downloadhelper.coapp.json".source =
-        "${manifestFile}";
+        "${vdhcoappManifestFile}";
     };
 
     aviallon.programs.allowUnfreeList = [
