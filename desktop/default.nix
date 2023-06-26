@@ -9,5 +9,6 @@ with lib;
     ./games.nix
     ./browser.nix
     ./gnome.nix
+    ./printing.nix
   ];
 }
