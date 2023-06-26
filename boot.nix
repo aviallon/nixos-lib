@@ -209,6 +209,8 @@ in {
     })];
 
     boot = {
+      bootspec.enableValidation = true;
+    
       initrd.kernelModules = [ ];
       initrd.availableKernelModules = [ "ehci_pci" ];
 
