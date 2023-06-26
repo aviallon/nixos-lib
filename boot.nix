@@ -32,6 +32,16 @@ let
         SCHED_CLUSTER y
       '';
     };
+    backports = {
+      zenLLCIdle = {
+        name = "zen-llc-idle";
+        patch = pkgs.fetchpatch {
+          url = "https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/patch/?id=c5214e13ad60bd0022bab45cbac2c9db6bc1e0d4";
+          hash = "sha256-3uDieD7XOaMM5yqOSvyLNsr2OqBxXESB5sM2gnGYoWk=";
+        };
+      };
+    };
+    
     optimizeForCPUArch = arch: let
       archConfigMap = {
         "k8" = "K8"; "opteron" = "K8"; "athlon64" = "K8"; "athlon-fx" = "K8";
@@ -87,6 +97,8 @@ let
       ) set;
 
   isXanmod = kernel: ! isNull (strings.match ".*(xanmod).*" kernel.modDirVersion);
+
+  kernelVersionOlder = ver: versionOlder cfg.kernel.version ver;
   
   cfg = config.aviallon.boot;
   generalCfg = config.aviallon.general;
@@ -114,7 +126,11 @@ in {
     kvdo.enable = mkEnableOption "dm-kvdo kernel module";
     rtGroupSched.enable = mkEnableOption "RT cgroups";
     energyModel.enable = mkEnableOption "Energy Model";
-    amdClusterId.enable = mkEnableOption "Energy Model";
+    
+    patches = {
+      amdClusterId.enable = mkEnableOption "Energy Model";
+      zenLLCIdle.enable = mkEnableOption "Zen LLC Idle patch";
+    };
     
     efi = mkOption rec {
       description = "Use EFI bootloader";
@@ -202,7 +218,8 @@ in {
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
         ++ optional cfg.rtGroupSched.enable customKernelPatches.enableRTGroupSched
         ++ optional cfg.energyModel.enable customKernelPatches.enableEnergyModel
-        ++ optional cfg.amdClusterId.enable customKernelPatches.amdClusterId
+        ++ optional (cfg.patches.amdClusterId.enable && kernelVersionOlder "6.4") customKernelPatches.amdClusterId
+        ++ optional (cfg.patches.zenLLCIdle.enable && kernelVersionOlder "6.5") customKernelPatches.backports.zenLLCIdle
         ++ optional (isXanmod cfg.kernel && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpu.arch)
       ;
 
