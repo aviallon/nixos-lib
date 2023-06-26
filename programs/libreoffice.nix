@@ -7,16 +7,8 @@ let
     then "<function>"
     else (builtins.toJSON x)
   ;
-  applyOverrides = overrides: pkg:
-    foldl'
-      (prev: override:
-        let
-          r = (trace "override: ${toStringOrFunc override}" override) (trace "prev: ${toString prev}" prev);
-        in trace "result: ${toString r}" r
-      )
-    pkg
-    overrides
-  ;
+  
+  applyOverrides = overrides: pkg: pipe pkg overrides;
 in {
   options.aviallon.programs.libreoffice = {
     enable = mkEnableOption "LibreOffice";
