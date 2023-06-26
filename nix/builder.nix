@@ -164,7 +164,7 @@ in
     system.activationScripts = {
       buildUserKeySetup.text = ''
         cp --force -v ${buildUserKeyFile} ${buildUserKeyFilePath}
-        chmod -v 400 ${buildUserKeyFilePath}
+        chmod -c 400 ${buildUserKeyFilePath}
       '';
     };
   };
