@@ -56,9 +56,6 @@ in {
       startWhenNeeded = true;
     };
 
-    # Better reliability and performance
-    services.dbus.implementation = "broker";
-
     systemd.services."ssh-inhibit-sleep@" = {
       description = "Inhibit sleep when SSH connections are active";
       bindsTo = [ "sshd@%i.service" ];
@@ -75,6 +72,13 @@ in {
     programs.ssh.setXAuthLocation = config.services.xserver.enable;
     programs.ssh.forwardX11 = mkDefault config.services.xserver.enable;
     security.pam.services.sudo.forwardXAuth = mkDefault true; # Easier to start GUI programs as root
+
+    environment.systemPackages = with pkgs; [ waypipe ];
+
+
+    # Better reliability and performance
+    services.dbus.implementation = "broker";
+
     
 
     
