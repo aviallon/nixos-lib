@@ -134,9 +134,6 @@ in {
 
     programs.ssh.startAgent = false;
 
-    # SmartCards
-    services.pcscd.enable = mkDefault (!generalCfg.minimal);
-
     services.avahi = {
       enable = !generalCfg.minimal; # .lan/.local resolution
       nssmdns = true; # .lan/.local resolution

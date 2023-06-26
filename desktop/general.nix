@@ -153,6 +153,9 @@ in {
       Defaults:root,%wheel env_keep+=XDG_RUNTIME_DIR
       ''
     ;
+
+    # SmartCards
+    services.pcscd.enable = mkDefault (!generalCfg.minimal);
     
     networking.networkmanager = {
       plugins = []
