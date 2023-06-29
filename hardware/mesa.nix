@@ -30,7 +30,8 @@ in {
     unstable = mkOption {
       default = false;
       type = types.bool;
-      description = "Wether or not to use mesa from nixpkgs-unstable";
+      internal = true;
+      description = "Wether or not to use mesa from nixpkgs-unstable [BROKEN]";
       example = config.aviallon.general.unsafeOptimizations;
     };
     package = mkOption {
