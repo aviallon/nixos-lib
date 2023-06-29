@@ -73,6 +73,15 @@ in {
     hardware.opengl = {
       package = with pkgs; cfg.internal.package.drivers;
       package32 = with pkgs; cfg.internal.package32.drivers;
+
+      extraPackages = optional (hasAttr "opencl" cfg.internal.package.out) cfg.internal.package.out.opencl;
+      extraPackages32 = optional (hasAttr "opencl" cfg.internal.package32.out) cfg.internal.package32.out.opencl;
+    };
+
+    # Warning: mesa has many outputs, and "opencl" is not in "drivers"
+    # See pkgs.mesa.outputs
+
+    environment.variables = {
     };
   };
 }
