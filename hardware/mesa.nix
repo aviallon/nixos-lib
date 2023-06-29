@@ -82,6 +82,7 @@ in {
     # See pkgs.mesa.outputs
 
     environment.variables = {
+      VAAPI_MPEG4_ENABLED = "1"; # https://docs.mesa3d.org/envvars.html#va-api-environment-variables
     };
   };
 }
