@@ -27,6 +27,10 @@ in {
       "amd_pstate.shared_memory" = 1;
     };
 
+    aviallon.boot.patches = mkIf config.aviallon.optimizations.enable {
+      amdClusterId.enable = mkIf cpuIsZen true;
+    };
+
     boot.extraModulePackages = with config.boot.kernelPackages; [] 
       ++ optional cpuIsZen (info "enable zenpower for Ryzen CPU" zenpower)
     ;
