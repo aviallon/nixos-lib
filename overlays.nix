@@ -93,11 +93,14 @@ in
               let
                 tryX = tryEval x;
               in
-                if tryX.success
+                if
+                  tryX.success && (isDerivation tryX.value)
                 then
-                  isDerivation tryX.value
-                  && !(tryX.value.meta.insecure || tryX.value.meta.broken)
-                else false
+                  if !(tryX.value.meta.insecure || tryX.value.meta.broken)
+                  then true
+                  else trace "Excluding interpreter ${getName x} from pycharm FHS" false
+                else
+                  false
               ;
             interpreters = pkgs: filter (x: myIsDerivation x) (attrValues pkgs.pythonInterpreters);
             unwrapped = final.jetbrains.pycharm-professional;
