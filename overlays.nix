@@ -74,16 +74,6 @@ in
         # Use our kernel for generating linux man pages
         linux-manual = prev.linux-manual.override { linuxPackages_latest = config.boot.kernelPackages; };
       })
-      (self: super: {
-        nextcloud-client = super.nextcloud-client.overrideAttrs (old: {
-          nativeBuildInputs = old.nativeBuildInputs ++ (with super; [
-            extra-cmake-modules
-          ]);
-          buildInputs = old.buildInputs ++ (with super; with libsForQt5; [
-            kio
-          ]);
-        });
-      })
 
       (final: prev: {
         jetbrains = prev.jetbrains // {
