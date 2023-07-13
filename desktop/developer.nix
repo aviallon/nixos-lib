@@ -31,6 +31,14 @@ in {
       vulkan-tools
       gh # GitHub CLI
 
+      # Language Servers
+      nodePackages.yaml-language-server # Yaml
+      nodePackages.bash-language-server # Bash
+      nodePackages.intelephense # PHP
+      gopls # Go
+      ccls # C/C++
+      lua-language-server # Lua
+
       clinfo
       binutils
       cpuset
@@ -100,6 +108,7 @@ in {
     aviallon.programs.allowUnfreeList = [
       "tabnine" "clion"
       "Oracle_VM_VirtualBox_Extension_Pack" "virtualbox"
+      "intelephense"
     ];
   };
 }
