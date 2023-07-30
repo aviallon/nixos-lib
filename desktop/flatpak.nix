@@ -1,10 +1,9 @@
 { config, pkgs, lib, ...}:
 with lib;
 let
-  desktopCfg = config.aviallon.desktop;
+  cfg = config.aviallon.desktop;
 in {
-  config = {}
-    // {
+  config = mkIf cfg.enable {
       services.flatpak.enable = mkDefault true;
       systemd.services.flatpak-add-flathub = {
         script = ''
@@ -20,6 +19,7 @@ in {
           "graphical.target"
         ];
       };
+
     }
   ;
 }

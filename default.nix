@@ -5,7 +5,6 @@
     ./nix
     ./boot.nix
     ./desktop
-    ./home-manager.nix
     ./network.nix
     ./packages.nix
     ./services.nix

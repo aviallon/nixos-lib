@@ -11,8 +11,6 @@ in
 {
   imports = [
     ./programs
-    ./overlays.nix
-    ./packages/flatpak.nix
     (mkRenamedOptionModule [ "aviallon" "programs" "compileFlags" ] [ "aviallon" "optimizations" "extraCompileFlags" ])
   ];
 

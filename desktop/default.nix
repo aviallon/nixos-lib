@@ -10,5 +10,6 @@ with lib;
     ./browser.nix
     ./gnome.nix
     ./printing.nix
+    ./flatpak.nix
   ];
 }
