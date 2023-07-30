@@ -38,6 +38,10 @@ in
     environment.systemPackages = [
       (hiPrio config.system.build.nixos-rebuild)
     ];
+
+    environment.variables = {
+      NIX_REMOTE = "daemon"; # Use the nix daemon by default
+    };
     
     systemd.services.nixos-upgrade = {
       unitConfig = {
