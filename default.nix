@@ -9,7 +9,7 @@
     ./packages.nix
     ./services.nix
     ./filesystems.nix
-    ./hardening.nix
+    ./security
     ./hardware
     ./laptop.nix
     ./power.nix
