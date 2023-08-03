@@ -32,15 +32,21 @@ in {
       { assertion = cfg.gaming.enable -> !generalCfg.minimal; message = "Gaming features are incompatible with minimal mode"; }
     ];
   
-    environment.systemPackages = with pkgs; [
-      gamescope
-      mangohud
-      lutris
-      bottles
-    ] ++ optionals cfg.gaming.emulation [
-      (optimizePkg { recursive = 0; } cfg.gaming.yuzu.package)
-      (optimizePkg { } cfg.gaming.ryujinx.package)
-    ];
+    environment.systemPackages = let
+      my_yuzu = cfg.gaming.yuzu.package.overrideAttrs (old: {
+        cmakeFlags = old.cmakeFlags ++ [
+          "-DYUZU_USE_PRECOMPILED_HEADERS=OFF"
+        ];
+      });
+    in with pkgs; [
+        gamescope
+        mangohud
+        lutris
+        bottles
+      ] ++ optionals cfg.gaming.emulation [
+        (optimizePkg { recursive = 0; } my_yuzu)
+        (optimizePkg { } cfg.gaming.ryujinx.package)
+      ];
 
     aviallon.windows.wine.enable = mkDefault true;
 
