@@ -16,5 +16,7 @@ in {
     environment.systemPackages = with pkgs; [
       cfg.cryptsetup.package
     ];
+
+    boot.initrd.availableKernelModules = [ "cryptd" ];
   };
 }
