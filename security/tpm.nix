@@ -21,5 +21,9 @@ in {
     services.tcsd = mkIf cfg.tpm1_2.enable {
       enable = true;
     };
+
+    boot.initrd.availableKernelModules = [
+      "tpm_tis" "tpm_crb"
+    ];
   };
 }
