@@ -1,6 +1,5 @@
 {
   inputs = {
-    nixpkgs-22_11.url = "github:NixOS/nixpkgs/nixos-22.11";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
@@ -10,11 +9,6 @@
     fps.url = "github:wamserma/flake-programs-sqlite";
     fps.inputs.nixpkgs.follows = "nixpkgs";
 
-    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
-    pre-commit-hooks.inputs.nixpkgs.follows = "nixpkgs";
-
-    flake-utils-plus.url = "github:gytis-ivaskevicius/flake-utils-plus";
-
     sddm-unstable = {
       url = "github:sddm/sddm/develop";
       flake = false;
@@ -23,11 +17,11 @@
 
   outputs =
     inputs@{ self
-    #, flake-utils-plus
     , nixpkgs
     , nur
     , nixpkgs-unstable
     , fps
+    , sddm-unstable
     , ...
     }: let
       lib = nixpkgs.lib;
