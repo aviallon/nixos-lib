@@ -3,10 +3,6 @@ with lib;
 let
   cfg = config.aviallon.filesystems;
   
-  getSwapDevice = index: ifEnable (length config.swapDevices > index) (elemAt config.swapDevices index);
-  firstSwapDevice = getSwapDevice 0;
-  resumeDeviceLabel = attrByPath [ "label" ] null firstSwapDevice; 
-  
   ioSchedType = types.enum [ "bfq" "kyber" "mq-deadline" "none" null ];
 in
 {
@@ -52,6 +48,12 @@ in
       type = types.listOf types.str;
     };
     lvm = mkEnableOption "lvm options required for correct booting";
+    resumeDevice = mkOption {
+      default = null;
+      description = "Swap device used for hibernation/resuming.";
+      example = "LABEL=nixos-swap";
+      type = types.nullOr types.str;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -70,7 +72,11 @@ in
     ;
 
     aviallon.boot.cmdline = {
-      resume = mkIf (! isNull resumeDeviceLabel) (mkDefault "LABEL=${resumeDeviceLabel}");
+      resume =
+        if isNull cfg.resumeDevice
+          then "none"
+          else cfg.resumeDevice
+        ;
     };
 
 
