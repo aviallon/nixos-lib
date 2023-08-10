@@ -215,6 +215,7 @@ rec {
                      , overrideMap ? { }
                      , stdenv ? null
                      , lto ? false
+                     , attributes ? { }
                      , _depth ? 0
                      , ...
                      }@attrs:
@@ -289,8 +290,10 @@ rec {
             CFLAGS = if (! isList old.CFLAGS) then [ old.CFLAGS ] else old.CFLAGS;
           }
         );
+        _pkgOptimized = addAttrs _pkg optimizedAttrs;
+        _pkgFinal = addAttrs _pkgOptimized attributes;
       in
-      trace "Optimized ${myGetName pkg} with overrideAttrs at level '${level}' (depth: ${toString _depth}, lto: ${toString lto})" (addAttrs _pkg optimizedAttrs)
+      trace "Optimized ${myGetName pkg} with overrideAttrs at level '${level}' (depth: ${toString _depth}, lto: '${toString lto}')" _pkgFinal
     else if (hasAttr "name" pkg) then
       warn "Can't optimize ${myGetName pkg} (depth: ${toString _depth})" pkg
     else

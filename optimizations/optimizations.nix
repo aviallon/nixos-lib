@@ -16,11 +16,12 @@ let
       ltoBlacklist ? cfg.lto.blacklist,
       overrideMap ? cfg.overrideMap,
       lto ? cfg.lto,
+      attributes ? {},
       stdenv ? null,
       ...
     }@attrs: pkg:
       myLib.optimizations.optimizePkg pkg (cfg.defaultSettings // {
-        inherit cpuCores cpuTune cpuArch extraCFlags blacklist ltoBlacklist overrideMap stdenv;
+        inherit cpuCores cpuTune cpuArch extraCFlags blacklist ltoBlacklist overrideMap stdenv attributes;
       } // attrs);
 in {
   options.aviallon.optimizations = {
