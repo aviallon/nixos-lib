@@ -20,8 +20,6 @@ in {
       hwloc
       bind
       git-cola
-      virt-manager-qt
-      qtemu
       parted
       gparted
       cpu-x
@@ -51,6 +49,11 @@ in {
       linux-manual man-pages man-pages-posix
       
       linuxHeaders
+
+      # Virtulization tools
+      virt-manager-qt
+      virt-viewer
+      qtemu
 
       libsForQt5.kdevelop
       unstable.adbfs-rootless
