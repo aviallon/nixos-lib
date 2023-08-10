@@ -126,25 +126,6 @@ in
       )
     ) machineList);
 
-    aviallon.nix.builder.buildMachines = {
-      luke-skywalker-nixos = mkDefault {
-        hostName = "2a01:e0a:18e:8670:ae71:8e51:19af:91a4";
-        cores = 16;
-        threads = 32;
-        x86ver = 3;
-      };
-      elrond = mkDefault {
-        enable = false;
-        hostName = "cachan.lesviallon.fr";
-        sshConfig = ''
-          Port 52222
-        '';
-        cores = 6;
-        threads = 6;
-        x86ver = 2;
-      };
-    };
-
     users.users.builder = {
       isSystemUser = true;
       group = "builder";
