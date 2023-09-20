@@ -116,7 +116,11 @@ in {
       
       ACTION!="remove", KERNEL=="BAT*", SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", RUN+="${pkgs.systemd}/bin/systemctl start battery-power.target"
       ACTION!="remove", KERNEL=="BAT*", SUBSYSTEM=="power_supply", ATTR{status}=="Charging", RUN+="${pkgs.systemd}/bin/systemctl stop battery-power.target"
+
+      ACTION!="remove", DEVPATH=="*intel-rapl:*", SUBSYSTEM=="powercap", RUN+="${pkgs.coreutils}/bin/chmod g+r '/sys%p/ernegy_uj'"
     '';
+
+    users.groups.power = {};
   
     systemd.services.undervolt-intel = {
       script = ""
