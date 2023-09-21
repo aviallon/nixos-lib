@@ -39,12 +39,6 @@ in {
     };
     graphics = {
       shaderCache = {
-        path = mkOption {
-          description = "Where to put shader cache (currently only for NVidia)";
-          type = types.path;
-          default = "/var/tmp/shadercache";
-          example = "/tmp/shadercache";
-        };
         cleanupInterval = mkOption {
           description = "Interval for cache cleanup (tmpfiles.d format). Set to '-' to disable.";
           type = types.str;
@@ -54,6 +48,10 @@ in {
       };
     };
   };
+
+  imports = [
+    (mkRemovedOptionModule [ "aviallon" "desktop" "graphics" "shaderCache" "path" ] "Now always relative to $XDG_CACHE_HOME" )
+  ];
 
   config = mkIf cfg.enable {
 
