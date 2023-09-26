@@ -35,7 +35,8 @@ in {
     environment.systemPackages = let
       my_yuzu = cfg.gaming.yuzu.package.overrideAttrs (old: {
         cmakeFlags = old.cmakeFlags ++ [
-          "-DYUZU_USE_PRECOMPILED_HEADERS=OFF"
+          #"-DYUZU_USE_PRECOMPILED_HEADERS=OFF"
+          #"-DDYNARMIC_USE_PRECOMPILED_HEADERS=OFF"
         ];
       });
     in with pkgs; [
