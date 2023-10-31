@@ -183,10 +183,10 @@ let
     attrByPath [ march ] { } _map;
 
 
-  cacheTuning = { compiler, l1i ? null, l1Line ? null, lastLevel ? null }:
+  cacheTuning = { compiler, l1d ? null, l1i ? null, l1Line ? null, lastLevel ? null }:
     if compiler == "gcc" then [ ]
-      ++ optional (! isNull l1i) "--param l1-cache-size=${toString l1i}"
-      ++ optional (! isNull l1Line) "--param l1-cache-line-size=${toString l1i}"
+      ++ optional (! isNull l1d) "--param l1-cache-size=${toString l1d}"
+      ++ optional (! isNull l1Line) "--param l1-cache-line-size=${toString l1Line}"
       ++ optional (! isNull lastLevel) "--param l2-cache-size=${toString lastLevel}"
     else
       [ ];
@@ -333,6 +333,7 @@ rec {
     , ninja ? false
     , l1LineCache ? null
     , l1iCache ? null
+    , l1dCache ? null
     , lastLevelCache ? null
     , ...
     }:
@@ -366,6 +367,7 @@ rec {
           inherit compiler;
           l1Line = l1LineCache;
           l1i = l1iCache;
+          l1d = l1dCache;
           lastLevel = lastLevelCache;
         });
       CXXFLAGS = CFLAGS;
