@@ -11,6 +11,10 @@ let
       cpuCores ? generalCfg.cpu.threads,
       cpuArch ? generalCfg.cpu.arch,
       cpuTune ? generalCfg.cpu.tune,
+      l1dCache ? generalCfg.cpu.caches.l1d,
+      l1iCache ? generalCfg.cpu.caches.l1i,
+      l1LineCache ? generalCfg.cpu.caches.cacheLine,
+      lastLevelCache ? generalCfg.cpu.caches.lastLevel,
       extraCFlags ? cfg.extraCompileFlags,
       blacklist ? cfg.blacklist,
       ltoBlacklist ? cfg.lto.blacklist,
@@ -21,7 +25,7 @@ let
       ...
     }@attrs: pkg:
       myLib.optimizations.optimizePkg pkg (cfg.defaultSettings // {
-        inherit cpuCores cpuTune cpuArch extraCFlags blacklist ltoBlacklist overrideMap stdenv attributes;
+        inherit cpuCores cpuTune cpuArch extraCFlags blacklist ltoBlacklist overrideMap stdenv attributes l1dCache l1iCache l1LineCache lastLevelCache;
       } // attrs);
 in {
   options.aviallon.optimizations = {
