@@ -11,12 +11,11 @@ let
   # Multimedia Packages
 
   myFFmpeg = let
-    withUnfree = pkgs.unstable.ffmpeg-full.override { withUnfree = true; };
-    withTensorflow = withUnfree.overrideAttrs (old: {
-      buildInputs = (old.buildInputs or []) ++ [ pkgs.libtensorflow ];
-      configureFlags = (old.configureFlags or []) ++ [ "--enable-libtensorflow" ];
-    });
-  in withTensorflow;
+    withUnfree = pkgs.unstable.ffmpeg-full.override {
+      withUnfree = true;
+      withTensorflow = !pkgs.unstable.libtensorflow.meta.broken;
+    };
+  in withUnfree;
 
   
   myFFmpeg_opt = config.aviallon.optimizations.optimizePkg { lto = false; } myFFmpeg;
