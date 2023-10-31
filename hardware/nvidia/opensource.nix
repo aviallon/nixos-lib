@@ -3,7 +3,7 @@ with lib;
 let
   cfg = config.aviallon.hardware.nvidia;
 in {
-  config = mkIf (cfg.enable && !cfg.useProprietary) {
+  config = mkIf (cfg.enable && cfg.variant == "nouveau") {
     boot.initrd.kernelModules = [ "nouveau" ];
 
     aviallon.boot.cmdline = {

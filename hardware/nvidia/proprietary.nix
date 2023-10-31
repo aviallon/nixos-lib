@@ -11,7 +11,6 @@ let
 in {
   options = {
     aviallon.hardware.nvidia.proprietary = {
-      #enable = mkEnableOption "Wether to user NVidia proprietary drivers";
       gsync = mkEnableOption "Screen is GSYNC monitor";
       vsync = mkOption {
         description = "Wether to enable or disable vsync";
@@ -38,7 +37,7 @@ in {
     };
   };
   
-  config = mkIf (cfg.enable && cfg.useProprietary) {
+  config = mkIf (cfg.enable && cfg.variant == "proprietary") {
 
     assertions = [];
   
