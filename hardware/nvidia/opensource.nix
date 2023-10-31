@@ -34,5 +34,9 @@ in {
     aviallon.hardware.mesa.enable = mkDefault true;
 
     aviallon.hardware.nvidia.nouveau.config.NvBoost = ifEnable (!config.aviallon.laptop.enable) true;
+
+    environment.variables = {
+      RUSTICL_ENABLE = "nouveau";
+    };
   };
 }
