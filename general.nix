@@ -56,6 +56,33 @@ in
         type = types.str;
       };
       
+      caches = {
+        l1d = mkOption {
+          default = null;
+          example = 64;
+          description = "CPU L1 (data) cache size in kB";
+          type = with types; nullOr ints.positive;
+        };
+        l1i = mkOption {
+          default = null;
+          example = 64;
+          description = "CPU L1 (instruction) cache size in kB";
+          type = with types; nullOr ints.positive;
+        };
+        lastLevel = mkOption {
+          default = null;
+          example = 1024;
+          description = "Last-level (typ. L3) CPU cache size in kB";
+          type = with types; nullOr ints.positive;
+        };
+        cacheLine = mkOption {
+          default = null;
+          example = 64;
+          description = lib.mdDoc "Cache-line size in bytes (can be retrieved using `/sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size`)";
+          type = with types; nullOr ints.positive;
+        };
+      };
+      
       x86 = {
         level = mkOption {
           default = 1;
