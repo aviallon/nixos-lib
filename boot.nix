@@ -1,4 +1,4 @@
-{ config, pkgs, lib, options, ... }:
+{ config, pkgs, lib, myLib, options, ... }:
 with lib;
 let
   customKernelPatches = {
@@ -105,6 +105,8 @@ let
   allowUnfree = (types.isType types.attrs config.nixpkgs.config)
                 && (hasAttr "allowUnfree" config.nixpkgs.config)
                 && (getAttr "allowUnfree" config.nixpkgs.config);
+
+  cpuConfig = config.aviallon.general.cpu;
 in {
 
   options.aviallon.boot = {
@@ -171,6 +173,13 @@ in {
       example = "pkgs.kernel";
       type = types.package;
     };
+
+    extraKCflags = mkOption {
+      description = "If optimizations are enabled, add the specified values to kernel KCFLAGS";
+      default = [];
+      type = types.listOf types.string;
+      example = [ "-fipa-pta" ];
+    };
   };
 
   config = mkMerge [
@@ -214,7 +223,27 @@ in {
       initrd.kernelModules = [ ];
       initrd.availableKernelModules = [ "ehci_pci" ];
 
-      kernelPackages = mkOverride 2 (pkgs.linuxPackagesFor cfg.kernel);
+      kernelPackages = let
+        baseKernel = cfg.kernel;
+        # Possible CFLAGS source : (myLib.optimizations.makeOptimizationFlags {}).CFLAGS
+        kCflags =
+          [
+            "-march=${cpuConfig.arch}"
+            "-mtune=${cpuConfig.tune or cpuConfig.arch}"
+          ]
+          ++ optional (! isNull cpuConfig.caches.lastLevel ) "--param l2-cache-size=${toString cpuConfig.caches.lastLevel}"
+          ++ optional (! isNull cpuConfig.caches.l1d ) "--param l1-cache-size=${toString cpuConfig.caches.l1d}"
+          ++ cfg.extraKCflags;
+        optimizedKernel =
+          if config.aviallon.optimizations.enable then
+            baseKernel.overrideAttrs (old: {
+              KCFLAGS = (old.KCFLAGS or "") + (toString kCflags);
+              passthru = baseKernel.passthru;
+            })
+          else
+            baseKernel
+          ;
+      in mkOverride 2 (pkgs.linuxPackagesFor optimizedKernel);
 
       kernelPatches = []
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
