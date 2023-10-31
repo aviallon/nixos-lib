@@ -75,10 +75,11 @@ in {
       "--flag-switches-begin" 
         "--ignore-gpu-blacklist"
         "--enable-gpu-rasterization"
+        "--enable-quic"
         "--enable-accelerated-mjpeg-decode"
         "--enable-accelerated-video"
         "--canvas-oop-rasterization"
-        "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder"
+        "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,WebRTCPipeWireCapturer"
         "--disable-features=UseChromeOSDirectVideoDecoder"
       "--flag-switches-end"
     ]);
