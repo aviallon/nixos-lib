@@ -8,6 +8,7 @@ in
 {
   imports = [
     ./filesystems
+    (mkRemovedOptionModule [ "aviallon" "filesystems" "resumeDevice"] "Use boot.resumeDevice instead")
   ];
 
   options.aviallon.filesystems = {
@@ -48,12 +49,6 @@ in
       type = types.listOf types.str;
     };
     lvm = mkEnableOption "lvm options required for correct booting";
-    resumeDevice = mkOption {
-      default = null;
-      description = "Swap device used for hibernation/resuming.";
-      example = "LABEL=nixos-swap";
-      type = types.nullOr types.str;
-    };
   };
 
   config = mkIf cfg.enable {
@@ -70,15 +65,6 @@ in
       ++ optionals cfg.lvm [ "dm-cache" "dm-cache-smq" "dm-persistent-data" "dm-bio-prison" "dm-clone" "dm-crypt" "dm-writecache" "dm-mirror" "dm-snapshot" ]
       ++ optionals config.aviallon.boot.kvdo.enable [ "kvdo" ]
     ;
-
-    aviallon.boot.cmdline = {
-      resume =
-        if isNull cfg.resumeDevice
-          then "none"
-          else cfg.resumeDevice
-        ;
-    };
-
 
     boot.supportedFilesystems = [ "ntfs" "ext4" "vfat" "exfat" ];
 
