@@ -91,6 +91,7 @@ in
                   false
               ;
             interpreters = pkgs: filter (x: myIsDerivation x) (attrValues pkgs.pythonInterpreters);
+            pkgNames = pkgs: forEach pkgs (p: "${getName p}-${p.version}");
             unwrapped = final.jetbrains.pycharm-professional;
           in prev.buildFHSUserEnv rec {
             name = "pycharm-professional";
@@ -103,7 +104,7 @@ in
               
                 jetbrains.pycharm-professional
               ]
-              ++ trace "Using the following interpreters: ${toString (interpreters pkgs)}" (interpreters pkgs)
+              ++ trace "Using the following interpreters: ${toString (pkgNames (interpreters pkgs))}" (interpreters pkgs)
             );
 
             # symlink shared assets, including icons and desktop entries
