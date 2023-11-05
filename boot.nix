@@ -22,6 +22,12 @@ let
         ENERGY_MODEL y
       '';
     };
+    removeKernelDRM = {
+      name = "remove-kernel-drm";
+      patch = ./remove-kernel-drm.patch;
+    };
+
+    
     amdClusterId = {
       name = "cluster-id-amd";
       patch = pkgs.fetchpatch {
@@ -180,6 +186,8 @@ in {
       type = types.listOf types.string;
       example = [ "-fipa-pta" ];
     };
+
+    removeKernelDRM = mkEnableOption "convert all EXPORT_SYMBOL_GPL to EXPORT_SYMBOL. Warning: might be illegal in your region.";
   };
 
   config = mkMerge [
@@ -252,6 +260,7 @@ in {
         ++ optional (cfg.patches.amdClusterId.enable && kernelVersionOlder "6.4") customKernelPatches.amdClusterId
         ++ optional (cfg.patches.zenLLCIdle.enable && kernelVersionOlder "6.5") customKernelPatches.backports.zenLLCIdle
         ++ optional (isXanmod cfg.kernel && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpu.arch)
+        ++ optional cfg.removeKernelDRM customKernelPatches.removeKernelDRM
       ;
 
 
