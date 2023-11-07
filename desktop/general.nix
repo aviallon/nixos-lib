@@ -80,6 +80,9 @@ in {
       };
       boot.initrd.verbose = generalCfg.debug;
       boot.consoleLogLevel = mkIf (!generalCfg.debug) 1;
+      boot.initrd.systemd.managerEnvironment = {
+        SYSTEMD_LOG_LEVEL = toString config.boot.consoleLogLevel;
+      };
 
       console.enable = mkDefault false; # Completly disable console by default
       security.polkit.enable = true; # Better interactive privilege prompts
