@@ -51,7 +51,8 @@ in {
       linuxHeaders
 
       # Virtulization tools
-      virt-manager-qt
+      virt-manager
+      guestfs-tools
       virt-viewer
       qtemu
 
@@ -78,8 +79,13 @@ in {
         ovmf.enable = true;
         ovmf.packages = [ pkgs.OVMFFull ];
         swtpm.enable = true;
+        verbatimConfig = ''
+          nvram = [ "/run/libvirt/nix-ovmf/AAVMF_CODE.fd:/run/libvirt/nix-ovmf/AAVMF_VARS.fd", "/run/libvirt/nix-ovmf/OVMF_CODE.fd:/run/libvirt/nix-ovmf/OVMF_VARS.fd" ]
+        '';
       };
     };
+
+    
     virtualisation.spiceUSBRedirection.enable = true; # Quality of life
     security.virtualisation.flushL1DataCache = "never"; # We do not care, we are on a dev platform
 
