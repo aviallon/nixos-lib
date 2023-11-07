@@ -6,6 +6,7 @@ let
 in {
   options.aviallon.developer = {
     enable = mkEnableOption "enable developer mode on this machine";
+    virtualization.host.enable = (mkEnableOption "hypervisor virtualization services") // { default = true; };
     virtualbox.unstable = mkEnableOption "use unstable virtualbox";
   };
   config = mkIf cfg.enable {
@@ -71,7 +72,7 @@ in {
       man.enable = true;
     };
 
-    virtualisation.libvirtd = {
+    virtualisation.libvirtd = mkIf cfg.virtualization.host.enable {
       enable = true;
       onBoot = "ignore"; # We are doing development, not a server
       qemu = {
@@ -89,7 +90,7 @@ in {
     virtualisation.spiceUSBRedirection.enable = true; # Quality of life
     security.virtualisation.flushL1DataCache = "never"; # We do not care, we are on a dev platform
 
-    virtualisation.virtualbox = {
+    virtualisation.virtualbox = mkIf cfg.virtualization.host.enable {
       host.enable = true;
       host.enableExtensionPack = true;
       host.enableHardening = false; # Causes kernel build failures
