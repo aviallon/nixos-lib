@@ -204,7 +204,9 @@ rec {
   };
 
   addAttrs = pkg: attrs: pkg.overrideAttrs (old:
-    myLib.attrsets.mergeAttrsRecursive old attrs
+    (myLib.attrsets.mergeAttrsRecursive old attrs) // {
+      passthru = (pkg.passthru or {}) // (attrs.passtru or {});
+    }
   );
 
   optimizePkg = pkg: { level ? "normal"
