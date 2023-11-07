@@ -11,5 +11,6 @@ let
     optimizations = callLibs ./optimizations.nix;
     attrsets = callLibs ./attrsets.nix;
     types = callLibs ./types.nix;
+    debug = callLibs ./debug.nix;
   });
 in myLib
