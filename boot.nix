@@ -104,7 +104,7 @@ let
 
   isXanmod = kernel: ! isNull (strings.match ".*(xanmod).*" kernel.modDirVersion);
 
-  kernelVersionOlder = ver: versionOlder cfg.kernel.version ver;
+  kernelVersionOlder = ver: versionOlder cfg.kernel.package.version ver;
   
   cfg = config.aviallon.boot;
   generalCfg = config.aviallon.general;
@@ -173,22 +173,35 @@ in {
       type = types.attrsOf (types.oneOf [ types.bool types.int types.str (types.listOf types.str) ]);
     };
 
-    kernel = mkOption {
-      description = "Linux kernel to use";
-      default = options.boot.kernelPackages.default.kernel;
-      example = "pkgs.kernel";
-      type = types.package;
-    };
+    kernel = {
+      package = mkOption {
+        description = "Linux kernel to use";
+        default = options.boot.kernelPackages.default.kernel;
+        example = "pkgs.kernel";
+        type = types.package;
+      };
 
-    extraKCflags = mkOption {
-      description = "If optimizations are enabled, add the specified values to kernel KCFLAGS";
-      default = [];
-      type = types.listOf types.string;
-      example = [ "-fipa-pta" ];
+      addAttributes = mkOption {
+        description = "Merge specified attributes to kernel derivation (via special overideAttrs)";
+        default = {};
+        type = with types; attrs;
+        example = { KCFLAGS = "-Wall"; };
+      };
+
+      addOptimizationAttributes = mkOption {
+        description = "Merge specified attributes to kernel derivation IF aviallon.optimizations.enabled is true";
+        default = {};
+        type = with types; attrs;
+        example = { KCFLAGS = "-O3 -fipa-pta"; };
+      };
     };
 
     removeKernelDRM = mkEnableOption "convert all EXPORT_SYMBOL_GPL to EXPORT_SYMBOL. Warning: might be illegal in your region.";
   };
+
+  imports = [
+    ( mkRemovedOptionModule  [ "aviallon" "boot" "extraKCflags" ] "Replaced by aviallon.boot.kernel.addOptimizationAttributes attrset" )
+  ];
 
   config = mkMerge [
   {
@@ -231,27 +244,33 @@ in {
       initrd.kernelModules = [ ];
       initrd.availableKernelModules = [ "ehci_pci" ];
 
-      kernelPackages = let
-        baseKernel = cfg.kernel;
+      kernelPackages = with myLib.debug; let
+        baseKernel = cfg.kernel.package;
+        
         # Possible CFLAGS source : (myLib.optimizations.makeOptimizationFlags {}).CFLAGS
-        kCflags =
+        kCflags = traceValWithPrefix "kCflags" (
           [
             "-march=${cpuConfig.arch}"
             "-mtune=${cpuConfig.tune or cpuConfig.arch}"
           ]
           ++ optional (! isNull cpuConfig.caches.lastLevel ) "--param l2-cache-size=${toString cpuConfig.caches.lastLevel}"
           ++ optional (! isNull cpuConfig.caches.l1d ) "--param l1-cache-size=${toString cpuConfig.caches.l1d}"
-          ++ cfg.extraKCflags;
-        optimizedKernel =
-          if config.aviallon.optimizations.enable then
-            baseKernel.overrideAttrs (old: {
-              KCFLAGS = (old.KCFLAGS or "") + (toString kCflags);
-              passthru = baseKernel.passthru;
-            })
-          else
-            baseKernel
-          ;
-      in mkOverride 2 (pkgs.linuxPackagesFor optimizedKernel);
+        );
+          
+        optimizedKernelAttrs = traceValWithPrefix "optimizedKernelAttrs" (
+          optionalAttrs config.aviallon.optimizations.enable (
+            myLib.attrsets.mergeAttrsRecursive
+              {
+                KCFLAGS = kCflags;
+              }
+              (traceValWithPrefix "aviallon.boot.kernel.addOptimizationAttributes" cfg.kernel.addOptimizationAttributes)
+          )
+        );
+        moddedKernelAttrs = traceValWithPrefix "moddedKernelAttrs" (
+          myLib.attrsets.mergeAttrsRecursive (traceValWithPrefix "aviallon.boot.kernel.addAttributes" cfg.kernel.addAttributes) optimizedKernelAttrs
+        );
+        moddedKernel = myLib.optimizations.addAttrs baseKernel moddedKernelAttrs;
+      in mkOverride 2 (pkgs.linuxPackagesFor moddedKernel);
 
       kernelPatches = []
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
@@ -259,7 +278,7 @@ in {
         ++ optional cfg.energyModel.enable customKernelPatches.enableEnergyModel
         ++ optional (cfg.patches.amdClusterId.enable && kernelVersionOlder "6.4") customKernelPatches.amdClusterId
         ++ optional (cfg.patches.zenLLCIdle.enable && kernelVersionOlder "6.5") customKernelPatches.backports.zenLLCIdle
-        ++ optional (isXanmod cfg.kernel && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpu.arch)
+        ++ optional (isXanmod cfg.kernel.package && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpu.arch)
         ++ optional cfg.removeKernelDRM customKernelPatches.removeKernelDRM
       ;
 

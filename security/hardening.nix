@@ -41,7 +41,7 @@ in
   #  imports = [
   #     (modulesPath + "/profiles/hardened.nix")
   #  ];
-    aviallon.boot.kernel = mkIf cfg.hardcore pkgs.linuxKernel.kernels.linux_hardened;
+    aviallon.boot.kernel.package = mkIf cfg.hardcore pkgs.linuxKernel.kernels.linux_hardened;
     security.lockKernelModules = mkIf cfg.hardcore (mkOverride 500 true);
     # security.protectKernelImage = mkIf cfg.hardcore (mkOverride 500 false); # needed for kexec
 
