@@ -302,6 +302,35 @@ in {
       loader.systemd-boot = {
         enable = cfg.efi && (!cfg.useGrub);
         configurationLimit = cfg.configurationLimit; 
+        extraInstallCommands = let
+          efiDir = config.boot.loader.efi.efiSysMountPoint;
+        in ''
+          rpath=
+          generation=
+          boot_generation_path=$(realpath /run/booted-system)  
+          for path in /nix/var/nix/profiles/system-*-link; do
+            rpath=$(realpath "$path")
+            if [ "$rpath" = "$boot_generation_path" ]; then
+              generation="''${path##*/system-}"
+              generation="''${generation%%-link}"
+              break
+            fi
+          done
+          if [ -z "$generation" ]; then
+            echo "Failed to find current boot's generation!"
+            exit 1
+          fi
+
+          loader_entry="${efiDir}/loader/entries/nixos-generation-''${generation}.conf"
+          if ! [ -f "$loader_entry" ]; then
+            echo "Failed to find corresponding loader generation entry:" ''${loader_entry} "not found"
+            echo -e "\e[33mWARNING:\e[0m This may mean that your aviallon.boot.configurationLimit is set too low!"
+            exit 1
+          fi
+
+          sed -i 's/version /version <LAST> /' "${efiDir}/loader/entries/nixos-generation-''${generation}.conf" &&
+          echo "Marked generation $generation as last sucessfully booted"
+        '';
       };
 
       loader.generic-extlinux-compatible = {
