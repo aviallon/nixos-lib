@@ -256,12 +256,19 @@ in {
           ++ optional (! isNull cpuConfig.caches.lastLevel ) "--param l2-cache-size=${toString cpuConfig.caches.lastLevel}"
           ++ optional (! isNull cpuConfig.caches.l1d ) "--param l1-cache-size=${toString cpuConfig.caches.l1d}"
         );
+        kRustflags = traceValWithPrefix "kRustflags" (
+          [
+            "-Ctarget-cpu=${cpuConfig.arch}"
+            "-Ctune-cpu=${cpuConfig.tune or cpuConfig.arch}"
+          ]
+        );
           
         optimizedKernelAttrs = traceValWithPrefix "optimizedKernelAttrs" (
           optionalAttrs config.aviallon.optimizations.enable (
             myLib.attrsets.mergeAttrsRecursive
               {
                 KCFLAGS = kCflags;
+                KRUSTFLAGS = kRustflags;
               }
               (traceValWithPrefix "aviallon.boot.kernel.addOptimizationAttributes" cfg.kernel.addOptimizationAttributes)
           )
@@ -281,7 +288,6 @@ in {
         ++ optional (isXanmod cfg.kernel.package && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpu.arch)
         ++ optional cfg.removeKernelDRM customKernelPatches.removeKernelDRM
       ;
-
 
       loader.grub.enable = cfg.useGrub;
       loader.grub = {
