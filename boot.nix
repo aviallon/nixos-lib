@@ -244,6 +244,9 @@ in {
       initrd.kernelModules = [ ];
       initrd.availableKernelModules = [ "ehci_pci" ];
 
+      # Required for many features, like rootluks TPM-unlock, etc.
+      initrd.systemd.enable = true;
+
       kernelPackages = with myLib.debug; let
         baseKernel = cfg.kernel.package;
         
