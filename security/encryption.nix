@@ -17,6 +17,14 @@ in {
       cfg.cryptsetup.package
     ];
 
+    boot.initrd.systemd.contents."/etc/crypttab".text = mkDefault "";
+
+    environment.etc.crypttab = {
+      text = config.boot.initrd.systemd.contents."/etc/crypttab".text;
+    };
+
+    boot.initrd.systemd.enable = mkOverride 10 true;
+    
     boot.initrd.availableKernelModules = [ "cryptd" ];
   };
 }
