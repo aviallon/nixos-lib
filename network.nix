@@ -73,6 +73,9 @@ in
     networking.hostId = mkDefault (builtins.abort "Default hostId not changed" null);
     networking.hostName = mkDefault (builtins.abort "Default hostname not changed" null);
 
+    # Needed for proper WiFi support in some countries (like France, for instance)
+    hardware.wirelessRegulatoryDatabase = mkDefault true;
+
     networking.firewall.allowPing = !desktopCfg.enable;
   };
 }
