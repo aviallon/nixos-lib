@@ -117,8 +117,6 @@ in
         };
       })
 
-      # https://ryantm.github.io/nixpkgs/functions/prefer-remote-fetch/#sec-prefer-remote-fetch
-      (final: prev: prev.prefer-remote-fetch final prev)
     ];
     aviallon.programs.allowUnfreeList = [
       "unrar" "ark"
