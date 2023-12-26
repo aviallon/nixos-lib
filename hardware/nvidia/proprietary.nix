@@ -90,7 +90,17 @@ in {
     aviallon.programs.allowUnfreeList = [
       "nvidia-x11"
       "nvidia-settings"
+      
       "cudatoolkit"
+      "cuda_cccl"
+      "libnpp"
+      "libcublas"
+      "libcufft"
+      "cuda_cudart"
+      "cuda_nvcc"
+      "cudnn-8.6.0.163"
+      "cudnn"
+      "cuda_nvml_dev"
     ];
 
     hardware.opengl.extraPackages = with pkgs; [
