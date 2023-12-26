@@ -112,6 +112,8 @@ in
     nix.settings.cores = mkIf (generalCfg.cpu.threads != null) generalCfg.cpu.threads;
     nix.settings.max-jobs = mkIf (generalCfg.cpu.threads != null) (math.log2 generalCfg.cpu.threads);
 
+    nix.settings.hashed-mirrors = [ "https://tarballs.nixos.org" "https://nixpkgs-unfree.cachix.org" ];
+
     nix.registry = {
       nixpkgs.flake = nixpkgs;
       nixpkgs-unstable.flake = nixpkgs-unstable;
