@@ -279,7 +279,21 @@ in {
         moddedKernelAttrs = traceValWithPrefix "moddedKernelAttrs" (
           myLib.attrsets.mergeAttrsRecursive (traceValWithPrefix "aviallon.boot.kernel.addAttributes" cfg.kernel.addAttributes) optimizedKernelAttrs
         );
-        moddedKernel = myLib.optimizations.addAttrs baseKernel moddedKernelAttrs;
+
+        noDRMKernel =
+          if cfg.removeKernelDRM then
+            baseKernel.overrideAttrs (old: {
+              passthru = baseKernel.passthru;
+              nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.gnused ];
+              postPatch = (old.postPatch or "") + ''
+                sed -i -e 's/_EXPORT_SYMBOL(sym, "_gpl")/_EXPORT_SYMBOL(sym, "")/g' -e 's/__EXPORT_SYMBOL(sym, "_gpl", __stringify(ns))/__EXPORT_SYMBOL(sym, "", __stringify(ns))/g' include/linux/export.h
+              '';
+            })
+          else
+            baseKernel
+          ;
+
+        moddedKernel = myLib.optimizations.addAttrs noDRMKernel moddedKernelAttrs;
       in mkOverride 2 (pkgs.linuxPackagesFor moddedKernel);
 
       kernelPatches = []
@@ -289,7 +303,6 @@ in {
         ++ optional (cfg.patches.amdClusterId.enable && kernelVersionOlder "6.4") customKernelPatches.amdClusterId
         ++ optional (cfg.patches.zenLLCIdle.enable && kernelVersionOlder "6.5") customKernelPatches.backports.zenLLCIdle
         ++ optional (isXanmod cfg.kernel.package && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpu.arch)
-        ++ optional cfg.removeKernelDRM customKernelPatches.removeKernelDRM
       ;
 
       loader.grub.enable = cfg.useGrub;
