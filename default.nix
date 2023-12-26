@@ -7,7 +7,7 @@
     ./desktop
     ./network.nix
     ./packages.nix
-    ./services.nix
+    ./services
     ./filesystems.nix
     ./security
     ./hardware

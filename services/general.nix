@@ -24,10 +24,6 @@ let
   );
 in {
 
-  imports = [
-    ./services
-  ];
-
   options.aviallon.services = {
     enable = mkOption {
       default = true;
