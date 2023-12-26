@@ -62,7 +62,7 @@ in {
     hardware.nvidia = {
       powerManagement = mkIf (config.hardware.nvidia.prime.offload.enable || cfg.proprietary.saveAllVram) {
         enable = true;
-        finegrained = true;
+        finegrained = mkIf config.hardware.nvidia.prime.offload.enable true;
       };
       modesetting.enable = true;
       nvidiaSettings = true;
