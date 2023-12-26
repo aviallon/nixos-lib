@@ -51,7 +51,7 @@ in {
       
       linuxHeaders
 
-      # Virtulization tools
+      # Virtualization tools
       virt-manager
       guestfs-tools
       virt-viewer
