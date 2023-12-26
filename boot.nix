@@ -320,10 +320,23 @@ in {
         in ''
           rpath=
           generation=
+          specialization=
           boot_generation_path=$(realpath /run/booted-system)  
           for path in /nix/var/nix/profiles/system-*-link; do
             rpath=$(realpath "$path")
+            ok=false
             if [ "$rpath" = "$boot_generation_path" ]; then
+              echo "Good path: $path"
+              ok=true
+            fi
+            for specialization in "$path"/specialisation/*; do
+              if [ "$(realpath $specialization)" = "$boot_generation_path" ]; then
+                ok=true
+                echo "Good specialization: $specialization"
+                break
+              fi
+            done
+            if $ok; then
               generation="''${path##*/system-}"
               generation="''${generation%%-link}"
               break
@@ -335,13 +348,19 @@ in {
           fi
 
           loader_entry="${efiDir}/loader/entries/nixos-generation-''${generation}.conf"
+          if ! [ -z "$specialization" ]; then
+            specialization_name=$(basename -- "$specialization")
+            echo "Specialization is: $specialization_name"
+            loader_entry="${efiDir}/loader/entries/nixos-generation-''${generation}-specialisation-''${specialization_name}.conf"
+          fi
+          
           if ! [ -f "$loader_entry" ]; then
             echo "Failed to find corresponding loader generation entry:" ''${loader_entry} "not found"
             echo -e "\e[33mWARNING:\e[0m This may mean that your aviallon.boot.configurationLimit is set too low!"
             exit 1
           fi
 
-          sed -i 's/version /version <LAST> /' "${efiDir}/loader/entries/nixos-generation-''${generation}.conf" &&
+          sed -i 's/version /version <LAST> /' "$loader_entry" &&
           echo "Marked generation $generation as last sucessfully booted"
         '';
       };
