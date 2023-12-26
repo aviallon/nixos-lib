@@ -94,6 +94,7 @@ in {
       kdepim-runtime
       
       korganizer
+      kalendar
       dolphin
       kio-fuse
       konsole
