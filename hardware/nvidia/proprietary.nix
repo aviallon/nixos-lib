@@ -103,6 +103,10 @@ in {
       "cuda_nvml_dev"
     ];
 
+    # Causes massive rebuilds (tensorflow, openCV, etc.), will need to find a better cache beforehand
+    # For now, prefer using package overrides
+    # nixpkgs.config.cudaSupport = mkDefault true;
+
     hardware.opengl.extraPackages = with pkgs; [
       nvidia-vaapi-driver
       libvdpau-va-gl
