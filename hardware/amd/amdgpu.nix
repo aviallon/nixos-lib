@@ -28,6 +28,8 @@ in {
       ]
     ;
 
+    nixpkgs.config.rocmSupport = mkDefault devCfg.enable;
+
     services.xserver.videoDrivers = []
     ++ optional cfg.useProprietary "amdgpu-pro"
     ++ [
