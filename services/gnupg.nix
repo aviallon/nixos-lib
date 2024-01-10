@@ -37,7 +37,7 @@ in {
       restartTriggers = [ pinentrySwitcher ];
       restartIfChanged = true;
     
-      serviceConfig.ExecStart = [ "" ''
+      serviceConfig.ExecStart = mkOverride 30 [ "" ''
         ${cfg.package}/bin/gpg-agent --supervised \
           --pinentry-program ${pinentrySwitcher}/bin/pinentry
         '' ];
