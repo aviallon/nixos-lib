@@ -2,7 +2,7 @@
 with lib;
 let
   generalCfg = config.aviallon.general;
-  throttledService = "lenovo_fix";
+  throttledService = "throttled";
 in {
   config = mkIf (generalCfg.cpu.vendor == "intel") {
     aviallon.boot.cmdline = {
