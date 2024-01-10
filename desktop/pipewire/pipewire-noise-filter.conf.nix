@@ -4,13 +4,13 @@
 , noiseFilterStrength
 }:
 
-writeText "pipewire-noise-filter.cfg"  ''
+writeText "pipewire-noise-filter.conf"  ''
 # Noise canceling source
 #
 # start with pipewire -c filter-chain/source-rnnoise.conf
 #
 context.properties = {
-    log.level        = 1
+    log.level        = 3
 }
 
 context.spa-libs = {
@@ -51,6 +51,7 @@ context.modules = [
                 node.passive = true
             }
             playback.props = {
+                node.name = "rnnoise_source.output"
                 media.class = Audio/Source
             }
         }
