@@ -21,9 +21,10 @@ let
   myFFmpeg_opt = config.aviallon.optimizations.optimizePkg { lto = false; } myFFmpeg;
 
   
-  ffmpeg_4 = config.aviallon.optimizations.optimizePkg { } pkgs.ffmpeg_4;
-  obs-studio = pkgs.obs-studio.override { inherit ffmpeg_4; };
-  myWrapOBS = pkgs.wrapOBS.override { inherit obs-studio; };
+  #ffmpeg_4 = config.aviallon.optimizations.optimizePkg { } pkgs.ffmpeg_4;
+  #obs-studio = pkgs.obs-studio.override { inherit ffmpeg_4; };
+  #myWrapOBS = pkgs.wrapOBS.override { inherit obs-studio; };
+  myWrapOBS = pkgs.wrapOBS;
 in {
   config = mkIf (cfg.enable && !generalCfg.minimal) {
     environment.systemPackages = with pkgs; [
