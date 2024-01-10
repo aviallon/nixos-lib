@@ -117,14 +117,14 @@ in {
     (mkIf (!generalCfg.minimal) {
       boot.plymouth.enable = mkDefault true;
 
-      fonts.enableDefaultFonts = true;
+      fonts.enableDefaultPackages = true;
 
       hardware.acpilight.enable = true;
       hardware.opentabletdriver.enable = true;
 
       hardware.bluetooth = {
         enable = true;
-        package = pkgs.bluezFull;
+        # package = pkgs.bluez;
       };
 
       hardware.opengl.driSupport32Bit = mkDefault cfg.gaming.enable;
