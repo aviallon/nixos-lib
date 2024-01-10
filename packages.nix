@@ -27,13 +27,19 @@ in
       description = "Allow specific unfree software to be installed";
       type = types.listOf types.str;
     };
+    config = mkOption {
+      default = {};
+      type = types.attrs;
+      example = { cudaSupport = true; };
+      description = "nixpkgs config settings to be applied to all nixpkgs instances";
+    };
   };
 
   config = mkIf cfg.enable {
 
     programs.java.enable = mkDefault (!generalCfg.minimal);
 
-    nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowUnfreeList;
+    aviallon.programs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowUnfreeList;
 
     environment.systemPackages = with pkgs; []
     ++ [
@@ -69,8 +75,6 @@ in
       historyLimit = 9999;
       newSession = true;
     };
-
-    aviallon.programs.allowUnfreeList = [];
 
     programs.ccache.enable = true;
     

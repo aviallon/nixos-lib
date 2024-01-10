@@ -49,6 +49,8 @@
         default = aviallon;
       };
 
+      nixpkgsConfig = self.nixosModules.aviallon.aviallon.programs.config;
+
       specialArgs = inputs // { inherit myLib; };
     };
 }
