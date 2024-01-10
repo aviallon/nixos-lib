@@ -318,6 +318,7 @@ in {
         extraInstallCommands = let
           efiDir = config.boot.loader.efi.efiSysMountPoint;
         in ''
+          export PATH="$PATH:${getBin pkgs.coreutils-full}/bin:${getBin pkgs.gnused}/bin"
           rpath=
           generation=
           specialization=
@@ -329,9 +330,10 @@ in {
               echo "Good path: $path"
               ok=true
             fi
-            for specialization in "$path"/specialisation/*; do
-              if [ "$(realpath $specialization)" = "$boot_generation_path" ]; then
+            for spec in "$path"/specialisation/*; do
+              if [ "$(realpath $spec)" = "$boot_generation_path" ]; then
                 ok=true
+                specialization="$spec"
                 echo "Good specialization: $specialization"
                 break
               fi
