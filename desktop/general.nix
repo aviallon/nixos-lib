@@ -36,6 +36,7 @@ in {
         default = true;
         example = false;
       };
+      airplay.enable = (mkEnableOption "AirPlay sink device support") // { default = true; };
     };
     graphics = {
       shaderCache = {

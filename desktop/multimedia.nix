@@ -8,6 +8,8 @@ let
     noiseFilterStrength = cfg.audio.noise-filter.strength;
   };
 
+  airplayConfig = pkgs.callPackage ./pipewire/pipewire-airplay.conf.nix {};
+
   # Multimedia Packages
 
   myFFmpeg = let
@@ -111,6 +113,9 @@ in {
         {
           enable = cfg.audio.noise-filter.strength > 0.0;
         }
+      );
+      pipewire-airplay-sink = mkIf cfg.audio.airplay.enable (
+        mkPipewireModule { conf = airplayConfig; description = "Pipewire Airplay Sink"; }
       );
     };
 
