@@ -74,6 +74,33 @@ in
       })
 
       (final: prev: {
+        lutris-fhs =
+          (prev.buildFHSUserEnv {
+            name = "lutris";
+            targetPkgs = pkgs: (with pkgs;
+              [
+                glibc
+                bashInteractive
+
+                python3Full
+
+                lutris
+                gamescope
+                wineWowPackages.waylandFull
+                flatpak
+              ]
+            );
+
+            # symlink shared assets, including icons and desktop entries
+            extraInstallCommands = ''
+              ln -s "${pkgs.lutris}/share" "$out/"
+            '';
+
+            runScript = "/usr/bin/lutris";
+          });
+      })
+
+      (final: prev: {
         jetbrains = prev.jetbrains // {
           pycharm-professional-fhs = (
           let
