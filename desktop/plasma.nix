@@ -3,24 +3,7 @@ with lib;
 let
   cfg = config.aviallon.desktop;
   optimizeCfg = config.aviallon.optimizations;
-  _sddm_new = pkgs.sddm.overrideAttrs (old: rec {
-    pname = old.pname + "-unstable";
-    version = sddm-unstable.lastModifiedDate;
-    src = sddm-unstable;
-
-    patches = filter (x: hasSuffix "sddm-ignore-config-mtime.patch" x) old.patches;
-
-    nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.docutils ];
-
-    cmakeFlags = old.cmakeFlags ++ [
-      "-DBUILD_MAN_PAGES=ON"
-      "-DSYSTEMD_TMPFILES_DIR=${placeholder "out"}/etc/tmpfiles.d"
-      "-DSYSTEMD_SYSUSERS_DIR=${placeholder "out"}/lib/sysusers.d"
-    ];
-
-    outputs = (old.outputs or [ "out" ]) ++ [ "man" ];
-  });
-  _sddm = if cfg.sddm.unstable then _sddm_new else pkgs.sddm;
+  _sddm = if cfg.sddm.unstable then pkgs.unstable.sddm else pkgs.sddm;
   sddmOptimized = optimizeCfg.optimizePkg { recursive = 0; } _sddm;
   sddmPackage = if optimizeCfg.enable then sddmOptimized else _sddm;
 in {
