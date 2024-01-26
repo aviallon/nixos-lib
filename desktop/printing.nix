@@ -43,6 +43,8 @@ in {
       extraBackends = with pkgs; [
         hplipWithPlugin
       ];
+      brscan5.enable = true;
+      brscan4.enable = true;
     };
 
     networking.firewall.allowedTCPPorts = optionals config.services.printing.enable [ 631 139 445 ];
@@ -69,6 +71,11 @@ in {
       "cups-drv-rastertosag-gdi"
       "cups-kyocera-ecosys-m552x-p502x"
       "canon-cups-ufr2"
+      "brscan5"
+      "brscan4"
+      "brother-udev-rule-type1"
+      "brscan5-etc-files"
+      "brscan4-etc-files"
     ];
   };
 }
