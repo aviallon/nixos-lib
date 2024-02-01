@@ -122,18 +122,6 @@ in {
       })
     
       (self: super: {
-        htop = optimizePkg {
-          } super.htop;
-        nano = optimizePkg {
-            recursive = 99;
-          } super.nano;
-        optipngOptimized = optimizePkg {
-            parallelize = generalCfg.cpu.threads;
-          } super.optipng;
-        myFFmpeg = optimizePkg {
-            lto = false;
-          } super.myFFmpeg;
-
         jetbrains = super.jetbrains // {
           jdk = optimizePkg {} super.jetbrains.jdk;
         };
