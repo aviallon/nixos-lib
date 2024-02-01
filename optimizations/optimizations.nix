@@ -55,7 +55,7 @@ in {
     };
     defaultSettings = mkOption {
       default = {
-        recursive = 1;
+        recursive = 0;
         level = "slower";
       };
       example = { level = "unsafe"; recursive = 0; };
