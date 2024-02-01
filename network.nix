@@ -24,6 +24,7 @@ in
       description = "Set network DNS";
       type = types.enum [ "systemd-resolved" "dnsmasq" "unbound" "none" "default" ];
     };
+    vpnSupport = mkEnableOption "VPN support of many kinds in NetworkManager" // { default = desktopCfg.enable; };
   };
 
   config = mkIf cfg.enable {
@@ -58,9 +59,16 @@ in
     networking.networkmanager = {
       wifi.backend = mkDefault "iwd";
       dns = mkDefault cfg.dns;
-      plugins = with pkgs; concatLists [
-        (optional (cfg.dns == "dnsmasq") dnsmasq)
-      ];
+      plugins = with pkgs; []
+        ++ optional (cfg.dns == "dnsmasq") dnsmasq
+        ++ optionals cfg.vpnSupport [
+          networkmanager_strongswan
+          networkmanager-openvpn
+          networkmanager-openconnect
+          networkmanager-sstp
+          networkmanager-l2tp
+        ]
+      ;
     };
     networking.wireless.enable = (cfg.backend != "NetworkManager");
     networking.wireless.iwd.enable = true;
