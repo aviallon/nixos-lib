@@ -295,7 +295,7 @@ rec {
         _pkgOptimized = addAttrs _pkg optimizedAttrs;
         _pkgFinal = addAttrs _pkgOptimized attributes;
       in
-      trace "Optimized ${myGetName pkg} with overrideAttrs at level '${level}' (depth: ${toString _depth}, lto: '${toString lto}')" _pkgFinal
+      trace "Optimized ${myGetName pkg} with overrideAttrs at level '${level}' (depth: ${toString _depth}, lto: ${if lto then "true" else "false"})" _pkgFinal
     else if (hasAttr "name" pkg) then
       warn "Can't optimize ${myGetName pkg} (depth: ${toString _depth})" pkg
     else
