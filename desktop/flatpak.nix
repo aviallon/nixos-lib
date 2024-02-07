@@ -31,12 +31,11 @@ in {
         ];
       };
 
-      system.fsPackages = [ pkgs.bindfs ];
       fileSystems =
         let mkRoSymBind = path: {
           device = path;
-          fsType = "fuse.bindfs";
-          options = [ "ro" "resolve-symlinks" "x-gvfs-hide" ];
+          fsType = "none";
+          options = [ "rbind" "ro" "x-gvfs-hide" ];
         };
       in {
         "/usr/share/icons" = mkRoSymBind "/run/current-system/sw/share/icons";
