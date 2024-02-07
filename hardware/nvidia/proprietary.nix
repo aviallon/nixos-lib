@@ -1,4 +1,4 @@
-{ config, pkgs, lib, options, ... }:
+{ config, pkgs, lib, options, nixpkgs-unstable, ... }:
 with lib;
 let
   cfg = config.aviallon.hardware.nvidia;
@@ -8,6 +8,8 @@ let
   xwaylandEGLStream = pkgs.writeShellScriptBin "xwayland" ''
     exec ${options.programs.xwayland.package.default}/bin/xwayland -eglstream "$@"
   '';
+
+  nvidiaUnstable = config.boot.kernelPackages.callPackage (nixpkgs-unstable + /pkgs/os-specific/linux/nvidia-x11/default.nix) {};
 in {
   options = {
     aviallon.hardware.nvidia.proprietary = {
@@ -34,6 +36,12 @@ in {
         type = types.bool;
       };
       saveAllVram = mkEnableOption "back up all VRAM in /var/tmp before going to sleep. May reduce artifacts after resuming";
+      version = mkOption {
+        description = "What Nvidia version variant to use";
+        type = types.enum [ "production" "stable" "beta" "unstable_beta" ];
+        default = if generalCfg.unsafeOptimizations then "beta" else "stable";
+        example = "unstable_beta";
+      };
     };
   };
   
@@ -66,7 +74,12 @@ in {
       };
       modesetting.enable = true;
       nvidiaSettings = true;
-      package = mkIf generalCfg.unsafeOptimizations config.boot.kernelPackages.nvidiaPackages.beta; # Use bleeding edge version
+      package =
+        if cfg.proprietary.version == "unstable_beta" then
+          nvidiaUnstable.beta # Use bleeding edge version
+        else
+          config.boot.kernelPackages.nvidiaPackages.${cfg.proprietary.version}
+        ;
     };
 
     aviallon.hardware.nvidia.proprietary.EGLStream = mkDefault (
