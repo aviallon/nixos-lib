@@ -68,16 +68,43 @@ in {
     			["bluez5.headset-roles"] = "[ hsp_hs hsp_ag hfp_hf hfp_ag ]"
     		}
     	'';
-    	"pipewire/pipewire-pulse.conf.d/combined-outputs.json".text = ''
-    	  {
-          "context.exec": [
-            {
-              "args": "load-module module-combine-sink sink_name=\"Sorties combinées\"",
-              "path": "pactl"
+      "pipewire/pipewire.conf.d/combined-outputs.conf".text = ''
+        context.modules = [
+        {   name = libpipewire-module-combine-stream
+            args = {
+                combine.mode = sink
+                node.name = "combine_sink"
+                node.description = "Sortie combinée"
+                combine.latency-compensate = true
+                combine.props = {
+                    audio.position = [ FL FR ]
+                }
+                stream.props = {
+                }
+                stream.rules = [
+                    {
+                        matches = [
+                            # any of the items in matches needs to match, if one does,
+                            # actions are emited.
+                            {
+                                # all keys must match the value. ! negates. ~ starts regex.
+                                #node.name = "~alsa_input.*"
+                                media.class = "Audio/Sink"
+                            }
+                        ]
+                        actions = {
+                            create-stream = {
+                                #combine.audio.position = [ FL FR ]
+                                #audio.position = [ FL FR ]
+                            }
+                        }
+                    }
+                ]
             }
-          ]
         }
-      '';
+        ]
+        '';
+
     };
     security.rtkit.enable = true; # Real-time support for pipewire
 
