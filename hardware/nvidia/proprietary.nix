@@ -67,6 +67,8 @@ in {
 
     services.xserver.exportConfiguration = true;
 
+    services.xserver.displayManager.sddm.wayland.enable = false; # Frequent issues with Nvidia GPUs
+
     hardware.nvidia = {
       powerManagement = mkIf (config.hardware.nvidia.prime.offload.enable || cfg.proprietary.saveAllVram) {
         enable = true;
