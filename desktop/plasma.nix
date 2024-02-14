@@ -39,15 +39,13 @@ in {
     # Prevents blinking cursor
     services.xserver.displayManager.sddm = {
       enable = true;
+      wayland.enable = mkDefault true;
       settings = {
         Theme = {
           CursorTheme = "breeze_cursors";
         };
         X11 = {
           MinimumVT = mkOverride 50 1;
-        };
-        General = {
-          DisplayServer = "wayland";
         };
       };
     };
