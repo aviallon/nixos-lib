@@ -150,6 +150,13 @@ in {
         aspellDicts.fr
       ];
 
+      environment.variables = {
+        SDL_VIDEODRIVER = "wayland";
+        QT_QPA_PLATFORM = "wayland;xcb";
+        MOZ_DBUS_REMOTE = "1"; # For shared clipboard with Xwayland apps
+        _JAVA_AWT_WM_NONREPARENTING = "1";
+      };
+
       aviallon.programs.allowUnfreeList = [
         "spotify" "spotify-unwrapped"
 
