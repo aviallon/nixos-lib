@@ -94,10 +94,13 @@ in {
       // {
         "nvidia-drm.modeset" = 1;
         "nvidia.NVreg_UsePageAttributeTable" = 1;
+        "nvidia.NVreg_InitializeSystemMemoryAllocations" = 0;
       }
-      // {
-        "nvidia.NVreg_PreserveVideoMemoryAllocations" = toValue cfg.proprietary.saveAllVram;
-        "nvidia.NVreg_TemporaryFilePath" = "/var/tmp/nvidia-gpu.vram.img";
+      // optionalAttrs cfg.proprietary.saveAllVram {
+        # "nvidia.NVreg_PreserveVideoMemoryAllocations" = 1; # Already setby hardware.nvidia.powerManagement.enable
+        "nvidia.NVreg_DynamicPowerManagement" = "0x02";
+        "nvidia.NVreg_EnableS0ixPowerManagement" = 1;
+        "nvidia.NVreg_TemporaryFilePath" = "/var/tmp";
       }
     ;
 
