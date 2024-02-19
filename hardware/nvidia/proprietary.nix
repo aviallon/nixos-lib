@@ -142,11 +142,10 @@ in {
       "__GL_YIELD" = "USLEEP"; # use usleep(0) instead of sched_yield() -> better performance in most cases
       "__GL_ALLOW_UNOFFICIAL_PROTOCOL" = "1"; # allow unofficial GLX protocol if also set in Xorg conf
       "__GL_VRR_ALLOWED" = "1"; # Try to enable G-SYNC VRR if screen AND app is compatible
-      "__GL_SYNC_TO_VBLANK" = toValue cfg.proprietary.vsync; 
+      "__GL_SYNC_TO_VBLANK" = mkIf (!cfg.proprietary.vsync) (toValue cfg.proprietary.vsync); 
 
       # Causes Kwin to fail
       # https://github.com/ValveSoftware/gamescope/issues/526#issuecomment-1733739097
-      __GL_THREADED_OPTIMIZATIONS = "0";
       # "__GL_THREADED_OPTIMIZATIONS" = toValue generalCfg.unsafeOptimizations;
       "KWIN_DRM_USE_EGL_STREAMS" = toValue cfg.proprietary.EGLStream; # Make KWin use EGL Streams if needed, because otherwise performance will be horrible.
 
