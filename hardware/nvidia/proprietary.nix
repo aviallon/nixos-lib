@@ -42,6 +42,12 @@ in {
         default = if generalCfg.unsafeOptimizations then "beta" else "stable";
         example = "unstable_beta";
       };
+      registryDwords = mkOption {
+        description = "Registry DWORDS to set for Nvidia driver";
+        example = [ "OverrideMaxPerf=0x1" ];
+        default = [ "PowerMizerEnable=0x1" "PerfLevelSrc=0x2222" "PowerMizerDefault=0x3" "PowerMizerDefaultAC=0x1" ];
+        type = with types; listOf str;
+      };
     };
   };
   
@@ -90,6 +96,9 @@ in {
 
     aviallon.programs.nvtop.nvidia = true;
 
+    boot.extraModprobeConfig = ''
+      option nvidia NVreg_RegistryDwords="${concatStringsSep ";" cfg.proprietary.registryDwords}"
+    '';
     aviallon.boot.cmdline = {}
       // {
         "nvidia-drm.modeset" = 1;
