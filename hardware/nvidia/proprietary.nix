@@ -102,6 +102,7 @@ in {
     aviallon.boot.cmdline = {}
       // {
         "nvidia-drm.modeset" = 1;
+        "nvidia-drm.fbdev" = 1;
         "nvidia.NVreg_UsePageAttributeTable" = 1;
         "nvidia.NVreg_InitializeSystemMemoryAllocations" = 0;
       }
