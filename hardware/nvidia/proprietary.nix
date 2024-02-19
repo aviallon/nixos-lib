@@ -152,6 +152,9 @@ in {
 
       # Undocumented, fix for EGL not being found by Nvidia driver: https://github.com/NVIDIA/egl-wayland/issues/39#issuecomment-927288015
       __EGL_EXTERNAL_PLATFORM_CONFIG_DIRS = "/run/opengl-driver/share/egl/egl_external_platform.d";
+
+      # Improves Wayland
+      "GBM_BACKEND" = "nvidia-drm";
     };
   };
 }
