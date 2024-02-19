@@ -78,14 +78,15 @@ in {
         preempt = "full";
         "usbhid.mousepoll" = 1; # 1ms latency for mouse
         "usbhid.kbpoll" = 4; # 4ms latency for kb
+        "systemd.log_level" = config.boot.initrd.systemd.managerEnvironment.SYSTEMD_LOG_LEVEL;
       };
       boot.initrd.verbose = generalCfg.debug;
       boot.consoleLogLevel = mkIf (!generalCfg.debug) 1;
       boot.initrd.systemd.managerEnvironment = {
-        SYSTEMD_LOG_LEVEL = toString config.boot.consoleLogLevel;
+        SYSTEMD_LOG_LEVEL = if generalCfg.debug then toString config.boot.consoleLogLevel else "crit";
       };
 
-      console.enable = mkDefault false; # Completly disable console by default
+      #console.enable = mkDefault false; # Completly disable console by default
       security.polkit.enable = true; # Better interactive privilege prompts
 
       # Enable running X11 apps on Wayland
