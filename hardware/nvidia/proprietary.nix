@@ -52,8 +52,8 @@ in {
     boot.initrd.kernelModules = [
       "nvidia"
       "nvidia_drm"
-      "nvidia_uvm"
       "nvidia_modeset"
+      # "nvidia_uvm" # Don't load it early as it causes power-management issues
     ];
 
     services.xserver.videoDrivers = [
