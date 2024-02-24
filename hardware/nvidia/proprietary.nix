@@ -75,6 +75,11 @@ in {
 
     services.xserver.displayManager.sddm.wayland.enable = false; # Frequent issues with Nvidia GPUs
 
+    # Fix hybrid sleep with Nvidia GPU
+    systemd.services.nvidia-suspend = {
+      requiredBy = [ "systemd-hybrid-sleep.service" ];
+      before = [ "systemd-hybrid-sleep.service" ];
+    };
     hardware.nvidia = {
       powerManagement = mkIf (config.hardware.nvidia.prime.offload.enable || cfg.proprietary.saveAllVram) {
         enable = true;
