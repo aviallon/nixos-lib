@@ -166,5 +166,12 @@ in {
       # Improves Wayland
       "GBM_BACKEND" = "nvidia-drm";
     };
+
+    nixpkgs.overlays = [(final: prev: {
+      jellyfin-media-player = prev.runCommand "jellyfinmediaplayer" { nativeBuildInputs = [ prev.makeBinaryWrapper ]; } ''
+        mkdir -p $out/bin
+        makeWrapper ${getBin prev.jellyfin-media-player}/bin/jellyfinmediaplayer $out/bin/jellyfinmediaplayer --inherit-argv0 --add-flags "--platform=xcb"
+      '';
+    })];
   };
 }
