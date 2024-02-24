@@ -48,7 +48,6 @@ in {
           MinimumVT = mkOverride 50 1;
         };
       };
-      wayland.enable = true;
     };
 
     systemd.services.display-manager = {
