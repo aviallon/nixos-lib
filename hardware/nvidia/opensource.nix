@@ -6,7 +6,7 @@ in {
   options.aviallon.hardware.nvidia.nouveau = {
     config = mkOption {
       description = "nouveau boot config";
-      type = with types; attrsOf (nullOr (oneOf [ int string bool ]));
+      type = with types; attrsOf (nullOr (oneOf [ int str bool ]));
       example = { NvBoost = 1; };
       default = {};
     };
