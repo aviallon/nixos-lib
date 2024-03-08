@@ -28,20 +28,13 @@ in
       type = types.bool;
     };
 
-    services = {
-      dbus = mkOption rec {
-        default = cfg.hardcore;
-        example = !default;
-        description = "Enable dbus service hardening";
-        type = types.bool;
-      };
-    };
   };
 
+  imports = [
+    (mkRemovedOptionModule [ "aviallon" "hardening" "services" "dbus" ] "dbus should use AppArmor hardening instead")
+  ];
+
   config = mkIf cfg.enable {
-  #  imports = [
-  #     (modulesPath + "/profiles/hardened.nix")
-  #  ];
     aviallon.boot.kernel.package = mkIf cfg.hardcore pkgs.linuxKernel.kernels.linux_hardened;
     security.lockKernelModules = mkIf cfg.hardcore (mkQuasiForce true);
     # security.protectKernelImage = mkIf cfg.hardcore (mkOverride 500 false); # needed for kexec
@@ -112,31 +105,5 @@ in
     environment.systemPackages = with pkgs; [
       sbctl # Secure Boot keys generation
     ];
-
-    systemd.services.dbus.serviceConfig = mkIf cfg.services.dbus {
-      # Hardening
-      CapabilityBoundingSet = [ "CAP_SETGID" "CAP_SETUID" "CAP_SETPCAP" "CAP_SYS_RESOURCE" "CAP_AUDIT_WRITE" ];
-      DeviceAllow = [ "/dev/null rw" "/dev/urandom r" ];
-      DevicePolicy = "strict";
-      IPAddressDeny = "any";
-      LimitMEMLOCK = 0;
-      LockPersonality = true;
-      MemoryDenyWriteExecute = true;
-      NoNewPrivileges = true;
-      PrivateDevices = true;
-      PrivateTmp = true;
-      ProtectControlGroups = true;
-      ProtectHome = true;
-      ProtectKernelModules = true;
-      ProtectKernelTunables = true;
-      ProtectSystem = "strict";
-      ReadOnlyPaths = [ "-/" ];
-      RestrictAddressFamilies = [ "AF_UNIX" ];
-      RestrictNamespaces = true;
-      RestrictRealtime = true;
-      SystemCallArchitectures = "native";
-      SystemCallFilter = [ "@system-service" "~@chown" "~@clock" "~@cpu-emulation" "~@debug" "~@module" "~@mount" "~@obsolete" "~@raw-io" "~@reboot" "~@resources" "~@swap" "~memfd_create" "~mincore" "~mlock" "~mlockall" "~personality" ];
-      UMask = "0077";
-    };
   };
 }
