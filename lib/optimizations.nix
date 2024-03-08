@@ -313,6 +313,7 @@ rec {
     cmake = any (p: (myGetName p) == "cmake") pkg.nativeBuildInputs;
     go = any (p: (myGetName p) == "go") pkg.nativeBuildInputs;
     ninja = any (p: (myGetName p) == "ninja") pkg.nativeBuildInputs;
+    autotools = any (p: (myGetName p) == "autoreconf-hook") pkg.nativeBuildInputs;
   } // attrs);
 
   makeOptimizationFlags =
@@ -333,6 +334,7 @@ rec {
     , rust ? false
     , cmake ? false
     , ninja ? false
+    , autotools ? false
     , l1LineCache ? null
     , l1iCache ? null
     , l1dCache ? null
@@ -382,6 +384,16 @@ rec {
       
         _maxLoad=$(($NIX_BUILD_CORES * 2))
         makeFlagsArray+=("-l''${_maxLoad}")
+        
+      '';
+    })
+    (optionalAttrs autotools {
+      preConfigure = ''
+
+        configureFlagsArray+=(
+          "CFLAGS=$CFLAGS"
+          "CXXFLAGS=$CXXFLAGS"
+        )
         
       '';
     })
