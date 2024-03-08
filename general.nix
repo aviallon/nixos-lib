@@ -110,6 +110,10 @@ in
       font = "Lat2-Terminus16";
     };
 
+    boot.initrd.systemd.contents = mkIf (config.boot.initrd.systemd.enable && !config.console.earlySetup) {
+      "/etc/kbd/consolefonts".source = "${pkgs.kbd}/share/consolefonts";
+    };
+
     aviallon.boot.cmdline = mkIf cfg.unsafeOptimizations {
       mitigations = "off";
     };
