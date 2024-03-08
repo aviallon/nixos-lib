@@ -3,6 +3,7 @@ with lib;
 let
   cfg = config.aviallon.hardening;
   desktopCfg = config.aviallon.desktop;
+  mkQuasiForce = x: lib.mkOverride 2 x;
 in
 {
   options.aviallon.hardening = {
@@ -42,10 +43,10 @@ in
   #     (modulesPath + "/profiles/hardened.nix")
   #  ];
     aviallon.boot.kernel.package = mkIf cfg.hardcore pkgs.linuxKernel.kernels.linux_hardened;
-    security.lockKernelModules = mkIf cfg.hardcore (mkOverride 500 true);
+    security.lockKernelModules = mkIf cfg.hardcore (mkQuasiForce true);
     # security.protectKernelImage = mkIf cfg.hardcore (mkOverride 500 false); # needed for kexec
 
-    aviallon.hardening.expensive = mkIf cfg.hardcore (mkForce true);
+    aviallon.hardening.expensive = mkIf cfg.hardcore (mkQuasiForce true);
 
     security.sudo.execWheelOnly = true;
 
@@ -83,14 +84,14 @@ in
 
     boot.kernel.sysctl = {
       # Almost free security. https://www.kernel.org/doc/html/latest/admin-guide/LSM/Yama.html
-      "kernel.yama.ptrace_scope" = mkOverride 999 1;
+      "kernel.yama.ptrace_scope" = mkQuasiForce 1;
 
       # https://lwn.net/Articles/420403/
-      "kernel.kptr_restrict" = mkOverride 999 2;
+      "kernel.kptr_restrict" = mkQuasiForce 2;
 
       # Can be used by developers. Should be disabled on regular desktops.
       # https://www.kernel.org/doc/html/latest/trace/ftrace.html
-      "kernel.ftrace_enabled" = mkIf cfg.hardcore (mkOverride 999 false);
+      "kernel.ftrace_enabled" = mkIf cfg.hardcore (mkQuasiForce false);
     };
 
     # Is used in podman containers, for instance
@@ -98,11 +99,11 @@ in
 #    boot.blacklistedKernelModules = mkForce [ ];
 
     # Only authorize admins to use nix in hardcore mode
-    nix.allowedUsers = mkIf cfg.hardcore (mkForce [ "@wheel" ]);
+    nix.allowedUsers = mkIf cfg.hardcore (mkQuasiForce [ "@wheel" ]);
 
     # Can really badly affect performance in some occasions.
-    security.audit.enable = mkIf cfg.expensive true;
-    security.auditd.enable = mkIf cfg.expensive true;
+    security.audit.enable = mkDefault true;
+    security.auditd.enable = mkQuasiForce false;
 
     security.audit.rules = concatLists [
       (optional cfg.expensive "-a exit,always -F arch=b64 -S execve")
