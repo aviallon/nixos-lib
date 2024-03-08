@@ -113,9 +113,21 @@ in
       path = [ pkgs.audit ];
     };
 
-    security.audit.rules = concatLists [
-      (optional cfg.expensive "-a exit,always -F arch=b64 -S execve")
-    ];
+    security.audit.rules = []
+      ++ [
+          "-A exclude,always -F msgtype=SERVICE_START"
+          "-A exclude,always -F msgtype=SERVICE_STOP"
+          "-A exclude,always -F msgtype=BPF"
+          "-w /etc/apparmor/ -p wa -k apparmor_changes"
+          "-w /etc/apparmor.d/ -p wa -k apparmor_changes"
+          
+          "-a exit,always -F arch=b64 -S init_module -S finit_module -k module_insertion"
+          "-a exit,always -F arch=b32 -S init_module -S finit_module -k module_insertion"
+          "-a exit,always -F arch=b64 -C auid!=euid -F euid=0 -S execve -k privesc_execve"
+          "-a exit,always -F arch=b32 -C auid!=euid -F euid=0 -S execve -k privesc_execve"
+         ]
+      ++ optional cfg.expensive "-a exit,always -F arch=b64 -S execve -k execve_calls"
+    ;
 
     environment.systemPackages = with pkgs; [
       sbctl # Secure Boot keys generation
