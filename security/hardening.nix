@@ -97,6 +97,18 @@ in
     # Can really badly affect performance in some occasions.
     security.audit.enable = mkDefault true;
     security.auditd.enable = mkQuasiForce false;
+    
+    systemd.services.systemd-journald = let
+      rules = pkgs.writeText "audit.rules" (concatStringsSep "\n" config.security.audit.rules);
+    in mkIf config.security.audit.enable {
+      serviceConfig = {
+        #ExecStartPre = "-${pkgs.audit}/bin/augenrules --load";
+        ExecStartPre = ''-${pkgs.audit}/bin/auditctl -R ${rules} -e 1 -f 1 -r 1000 -b 64'';
+        Sockets = [ "systemd-journald-audit.socket" ];
+      };
+      aliases = [ "auditd.service" ];
+      path = [ pkgs.audit ];
+    };
 
     security.audit.rules = concatLists [
       (optional cfg.expensive "-a exit,always -F arch=b64 -S execve")
