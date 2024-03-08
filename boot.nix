@@ -231,6 +231,21 @@ in {
       # https://www.kernel.org/doc/html/v5.15/admin-guide/kernel-parameters.html
       "lpj" = mkIf (cfg.loops_per_jiffies > 0) cfg.loops_per_jiffies;
 
+
+      # From systemd(1): systemd.show_status
+      # Takes a boolean argument or the constants error and auto. Can be also specified without an argument, with the same effect as a positive boolean. If enabled, the systemd manager (PID 1) shows
+      # terse service status updates on the console during bootup. With error, only messages about failures are shown, but boot is otherwise quiet.  auto behaves like false until there is a significant
+      # delay in boot. Defaults to enabled, unless quiet is passed as kernel command line option, in which case it defaults to error.
+      "systemd.show_status" =
+        if config.boot.consoleLogLevel <= 1 then
+          "no"
+        else if config.boot.consoleLogLevel < 4 then
+          "error"
+        else if config.boot.consoleLogLevel == 4 then
+          "auto"
+        else
+          "yes"
+        ;
     };
 
     nixpkgs.overlays = [(final: prev: {
