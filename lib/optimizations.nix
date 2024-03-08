@@ -349,8 +349,8 @@ rec {
         if (! isNull cpuTune) then cpuTune
         else if (! isNull cpuArch) then cpuArch
         else "generic";
-    in
-    rec {
+    in myLib.debug.traceValWithPrefix "optimizations" (foldl' myLib.attrsets.mergeAttrsRecursive {} [
+    (rec {
       CFLAGS = unique
         ([ ]
         ++ requiredFlags
@@ -384,8 +384,8 @@ rec {
         makeFlagsArray+=("-l''${_maxLoad}")
         
       '';
-    }
-    // (optionalAttrs cmake {
+    })
+    (optionalAttrs cmake {
       preConfigure = ''
       
         cmakeFlagsArray+=(
@@ -396,7 +396,7 @@ rec {
       ''
       ;
     })
-    // (optionalAttrs ninja {
+    (optionalAttrs ninja {
       preConfigure = ''
       
         _maxLoad=$(($NIX_BUILD_CORES * 2))
@@ -404,7 +404,7 @@ rec {
         
       '';
     })
-    // (optionalAttrs rust {
+    (optionalAttrs rust {
       RUSTFLAGS = [ ]
       ++ optionals (levelN >= 2) [ "-C opt-level=3" ]
       ++ optionals lto [ "-C lto=fat" "-C embed-bitcode=on" ]
@@ -413,26 +413,27 @@ rec {
         #++ optionals lto [ "-Clinker-plugin-lto" "-Clto" ]
       ;
     })
-    // (optionalAttrs (!check) {
+    (optionalAttrs (!check) {
       doCheck = false;
       doInstallCheck = false;
     })
-    // (optionalAttrs (go && ISA == "amd64") {
+    (optionalAttrs (go && ISA == "amd64") {
       GOAMD64 = "v${toString x86Level}";
     })
-    // (optionalAttrs (go && ISA == "arm") {
+    (optionalAttrs (go && ISA == "arm") {
       GOARM = toString (getGOARM armLevel);
     })
-    // (optionalAttrs (go && ISA == "i686") {
+     (optionalAttrs (go && ISA == "i686") {
       GO386 = "sse2";
     })
-    // (optionalAttrs go {
+    (optionalAttrs go {
       GCCGO = "gccgo";
       CGO_CFLAGS_ALLOW = "-f.*";
       CGO_CXXFLAGS_ALLOW = "-f.*";
       CGO_CPPFLAGS_ALLOW = "-D.*";
       CGO_LDFLAGS_ALLOW = "-Wl.*";
     })
-    // (addMarchSpecific march)
+    (addMarchSpecific march)
+  ])
   ;
 }
