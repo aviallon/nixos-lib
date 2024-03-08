@@ -43,7 +43,10 @@ in
 
     security.sudo.execWheelOnly = true;
 
-    services.openssh.settings.PermitRootLogin = "prohibit-password";
+    services.openssh.settings.PermitRootLogin =
+      if cfg.hardcore then
+        "no"
+      else "prohibit-password";
 
     security.apparmor.enable = true;
     services.dbus.apparmor = "enabled";
