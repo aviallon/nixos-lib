@@ -106,7 +106,8 @@ in
     };
 
     console = {
-      keyMap = "fr-pc";
+      keyMap = mkIf (!config.console.useXkbConfig) "fr-pc";
+      useXkbConfig = mkDefault true;
       font = "Lat2-Terminus16";
     };
 
