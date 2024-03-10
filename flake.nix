@@ -8,6 +8,7 @@
 
     fps.url = "github:wamserma/flake-programs-sqlite";
     fps.inputs.nixpkgs.follows = "nixpkgs";
+    flake-utils.url = "github:numtide/flake-utils";
 
     sddm-unstable = {
       url = "github:sddm/sddm/develop";
