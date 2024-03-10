@@ -5,6 +5,8 @@ let
   cfg = config.aviallon.nix;
   generalCfg = config.aviallon.general;
   desktopCfg = config.aviallon.desktop;
+  optimizeCfg = config.aviallon.optimizations;
+  optimizePkg = optimizeCfg.optimizePkg;
 in
 {
   options.aviallon.nix = {
@@ -83,7 +85,7 @@ in
     };
 
   
-    nix.package = mkIf (strings.versionOlder pkgs.nix.version "2.7") pkgs.nix_2_7;
+    nix.package = optimizePkg { lto = true; level = "slower"; } pkgs.nix;
 
     nix.settings.system-features = [ "big-parallel" "kvm" "benchmark" ]
       ++ optional ( ! isNull generalCfg.cpu.arch ) "gccarch-${generalCfg.cpu.arch}"

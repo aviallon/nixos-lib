@@ -52,7 +52,7 @@ in
       ripgrep
       fd
       htop
-      cachix
+      unstable.cachix
       usbutils
     ]
     ++ optionals (!generalCfg.minimal) [
