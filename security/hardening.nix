@@ -123,8 +123,8 @@ in
           
           "-a exit,always -F arch=b64 -S init_module -S finit_module -k module_insertion"
           "-a exit,always -F arch=b32 -S init_module -S finit_module -k module_insertion"
-          "-a exit,always -F arch=b64 -C auid!=euid -F euid=0 -S execve -k privesc_execve"
-          "-a exit,always -F arch=b32 -C auid!=euid -F euid=0 -S execve -k privesc_execve"
+          "-a exit,always -F arch=b64 -C auid!=euid -F auid!=unset -F euid=0 -S execve -k privesc_execve"
+          "-a exit,always -F arch=b32 -C auid!=euid -F auid!=unset -F euid=0 -S execve -k privesc_execve"
          ]
       ++ optional cfg.expensive "-a exit,always -F arch=b64 -S execve -k execve_calls"
     ;
