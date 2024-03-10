@@ -1,4 +1,4 @@
-{ config, pkgs, lib, myLib, ... }:
+{ config, pkgs, lib, myLib, suyu, ... }:
 with lib;
 let
   cfg = config.aviallon.desktop;
@@ -12,10 +12,10 @@ in {
       enable = mkEnableOption "gaming features";
       emulation = mkEnableOption "console emulators";
       yuzu.package = mkOption {
-        description = "Yuzu switch emulator package";
         type = with types; package;
+        description = "Yuzu switch emulator package. WARNING: removed from nixpkgs";
         example = pkgs.yuzu-early-access;
-        default = pkgs.unstable.yuzu-early-access;
+        default = suyu.packages.${builtins.currentSystem}.suyu;
       };
       ryujinx.package = mkOption {
         description = "Ryujinx Switch emulator package";

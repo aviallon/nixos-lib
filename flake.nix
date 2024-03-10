@@ -5,6 +5,11 @@
     nixpkgs-master.url = "github:NixOS/nixpkgs/master";
 
     nur.url = "github:nix-community/NUR";
+    suyu = {
+      url = "github:Noodlez1232/suyu-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-utils.follows = "flake-utils";
+    };
 
     fps.url = "github:wamserma/flake-programs-sqlite";
     fps.inputs.nixpkgs.follows = "nixpkgs";
@@ -23,6 +28,7 @@
     , nixpkgs-unstable
     , fps
     , sddm-unstable
+    , suyu
     , ...
     }: let
       lib = nixpkgs.lib;
