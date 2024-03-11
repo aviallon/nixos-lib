@@ -56,6 +56,12 @@ in {
         TimeoutStopSec = 10;
         SendSIGHUP = true;
       };
+      after = [
+        "getty@tty1.service"
+      ];
+      conflicts = [
+        "getty@tty1.service"
+      ];
     };
 
     nixpkgs.overlays = [(final: prev: { mySddm = sddmPackage; } )];
