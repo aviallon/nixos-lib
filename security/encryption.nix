@@ -26,5 +26,6 @@ in {
     boot.initrd.systemd.enable = mkOverride 10 true;
     
     boot.initrd.availableKernelModules = [ "cryptd" ];
+    boot.initrd.kernelModules = [ "jitterentropy_rng" ];
   };
 }
