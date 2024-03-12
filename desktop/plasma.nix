@@ -67,7 +67,7 @@ in {
     nixpkgs.overlays = [(final: prev: { mySddm = sddmPackage; } )];
 
     services.xserver.displayManager.job = {
-      execCmd = mkForce "exec ${sddmPackage}/bin/sddm";
+      execCmd = mkOverride 2 "exec ${sddmPackage}/bin/sddm";
     };
 
 
