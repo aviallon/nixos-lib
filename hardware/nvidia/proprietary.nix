@@ -102,7 +102,7 @@ in {
     aviallon.programs.nvtop.nvidia = true;
 
     boot.extraModprobeConfig = ''
-      option nvidia NVreg_RegistryDwords="${concatStringsSep ";" cfg.proprietary.registryDwords}"
+      options nvidia NVreg_RegistryDwords="${concatStringsSep ";" cfg.proprietary.registryDwords}"
     '';
     aviallon.boot.cmdline = {}
       // {
