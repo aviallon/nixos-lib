@@ -11,6 +11,9 @@ in {
   };
   config = mkIf cfg.enable {
     system.nixos.tags = [ "developer" ];
+
+    programs.direnv.enable = true;
+    programs.direnv.loadInNixShell = true;
   
     environment.systemPackages = with pkgs; [
       tabnine
