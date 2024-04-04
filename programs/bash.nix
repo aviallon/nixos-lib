@@ -16,9 +16,9 @@ with lib;
         PS1="$(${pkgs.powerline-go}/bin/powerline-go -error $? -jobs $(jobs -p | wc -l))"
       }
       if [ "$TERM" != "dumb" ] && [ "$TERM" != "linux" ]; then
-        export PROMPT_COMMAND="_prompt"
+        export PROMPT_COMMAND="_prompt''${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
+        export -f _prompt
       fi
-      export -f _prompt
     '';
   };
 }
