@@ -3,7 +3,8 @@ with lib;
 let
   cfg = config.aviallon.hardening;
   desktopCfg = config.aviallon.desktop;
-  mkQuasiForce = x: lib.mkOverride 2 x;
+  _mkForcePrio = lib.mkForce null;
+  mkQuasiForce = x: lib.mkOverride (_mkForcePrio.priority + 1) x;
 in
 {
   options.aviallon.hardening = {
