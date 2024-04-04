@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, myLib, ... }:
 with lib;
 let
   cfg = config.aviallon.desktop;
@@ -172,6 +172,20 @@ in {
       services.pcscd.enable = mkDefault true;
 
       networking.networkmanager.plugins = [ pkgs.networkmanager-openvpn ];
+
+      nixpkgs.overlays = [(final: prev: {
+
+        # Patch rtkit to enable graceful systemd suspend support
+        rtkit = myLib.optimizations.addAttrs prev.rtkit {
+          patches = [
+            (final.fetchpatch {
+              name = "add-graceful-system-suspend-support.patch";
+              url = "https://patch-diff.githubusercontent.com/raw/heftig/rtkit/pull/35.patch";
+              hash = "sha256-NRVNSa7fzgEDn6ic/Vb36VCj2kv9AC6+Dm2uYNgbEZw=";
+            })
+          ];
+        };
+      })];
     })
   ]);
 }
