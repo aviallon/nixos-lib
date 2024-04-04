@@ -3,7 +3,7 @@ with lib;
 let
   cfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
-  vdhcoapp = pkgs.nur.repos.wolfangaukang.vdhcoapp;
+  vdhcoapp = pkgs.nur.repos.milahu.vdhcoapp;
 in {
   options.aviallon.desktop.browser = {
     firefox.overrides = mkOption {
