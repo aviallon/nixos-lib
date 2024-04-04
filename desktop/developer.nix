@@ -14,6 +14,18 @@ in {
 
     programs.direnv.enable = true;
     programs.direnv.loadInNixShell = true;
+    programs.bash.promptInit = mkAfter ''
+      _direnv_hook() {
+        local previous_exit_status=$?;
+        trap -- "" SIGINT;
+        eval "$(${getBin config.programs.direnv.package}/bin/direnv export bash)";
+        trap - SIGINT;
+        return $previous_exit_status;
+      };
+      if ! [[ "''${PROMPT_COMMAND:-}" =~ _direnv_hook ]]; then
+        PROMPT_COMMAND="_direnv_hook''${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
+      fi
+    '';
   
     environment.systemPackages = with pkgs; [
       tabnine
