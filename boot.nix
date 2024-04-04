@@ -2,6 +2,18 @@
 with lib;
 let
   customKernelPatches = {
+    zstd = {
+      name = "zstd";
+      patch = null;
+      extraConfig = ''
+        MODULE_COMPRESS_XZ n
+        MODULE_COMPRESS_ZSTD y
+        ZSWAP_COMPRESSOR_DEFAULT_ZSTD y
+        FW_LOADER_COMPRESS_ZSTD y
+        ZRAM_DEF_COMP_ZSTD y
+      '';
+    };
+  
     enableX32ABI = {
       name = "enable-x32";
       patch = null;
@@ -262,6 +274,9 @@ in {
       # Required for many features, like rootluks TPM-unlock, etc.
       initrd.systemd.enable = true;
 
+      initrd.compressor = "zstd";
+      initrd.compressorArgs = [ "-T0" "-9" ];
+
       kernelPackages = with myLib.debug; let
         baseKernel = cfg.kernel.package;
         
@@ -318,6 +333,7 @@ in {
         ++ optional (cfg.patches.amdClusterId.enable && kernelVersionOlder "6.4") customKernelPatches.amdClusterId
         ++ optional (cfg.patches.zenLLCIdle.enable && kernelVersionOlder "6.5") customKernelPatches.backports.zenLLCIdle
         ++ optional (isXanmod cfg.kernel.package && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpu.arch)
+        ++ optional config.aviallon.optimizations.enable customKernelPatches.zstd
       ;
 
       loader.grub.enable = cfg.useGrub;
