@@ -18,7 +18,7 @@ let
       name = "enable-x32";
       patch = null;
       extraConfig = ''
-        X86_X32 y
+        X86_X32_ABI y
       '';
     };
     enableRTGroupSched = {
