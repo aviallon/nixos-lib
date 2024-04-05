@@ -41,13 +41,9 @@ in {
         programs.firefox.enable = true;
         programs.firefox.nativeMessagingHosts.packages = [ pkgs.gnomeExtensions.bowser-gnome-extension ];
 
-        environment.systemPackages = with pkgs; []
-          ++ [
-            guake
+        aviallon.programs.libreoffice.enable = true;
 
-            libreoffice-fresh
-            
-          ]
+        environment.systemPackages = with pkgs; [ guake ]
           ++ (with gnome; [
             gnome-software
           ])
