@@ -336,6 +336,9 @@ in {
         ++ optional config.aviallon.optimizations.enable customKernelPatches.zstd
       ;
 
+      # Hide boot menu for systemd-boot by default
+      loader.timeout = mkIf (!cfg.useGrub) 0;
+
       loader.grub.enable = cfg.useGrub;
       loader.grub = {
         device = mkIf cfg.efi "nodev";
@@ -345,7 +348,8 @@ in {
 
       loader.systemd-boot = {
         enable = cfg.efi && (!cfg.useGrub);
-        configurationLimit = cfg.configurationLimit; 
+        configurationLimit = cfg.configurationLimit;
+        consoleMode = mkDefault "max";
         extraInstallCommands = let
           efiDir = config.boot.loader.efi.efiSysMountPoint;
         in ''
