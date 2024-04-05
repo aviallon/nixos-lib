@@ -11,5 +11,6 @@ with lib;
     ./gnome.nix
     ./printing.nix
     ./flatpak.nix
+    ./sddm.nix
   ];
 }
