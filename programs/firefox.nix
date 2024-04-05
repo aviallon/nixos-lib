@@ -1,11 +1,4 @@
-{lib,
-firefox-esr-unwrapped,
-wrapFirefox,
-enablePlasmaBrowserIntegration ? false,
-enableGnomeExtensions ? false,
-extraNativeMessengingHosts ? [],
-...
-}:
+{config, pkgs, lib, ...}:
 with lib;
 let
   genPrefList = {locked ? false}: prefs:
@@ -17,15 +10,17 @@ let
         (key: value: ''${prefFuncName}(${builtins.toJSON key}, ${builtins.toJSON value});'' )
         prefs
       );
-in wrapFirefox firefox-esr-unwrapped {
-    cfg = {
+  cfg = config.programs.firefox;
+in {
+  config = mkIf cfg.enable {
+    programs.firefox.wrapperConfig = {
       smartcardSupport = true;
       pipewireSupport = true;
       ffmpegSupport = true;
-      inherit enablePlasmaBrowserIntegration enableGnomeExtensions extraNativeMessengingHosts;
+      privacySupport = true;
     };
 
-    extraPolicies = {
+    programs.firefox.policies = {
       CaptivePortal = true;
       DisableFirefoxStudies = true;
       DisablePocket = true;
@@ -64,7 +59,6 @@ in wrapFirefox firefox-esr-unwrapped {
       Extensions = {
         Install = [
           "uBlock0@raymondhill.net"
-          "French-GC@grammalecte.net"
         ];             
       };
       ExtensionSettings = {
@@ -72,15 +66,11 @@ in wrapFirefox firefox-esr-unwrapped {
           installation_mode = "force_installed";
           install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
         };
-        "French-GC@grammalecte.net" = {
-          installation_mode = "force_installed";
-          install_url = "https://addons.mozilla.org/firefox/downloads/latest/grammalecte-fr/latest.xpi";
-        };
       };
       ExtensionUpdate = true;
-    }; 
+    };
 
-    extraPrefs = traceVal (genPrefList { locked = true; } {
+    programs.firefox.preferences = {
       "widget.use-xdg-desktop-portal" = true;
       "dom.event.contextmenu.enabled" = true;
       "network.IDN_show_punycode" = true;
@@ -131,7 +121,7 @@ in wrapFirefox firefox-esr-unwrapped {
 
       #"privacy.trackingprotection.origin_telemetry.enabled" = false;
 
-    } + "\n" + genPrefList {} {
+    } // {
       "intl.accept_languages" =	"fr-fr,en-us,en";
       "intl.locale.requested" = "fr,en-US";
       "media.eme.enabled" = true; # DRM
@@ -154,5 +144,6 @@ in wrapFirefox firefox-esr-unwrapped {
       "widget.use-xdg-desktop-portal.location" = 1;
       "widget.use-xdg-desktop-portal.mime-handler" = 1;
       "widget.use-xdg-desktop-portal.settings" = 1;
-    });
-  }
+    };
+  };
+}

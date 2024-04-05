@@ -26,6 +26,12 @@ in {
       "e ${config.users.users.sddm.home}/.cache/sddm-greeter/qmlcache/ - - - 0"
       "x ${config.users.users.sddm.home}/.cache"
     ];
+    programs.firefox.enable = true;
+
+    # Already brought in by ${nixpkgs}/nixos/modules/services/x11/desktop-managers/plasma5.nix
+    # programs.firefox.nativeMessagingHosts.packages = [ pkgs.libsForQt5.plasma-browser-integration ];
+    
+    programs.firefox.policies.Extensions.Install = [ "plasma-browser-integration@kde.org" ];
 
     environment.etc = {
       "chromium/native-messaging-hosts/org.kde.plasma.browser_integration.json".source = 
@@ -93,11 +99,7 @@ in {
       kolourpaint
       krdc
       sddm-kcm
-
-      myFirefox
     ];
-
-    aviallon.desktop.browser.firefox.overrides.enablePlasmaBrowserIntegration = true;
 
     aviallon.programs.libreoffice.qt = true;
 

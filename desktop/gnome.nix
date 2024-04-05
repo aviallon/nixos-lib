@@ -38,7 +38,8 @@ in {
           "gphhapmejobijbbhgpjhcjognlahblep" # Gnome Shell integration
         ];
 
-        aviallon.desktop.browser.firefox.overrides.enableGnomeExtensions = true;
+        programs.firefox.enable = true;
+        programs.firefox.nativeMessagingHosts.packages = [ pkgs.gnomeExtensions.bowser-gnome-extension ];
 
         environment.systemPackages = with pkgs; []
           ++ [
@@ -46,7 +47,6 @@ in {
 
             libreoffice-fresh
             
-            myFirefox
           ]
           ++ (with gnome; [
             gnome-software

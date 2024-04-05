@@ -7,5 +7,6 @@
     ./nano.nix
     ./nvtop.nix
     ./libreoffice.nix
+    ./firefox.nix
   ];
 }
