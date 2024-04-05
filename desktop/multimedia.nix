@@ -59,6 +59,20 @@ in {
       alsa.support32Bit = mkDefault true;
       wireplumber.enable = true;
     };
+
+    hardware.bluetooth.enable = true;
+    hardware.bluetooth.settings = {
+      General = {
+        Experimental = true;
+        KernelExperimental = concatStringsSep "," [
+          "6fbaf188-05e0-496a-9885-d6ddfdb4e03e" # BlueZ Experimental ISO socket
+        ];
+      };
+      Policy = {
+        ResumeDelay = 4;
+      };
+    };
+    
     environment.etc = {
     	"wireplumber/bluetooth.lua.d/51-bluez-config.lua".text = ''
     		bluez_monitor.properties = {
