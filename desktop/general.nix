@@ -174,7 +174,7 @@ in {
       services.packagekit.enable = mkDefault true;
     
       # SmartCards
-      services.pcscd.enable = mkDefault true;
+      #services.pcscd.enable = mkDefault true;
 
       networking.networkmanager.plugins = [ pkgs.networkmanager-openvpn ];
 
