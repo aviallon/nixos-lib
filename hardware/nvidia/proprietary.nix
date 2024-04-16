@@ -170,6 +170,9 @@ in {
 
       # Improves Wayland
       "GBM_BACKEND" = "nvidia-drm";
+
+      # Use direct CUDA backend for Nvidia VAAPI Driver (egl backend is broken)
+      "NVD_BACKEND" = "direct";
     };
 
     nixpkgs.overlays = [(final: prev: {
