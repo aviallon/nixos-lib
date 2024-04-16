@@ -171,13 +171,6 @@ in {
       type = types.int;
     };
 
-    loops_per_jiffies = mkOption {
-      description = "Set loops_per_jiffies to given constant, reducing boot-time. A value of 0 means autodetection.";
-      default = 0;
-      example = 4589490;
-      type = types.addCheck types.int (v: v > 500 || v == 0);
-    };
-
     cmdline = mkOption {
       description = "Kernel params as attributes (instead of list)";
       default = { };
@@ -213,6 +206,7 @@ in {
 
   imports = [
     ( mkRemovedOptionModule  [ "aviallon" "boot" "extraKCflags" ] "Replaced by aviallon.boot.kernel.addOptimizationAttributes attrset" )
+    ( mkRemovedOptionModule  [ "aviallon" "boot" "loops_per_jiffies" ] "Actually unused by the kernel" )
   ];
 
   config = mkMerge [
@@ -238,11 +232,6 @@ in {
 
       # Reboot after 5 seconds on panic (prevent system lockup)
       "panic" = 5;
-
-      # Sets loops_per_jiffy to given constant, thus avoiding time-consuming boot-time autodetection
-      # https://www.kernel.org/doc/html/v5.15/admin-guide/kernel-parameters.html
-      "lpj" = mkIf (cfg.loops_per_jiffies > 0) cfg.loops_per_jiffies;
-
 
       # From systemd(1): systemd.show_status
       # Takes a boolean argument or the constants error and auto. Can be also specified without an argument, with the same effect as a positive boolean. If enabled, the systemd manager (PID 1) shows
