@@ -79,6 +79,8 @@ in {
         "usbhid.mousepoll" = 1; # 1ms latency for mouse
         "usbhid.kbpoll" = 4; # 4ms latency for kb
         "systemd.log_level" = config.boot.initrd.systemd.managerEnvironment.SYSTEMD_LOG_LEVEL;
+
+        sysrq_always_enabled = mkIf generalCfg.debug "";
       };
       boot.initrd.verbose = generalCfg.debug;
       boot.consoleLogLevel = mkIf (!generalCfg.debug) 1;
