@@ -44,8 +44,11 @@ in {
       };
       registryDwords = mkOption {
         description = "Registry DWORDS to set for Nvidia driver";
-        example = [ "OverrideMaxPerf=0x1" ];
-        default = [ "PowerMizerEnable=0x1" "PerfLevelSrc=0x2222" "PowerMizerDefault=0x3" "PowerMizerDefaultAC=0x1" ];
+
+        # Very useful resource.
+        # https://forums.developer.nvidia.com/t/power-mizer-difference-between-powermizerdefault-and-powermizerlevel/46884/3
+        example = [ "PerfLevelSrc=0x2222" ];
+        default = [ "PowerMizerEnable=0x1" "OverrideMaxPerf=0x1" "PowerMizerDefault=0x3" "PowerMizerDefaultAC=0x3" ];
         type = with types; listOf str;
       };
     };
