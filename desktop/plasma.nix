@@ -65,6 +65,9 @@ in {
     xdg.portal.enable = mkDefault true;
     xdg.icons.enable = true;
 
+    # We prefer Plasma Wayland
+    services.xserver.displayManager.defaultSession = "plasmawayland";
+
     systemd.user.services.setup-xdg-cursors = mkIf config.xdg.icons.enable {
       script = ''
           [ -d "$HOME/.icons/default" ] || mkdir -p "$HOME/.icons/default"
