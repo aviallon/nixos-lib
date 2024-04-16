@@ -16,7 +16,6 @@ in {
     boot.initrd.kernelModules = [ "nouveau" ];
 
     aviallon.boot.cmdline = {
-      "nouveau.perflvl_wr" = 7777;
       "nouveau.pstate" = 1;
       "nouveau.runpm" = 1;
       "nouveau.modeset" = 1;
