@@ -217,7 +217,7 @@ rec {
                      , overrideMap ? { }
                      , stdenv ? null
                      , lto ? false
-                     , attributes ? { }
+                     , attributes ? null
                      , _depth ? 0
                      , ...
                      }@attrs:
@@ -293,7 +293,12 @@ rec {
           }
         );
         _pkgOptimized = addAttrs _pkg optimizedAttrs;
-        _pkgFinal = addAttrs _pkgOptimized attributes;
+        _pkgFinal =
+          if isAttrs attributes then
+            addAttrs _pkgOptimized (traceVal attributes)
+          else
+            _pkgOptimized
+          ;
       in
       trace "Optimized ${myGetName pkg} with overrideAttrs at level '${level}' (depth: ${toString _depth}, lto: ${if lto then "true" else "false"})" _pkgFinal
     else if (hasAttr "name" pkg) then
