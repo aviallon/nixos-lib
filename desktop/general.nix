@@ -97,6 +97,9 @@ in {
       # Enable touchpad support (enabled default in most desktopManager).
       services.xserver.libinput.enable = true;
 
+      # Enable color management
+      services.colord.enable = true;
+
       hardware.opengl.driSupport = true;
 
 
