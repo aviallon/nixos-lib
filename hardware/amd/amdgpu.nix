@@ -17,8 +17,8 @@ in {
       "amdgpu.cik_support" = 1;
 
       "amdgpu.ppfeaturemask" = mkIf generalCfg.unsafeOptimizations "0xfff7ffff";
-      "amdgpu.freesync_video" = 1;
       #"amdgpu.mes" = mkIf generalCfg.unsafeOptimizations 1;
+      "amdgpu.seamless" = mkIf generalCfg.unsafeOptimizations 1;
     };
 
     environment.systemPackages = with pkgs; []
@@ -30,11 +30,9 @@ in {
 
     aviallon.programs.config.rocmSupport = mkDefault devCfg.enable;
 
-    services.xserver.videoDrivers = []
-    ++ optional cfg.useProprietary "amdgpu-pro"
-    ++ [
-      "amdgpu"
-    ];
+    services.xserver.videoDrivers = 
+      optional cfg.useProprietary "amdgpu-pro"
+      ++ [ "modesetting" ];
 
     hardware.opengl = {
       enable = true;
