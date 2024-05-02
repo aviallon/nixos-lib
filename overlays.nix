@@ -1,4 +1,4 @@
-{config, pkgs, options, lib, ...}:
+{config, pkgs, options, lib, myLib, ...}:
 with builtins;
 with lib;
 let
@@ -101,27 +101,17 @@ in
           });
       })
 
-      (final: prev: {
-        jetbrains = prev.jetbrains // {
-          pycharm-professional-fhs = (
+      (final: prev: let
+        pycharm-common = pkg:
           let
             myIsDerivation = x:
               let
-                tryX = tryEval x;
+                r = !(myLib.derivations.isBroken x);
               in
-                if
-                  tryX.success && (isDerivation tryX.value)
-                then
-                  if !(tryX.value.meta.insecure || tryX.value.meta.broken)
-                  then true
-                  else trace "Excluding interpreter ${getName x} from pycharm FHS" false
-                else
-                  false
-              ;
+            ;
             interpreters = pkgs: filter (x: myIsDerivation x) (attrValues pkgs.pythonInterpreters);
-            unwrapped = final.jetbrains.pycharm-professional;
           in prev.buildFHSUserEnv rec {
-            name = "pycharm-professional";
+            name = pkg.name;
             targetPkgs = pkgs: (with pkgs;
               [
                 glibc
@@ -129,19 +119,22 @@ in
 
                 python3Full
               
-                jetbrains.pycharm-professional
+                pkg
               ]
               ++ trace "Using the following interpreters: ${toString (pkgNames (interpreters pkgs))}" (interpreters pkgs)
             );
 
             # symlink shared assets, including icons and desktop entries
             extraInstallCommands = ''
-              ln -s "${unwrapped}/share" "$out/"
+              ln -s "${pkg}/share" "$out/"
             '';
 
-            runScript = "${unwrapped}/bin/pycharm-professional";
-          });
-
+            runScript = "/usr/bin/${name}";
+          };
+        in {
+        jetbrains = prev.jetbrains // {
+          pycharm-community-fhs = pycharm-common prev.jetbrains.pycharm-community;
+          pycharm-professional-fhs = pycharm-common prev.jetbrains.pycharm-professional;
 
           clion-fhs = let
             compilers = pkgs: with pkgs; with llvmPackages_17; [
