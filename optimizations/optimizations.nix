@@ -52,7 +52,7 @@ in {
       blacklist = mkOption {
         description = "Packages to blacklist from LTO";
         type = types.listOf types.str;
-        default = [ "x265" "cpio" "cups" "gtk+3" "which" ];
+        default = [ "x265" "cpio" "cups" "gtk+3" "which" "openssh" ];
       };
     };
     extraCompileFlags = mkOption {
@@ -78,10 +78,7 @@ in {
     trace = mkEnableOption "trace attributes in overriden derivations";
     blacklist = mkOption {
       default = [ # Broken
-                  "cmocka" "libkrb5" "libidn2" "tpm2-tss" "libxcrypt"
-                  "libomxil-bellagio" "wayland" "wayland-protocols"
-                  "openssl" "libXt" "intel-media-sdk"
-                  "zlib" "alsa-lib" "glib" "lcms2" "gconf" "gnome-vfs"
+                  "alsa-lib" "glib" "lcms2" "gconf" "gnome-vfs"
 
                   # Very slow
                   "llvm" "clang" "clang-wrapper" "valgrind" "rustc" "tensorflow" "qtwebengine"
