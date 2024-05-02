@@ -10,6 +10,7 @@ let
   '';
 
   nvidiaUnstable = config.boot.kernelPackages.callPackage (nixpkgs-unstable + /pkgs/os-specific/linux/nvidia-x11/default.nix) {};
+  cudaUnstable = pkgs: cudaVersion: pkgs.callPackages (nixpkgs-unstable + /pkgs/top-level/cuda-packages.nix) { inherit cudaVersion; };
 in {
   options = {
     aviallon.hardware.nvidia.proprietary = {
@@ -141,7 +142,7 @@ in {
 
     # Causes massive rebuilds (tensorflow, openCV, etc.), will need to find a better cache beforehand
     # For now, prefer using package overrides
-    # nixpkgs.config.cudaSupport = mkDefault true;
+    # aviallon.programs.config.cudaSupport = mkDefault true;
 
     hardware.opengl.extraPackages = with pkgs; [
       nvidia-vaapi-driver
@@ -178,11 +179,19 @@ in {
       "NVD_BACKEND" = "direct";
     };
 
-    nixpkgs.overlays = [(final: prev: {
-      jellyfin-media-player = prev.runCommand "jellyfinmediaplayer" { nativeBuildInputs = [ prev.makeBinaryWrapper ]; } ''
-        mkdir -p $out/bin
-        makeWrapper ${getBin prev.jellyfin-media-player}/bin/jellyfinmediaplayer $out/bin/jellyfinmediaplayer --inherit-argv0 --add-flags "--platform=xcb"
-      '';
-    })];
+    nixpkgs.overlays =
+      [(final: prev: {
+        jellyfin-media-player = prev.runCommand "jellyfinmediaplayer" { nativeBuildInputs = [ prev.makeBinaryWrapper ]; } ''
+          mkdir -p $out/bin
+          makeWrapper ${getBin prev.jellyfin-media-player}/bin/jellyfinmediaplayer $out/bin/jellyfinmediaplayer --inherit-argv0 --add-flags "--platform=xcb"
+        '';
+      })]
+      ++ optional (cfg.proprietary.version == "unstable_beta") (final: prev: {
+        cudaPackages_11 = final.unstable.cudaPackages_11;
+        cudaPackages_12 = final.unstable.cudaPackages_12;
+        cudaPackages = final.unstable.cudaPackages;
+
+      })
+    ;
   };
 }
