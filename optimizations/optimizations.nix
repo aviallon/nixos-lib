@@ -101,6 +101,11 @@ in {
   };
 
   config = mkIf cfg.enable {
+
+    aviallon.optimizations.blacklist = mkDefault (
+        options.aviallon.optimizations.blacklist.default
+        ++ (traceValSeq (forEach config.system.replaceRuntimeDependencies (x: lib.getName x.oldDependency )))
+    );
     nixpkgs.overlays = mkAfter [
       (self: super: {
         fastStdenv = super.overrideCC super.gccStdenv (super.buildPackages.gcc_latest.overrideAttrs (old:
