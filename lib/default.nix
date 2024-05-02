@@ -12,5 +12,6 @@ let
     attrsets = callLibs ./attrsets.nix;
     types = callLibs ./types.nix;
     debug = callLibs ./debug.nix;
+    derivations = callLibs ./derivations.nix;
   });
 in myLib
