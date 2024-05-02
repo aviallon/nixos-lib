@@ -7,26 +7,34 @@ let
 
   addAttrs = myLib.optimizations.addAttrs;
 
+  defaultOptimizeAttrs = {
+    level = "normal";
+    recursive = 0;
+    cpuCores = generalCfg.cpu.threads;
+    cpuArch = generalCfg.cpu.arch;
+    cpuTune = generalCfg.cpu.tune;
+    l1dCache = generalCfg.cpu.caches.l1d;
+    l1iCache = generalCfg.cpu.caches.l1i;
+    l1LineCache = generalCfg.cpu.caches.cacheLine;
+    lastLevelCache = generalCfg.cpu.caches.lastLevel;
+    extraCFlags = cfg.extraCompileFlags;
+    blacklist = cfg.blacklist;
+    ltoBlacklist = cfg.lto.blacklist;
+    overrideMap = cfg.overrideMap;
+    lto = cfg.lto.enable;
+  };
+
   optimizePkg = {
-      cpuCores ? generalCfg.cpu.threads,
-      cpuArch ? generalCfg.cpu.arch,
-      cpuTune ? generalCfg.cpu.tune,
-      l1dCache ? generalCfg.cpu.caches.l1d,
-      l1iCache ? generalCfg.cpu.caches.l1i,
-      l1LineCache ? generalCfg.cpu.caches.cacheLine,
-      lastLevelCache ? generalCfg.cpu.caches.lastLevel,
-      extraCFlags ? cfg.extraCompileFlags,
-      blacklist ? cfg.blacklist,
-      ltoBlacklist ? cfg.lto.blacklist,
-      overrideMap ? cfg.overrideMap,
-      lto ? cfg.lto,
       attributes ? {},
       stdenv ? null,
       ...
     }@attrs: pkg:
-      myLib.optimizations.optimizePkg pkg (cfg.defaultSettings // {
-        inherit cpuCores cpuTune cpuArch extraCFlags blacklist ltoBlacklist overrideMap stdenv attributes l1dCache l1iCache l1LineCache lastLevelCache;
-      } // attrs);
+      myLib.optimizations.optimizePkg pkg (
+        defaultOptimizeAttrs
+        // cfg.defaultSettings
+        // { inherit stdenv attributes; }
+        // attrs
+      );
 in {
   options.aviallon.optimizations = {
     enable = mkOption {
