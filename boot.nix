@@ -9,6 +9,7 @@ let
         MODULE_COMPRESS_XZ n
         MODULE_COMPRESS_ZSTD y
         ZSWAP_COMPRESSOR_DEFAULT_ZSTD y
+        ZSWAP_ZPOOL_DEFAULT_Z3FOLD y # Use more-efficient z3fold by default (especially useful with Zstd which has a high compression ratio.)
         FW_LOADER_COMPRESS_ZSTD y
         ZRAM_DEF_COMP_ZSTD y
       '';
