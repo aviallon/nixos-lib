@@ -147,6 +147,9 @@ in {
         vlc
         veracrypt
 
+        # Clipboard support on Wayland
+        wl-clipboard
+
         # Spell check support
         hunspell
         hunspellDicts.fr-any
