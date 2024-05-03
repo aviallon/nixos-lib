@@ -141,9 +141,9 @@ in {
       example = cfg.efi;
       type = types.bool;
     };
-    x32abi = {
-      enable = mkEnableOption "X32 kernel ABI";
-    };
+
+    
+    x32abi.enable = mkEnableOption "X32 kernel ABI";
     kvdo.enable = mkEnableOption "dm-kvdo kernel module";
     rtGroupSched.enable = mkEnableOption "RT cgroups";
     energyModel.enable = mkEnableOption "Energy Model";
@@ -158,6 +158,7 @@ in {
       example = true;
       type = with types; bool;
     };
+    
     legacy = mkOption rec {
       description = "Use legacy bootloader";
       default = !cfg.efi;
@@ -176,7 +177,7 @@ in {
       description = "Kernel params as attributes (instead of list)";
       default = { };
       example = { "i915.fastboot" = true; };
-      type = types.attrsOf (types.oneOf [ types.bool types.int types.str (types.listOf types.str) ]);
+      type = with types; attrsOf (oneOf [ bool int str (listOf str) ]);
     };
 
     kernel = {
