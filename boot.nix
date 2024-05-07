@@ -145,7 +145,7 @@ in {
     
     x32abi.enable = mkEnableOption "X32 kernel ABI";
     kvdo.enable = mkEnableOption "dm-kvdo kernel module";
-    rtGroupSched.enable = mkEnableOption "RT cgroups";
+    rtGroupSched.enable = mkEnableOption "RT cgroups" // { default = config.aviallon.optimizations.enable; };
     energyModel.enable = mkEnableOption "Energy Model";
     
     patches = {
