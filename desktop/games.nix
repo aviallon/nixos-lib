@@ -45,7 +45,7 @@ in {
         lutris
         bottles
       ] ++ optionals cfg.gaming.emulation [
-        (optimizePkg { recursive = 0; } my_yuzu)
+        (optimizePkg { recursive = 0; lto = false; } my_yuzu)
         (optimizePkg { } cfg.gaming.ryujinx.package)
       ];
 

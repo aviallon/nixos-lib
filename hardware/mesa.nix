@@ -66,9 +66,9 @@ in {
 
     aviallon.hardware.mesa.internal = mkIf cfg.optimized {
       package = mkDefault (
-        optimizePkg { } cfg.package);
+        optimizePkg { lto = false; } cfg.package);
       package32 = mkDefault (
-        optimizePkg { } cfg.package32);
+        optimizePkg { lto = false; } cfg.package32);
     };
 
     hardware.opengl = {
