@@ -47,8 +47,13 @@ in {
       );
     };
 
+    systemd.tmpfiles.rules = [
+      "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}"
+    ];
+
     environment.variables = {
-      "AMD_VULKAN_ICD" = strings.toUpper cfg.defaultVulkanImplementation;
+      AMD_VULKAN_ICD = strings.toUpper cfg.defaultVulkanImplementation;
+      ROC_ENABLE_PRE_VEGA = "1"; # Enable OpenCL with Polaris GPUs
     };
 
     # Make rocblas and rocfft work
@@ -57,5 +62,11 @@ in {
       "/sys/devices/virtual/kfd?"
       "/dev/dri/renderD128?"
     ];
+
+    nixpkgs.overlays = [(final: prev: {
+        # Overlay Blender to use the HIP build if we have a compatible AMD GPU
+        blender = final.blender-hip;
+        blender-prev = prev.blender;
+      })];
   };
 }
