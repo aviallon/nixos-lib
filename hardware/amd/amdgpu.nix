@@ -22,9 +22,9 @@ in {
     };
 
     environment.systemPackages = with pkgs; []
-      ++ [ rocm-smi ]
+      ++ [ rocmPackages.rocm-smi ]
       ++ optionals devCfg.enable [
-        rocminfo
+        rocmPackages.rocminfo
       ]
     ;
 
@@ -38,8 +38,7 @@ in {
       enable = true;
       extraPackages = with pkgs; mkIf (!cfg.useProprietary) (
         [
-          rocm-opencl-icd
-          rocm-opencl-runtime
+          rocmPackages.clr.icd
         ]
         ++ optional (cfg.defaultVulkanImplementation == "amdvlk") amdvlk
       );
