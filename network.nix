@@ -78,7 +78,7 @@ in
     # Must always be false
     networking.useDHCP = false;
 
-    networking.hostId = mkDefault (builtins.abort "Default hostId not changed" null);
+    networking.hostId = mkDefault (substring 0 8 (builtins.hashString "sha256" config.networking.hostName));
     networking.hostName = mkDefault (builtins.abort "Default hostname not changed" null);
 
     # Needed for proper WiFi support in some countries (like France, for instance)
