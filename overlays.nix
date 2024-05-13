@@ -93,11 +93,7 @@ in
       (final: prev: let
         pycharm-common = pkg:
           let
-            myIsDerivation = x:
-              let
-                r = !(myLib.derivations.isBroken x);
-              in
-            ;
+            myIsDerivation = x: !(myLib.derivations.isBroken x);
             interpreters = pkgs: filter (x: myIsDerivation x) (attrValues pkgs.pythonInterpreters);
           in prev.buildFHSUserEnv rec {
             name = pkg.name;
