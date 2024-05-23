@@ -408,6 +408,9 @@ rec {
         cmakeFlagsArray+=(
           "-DCMAKE_CXX_FLAGS=$CXXFLAGS"
           "-DCMAKE_C_FLAGS=$CFLAGS"
+          ${optionalString lto ''
+          "-DCMAKE_INTERPROCEDURAL_OPTIMIZATION=true"
+          ''}
         )
         
       ''
