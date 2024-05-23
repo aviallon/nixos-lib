@@ -30,7 +30,7 @@ let
   ltoFlags = { threads ? 1, thin ? false }: [
     # Fat LTO objects are object files that contain both the intermediate language and the object code. This makes them usable for both LTO linking and normal linking.
     "-flto=${toString threads}" # Use -flto=auto to use GNU make’s job server, if available, or otherwise fall back to autodetection of the number of CPU threads present in your system.
-    (optionalString thin "-ffat-lto-objects")
+    (optionalString (!thin) "-ffat-lto-objects")
     "-fuse-linker-plugin"
 
     # Stream extra information needed for aggressive devirtualization when running the link-time optimizer in local transformation mode.
@@ -380,10 +380,10 @@ rec {
           lastLevel = lastLevelCache;
         });
       CXXFLAGS = CFLAGS;
-      CPPFLAGS = [ ]
-      ++ optionals (levelN >= 1) genericPreprocessorFlags;
-      LDFLAGS = [ ]
-      ++ optionals (levelN >= 3) genericLinkerFlags;
+      CPPFLAGS = []
+        ++ optionals (levelN >= 1) genericPreprocessorFlags;
+      LDFLAGS = []
+        ++ optionals (levelN >= 3) genericLinkerFlags;
 
       preConfigure = ''
       
