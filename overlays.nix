@@ -96,7 +96,7 @@ in
             myIsDerivation = x: !(myLib.derivations.isBroken x);
             interpreters = pkgs: filter (x: myIsDerivation x) (attrValues pkgs.pythonInterpreters);
           in prev.buildFHSUserEnv rec {
-            name = pkg.name;
+            name = pkg.pname;
             targetPkgs = pkgs: (with pkgs;
               [
                 glibc
@@ -114,7 +114,7 @@ in
               ln -s "${pkg}/share" "$out/"
             '';
 
-            runScript = "/usr/bin/${name}";
+            runScript = "/usr/bin/${pkg.pname}";
           };
         in {
         jetbrains = prev.jetbrains // {
