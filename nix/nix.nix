@@ -98,7 +98,8 @@ in
     nix.settings.substitute = true;
     nix.settings.experimental-features = [ "nix-command" "flakes" ]
       ++ optional (versionOlder config.nix.package.version "2.19") "repl-flake"
-      ++ optional cfg.contentAddressed "ca-derivations";
+      ++ optional cfg.contentAddressed "ca-derivations"
+      ++ optional (config.nix.settings.use-cgroups or false) "cgroups";
 
     nix.settings.download-attempts = 5;
     nix.settings.stalled-download-timeout = 20;
@@ -112,7 +113,6 @@ in
       ++ optional cfg.contentAddressed "cache.ngi0.nixos.org-1:KqH5CBLNSyX184S9BKZJo1LxrxJ9ltnY2uAs5c/f1MA="
     );
 
-    nix.settings.use-cgroups = true;
     nix.settings.always-allow-substitutes = true;
 
     nix.settings.cores = mkIf (generalCfg.cpu.threads != null) generalCfg.cpu.threads;
