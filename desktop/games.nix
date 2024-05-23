@@ -14,7 +14,6 @@ in {
       yuzu.package = mkOption {
         type = with types; package;
         description = "Yuzu switch emulator package. WARNING: removed from nixpkgs";
-        example = pkgs.yuzu-early-access;
         default = suyu.packages.${pkgs.system}.suyu;
       };
       ryujinx.package = mkOption {
