@@ -112,6 +112,9 @@ in
       ++ optional cfg.contentAddressed "cache.ngi0.nixos.org-1:KqH5CBLNSyX184S9BKZJo1LxrxJ9ltnY2uAs5c/f1MA="
     );
 
+    nix.settings.use-cgroups = true;
+    nix.settings.always-allow-substitutes = true;
+
     nix.settings.cores = mkIf (generalCfg.cpu.threads != null) generalCfg.cpu.threads;
     nix.settings.max-jobs = mkIf (generalCfg.cpu.threads != null) (math.log2 generalCfg.cpu.threads);
 
