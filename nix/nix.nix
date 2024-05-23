@@ -85,7 +85,7 @@ in
     };
 
   
-    nix.package = optimizePkg { lto = true; level = "slower"; } pkgs.nix;
+    nix.package = optimizePkg { lto = true; level = "slower"; } pkgs.nixVersions.latest;
 
     nix.settings.system-features = [ "big-parallel" "kvm" "benchmark" ]
       ++ optional ( ! isNull generalCfg.cpu.arch ) "gccarch-${generalCfg.cpu.arch}"
@@ -96,7 +96,8 @@ in
 
     nix.settings.builders-use-substitutes = true;
     nix.settings.substitute = true;
-    nix.settings.experimental-features = [ "nix-command" "flakes" "repl-flake" ]
+    nix.settings.experimental-features = [ "nix-command" "flakes" ]
+      ++ optional (versionOlder config.nix.package.version "2.19") "repl-flake"
       ++ optional cfg.contentAddressed "ca-derivations";
 
     nix.settings.download-attempts = 5;
