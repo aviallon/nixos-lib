@@ -85,7 +85,7 @@ in
     };
 
   
-    nix.package = optimizePkg { lto = true; level = "slower"; } pkgs.nixVersions.latest;
+    nix.package = optimizePkg { level = "slower"; } pkgs.nixVersions.latest;
 
     nix.settings.system-features = [ "big-parallel" "kvm" "benchmark" ]
       ++ optional ( ! isNull generalCfg.cpu.arch ) "gccarch-${generalCfg.cpu.arch}"
@@ -99,8 +99,8 @@ in
     nix.settings.experimental-features = [ "nix-command" "flakes" ]
       ++ optional (versionOlder config.nix.package.version "2.19") "repl-flake"
       ++ optional cfg.contentAddressed "ca-derivations"
-      ++ optional (config.nix.settings.use-cgroups or false) "cgroups";
-
+    ;
+    
     nix.settings.download-attempts = 5;
     nix.settings.stalled-download-timeout = 20;
 
