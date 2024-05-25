@@ -52,7 +52,7 @@ in {
     ];
 
     environment.variables = {
-      AMD_VULKAN_ICD = strings.toUpper cfg.defaultVulkanImplementation;
+      AMD_VULKAN_ICD = mkIf (cfg.defaultVulkanImplementation == "amdvlk") (strings.toUpper cfg.defaultVulkanImplementation);
       ROC_ENABLE_PRE_VEGA = "1"; # Enable OpenCL with Polaris GPUs
     };
 
