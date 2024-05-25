@@ -159,7 +159,9 @@ in {
       ];
 
       environment.variables = {
-        SDL_VIDEODRIVER = "wayland";
+        SDL_VIDEODRIVER = "wayland,x11";
+        SDL_AUDIODRIVER = "pipewire,pulseaudio";
+
         QT_QPA_PLATFORM = "wayland;xcb";
         MOZ_DBUS_REMOTE = "1"; # For shared clipboard with Xwayland apps
         _JAVA_AWT_WM_NONREPARENTING = "1";
