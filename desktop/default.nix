@@ -5,7 +5,7 @@ with lib;
     ./general.nix
     ./developer.nix
     ./multimedia.nix
-    ./plasma.nix
+    ./plasma
     ./games.nix
     ./browser.nix
     ./gnome.nix

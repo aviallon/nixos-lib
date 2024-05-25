@@ -14,7 +14,7 @@ in {
     environment = mkOption {
       default = "plasma";
       example = "gnome";
-      type = with types; enum [ "plasma" "gnome" ];
+      type = with types; enum [ "plasma" "plasma6" "gnome" ];
       description = "What Desktop Environment to use";
     };
     layout = mkOption {
