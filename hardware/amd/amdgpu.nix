@@ -63,6 +63,9 @@ in {
       "/dev/dri/renderD128?"
     ];
 
+    nix.settings.substituters = [ "https://nixos-rocm.cachix.org" ];
+    nix.settings.trusted-public-keys = [ "nixos-rocm.cachix.org-1:VEpsf7pRIijjd8csKjFNBGzkBqOmw8H9PRmgAq14LnE=" ];
+
     nixpkgs.overlays = [(final: prev: {
         # Overlay Blender to use the HIP build if we have a compatible AMD GPU
         blender = final.blender-hip;
