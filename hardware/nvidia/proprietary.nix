@@ -103,7 +103,7 @@ in {
       versionOlder hardwareCfg.nvidia.package.version "490.29.05" # https://www.nvidia.com/download/driverResults.aspx/181159/en-us/
     );
 
-    aviallon.programs.nvtop.nvidia = true;
+    aviallon.programs.nvtop.backend = [ "nvidia" ];
 
     boot.extraModprobeConfig = ''
       options nvidia NVreg_RegistryDwords="${concatStringsSep ";" cfg.proprietary.registryDwords}"
@@ -150,10 +150,6 @@ in {
 
     hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [
       nvidia-vaapi-driver
-    ];
-
-    environment.systemPackages = with pkgs; [
-      nvtop
     ];
 
     # See documentation here: https://download.nvidia.com/XFree86/Linux-x86_64/510.60.02/README/openglenvvariables.html

@@ -17,7 +17,10 @@ in
   ];
   
   config = mkIf cfg.enable {
-    aviallon.programs.nvtop.enable = true;
+    aviallon.programs.nvtop = {
+      enable = true;
+      backend = [ "intel" ];
+    };
   
     boot.initrd.kernelModules = [ "i915" ];
     hardware.opengl = {

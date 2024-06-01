@@ -27,7 +27,10 @@ in {
   
   config = mkIf cfg.enable {
 
-    aviallon.programs.nvtop.enable = true;
+    aviallon.programs.nvtop = {
+      enable = true;
+      backend = [ "amd" ];
+    };
 
     hardware.opengl = {
       enable = true;
