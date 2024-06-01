@@ -19,7 +19,7 @@ in {
     };
 
     environment.interactiveShellInit = mkAfter ''
-      ${config.programs.gnupg.package}/bin/gpg-connect-agent --quiet updatestartuptty /bye
+      ${config.programs.gnupg.package}/bin/gpg-connect-agent --quiet updatestartuptty /bye >/dev/null
     '';
 
     environment.shellInit = ''
