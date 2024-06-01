@@ -68,8 +68,8 @@ in {
       systemd.services."autovt@tty1".enable = mkOverride 50 false;
 
       # Configure keymap in X11
-      services.xserver.layout = cfg.layout;
-      services.xserver.xkbOptions = "eurosign:e";
+      services.xserver.xkb.layout = cfg.layout;
+      services.xserver.xkb.options = "eurosign:e";
 
 
       aviallon.boot.cmdline = {
@@ -95,7 +95,7 @@ in {
       programs.xwayland.enable = true;
       
       # Enable touchpad support (enabled default in most desktopManager).
-      services.xserver.libinput.enable = true;
+      services.libinput.enable = true;
 
       # Enable color management
       services.colord.enable = true;

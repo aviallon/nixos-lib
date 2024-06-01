@@ -136,7 +136,7 @@ in {
 
     services.avahi = {
       enable = !generalCfg.minimal; # .lan/.local resolution
-      nssmdns = true; # .lan/.local resolution
+      nssmdns4 = true; # .lan/.local resolution
       openFirewall = true;
       reflector = true;
       publish = {

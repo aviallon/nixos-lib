@@ -9,7 +9,7 @@ in {
     package = mkOption {
       internal = true;
       description = "Which nvtop package to use";
-      default = pkgs.nvtop-amd;
+      default = pkgs.nvtopPackages.amd;
       type = myLib.types.package';
     };
   };
