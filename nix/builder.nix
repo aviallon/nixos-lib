@@ -4,8 +4,8 @@ let
   cfg = config.aviallon.nix;
   generalCfg = config.aviallon.general;
   desktopCfg = config.aviallon.desktop;
-  buildUserPubKeyFile = ./id_builder.pub;
-  buildUserKeyFile = ./id_builder;
+  buildUserPubKeyFile = cfg.builder.publicKeyFile;
+  buildUserKeyFile = cfg.builder.privateKeyFile;
   buildUserKeyFilePath = "/var/lib/nixos/aviallon.id_builder";
 
   getSpeed = cores: threads: cores + (threads - cores) / 2;
@@ -46,6 +46,17 @@ in
   ];
 
   options.aviallon.nix.builder = {
+    publicKeyFile = mkOption {
+      type = types.path;
+      example = "/path/to/id_builder.pub";
+      description = "Path to the public key nix will use to connect to builder";
+    };
+
+    privateKeyFile = mkOption {
+      type = types.path;
+      example = "/path/to/id_builder";
+      description = "Path to the private key nix builder user will use";
+    };
     
     buildMachines = mkOption {
       type = types.attrsOf (types.submoduleWith {
