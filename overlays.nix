@@ -101,6 +101,7 @@ in
               [
                 glibc
                 bashInteractive
+                zlib
 
                 python3Full
               
