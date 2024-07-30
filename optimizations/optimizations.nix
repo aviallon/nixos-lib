@@ -113,29 +113,9 @@ in {
     );
     nixpkgs.overlays = mkAfter [
       (self: super: {
-        fastStdenv = super.overrideCC super.gccStdenv (super.buildPackages.gcc_latest.overrideAttrs (old:
-          let
-            optimizedAttrs = {}
-              // {
-                configureFlags = [
-                  "--with-cpu-64=${generalCfg.cpu.arch}" "--with-arch-64=${generalCfg.cpu.arch}"
-                  "--with-tune-64=${generalCfg.cpu.tune}"
-                  "--with-build-config=bootstrap-lto-lean"
-                ];
-              }
-            ;
-            ccWithProfiling = old.cc.overrideAttrs (_: { buildFlags = [ "profiledbootstrap" ]; } );
-          in {
-            cc = addAttrs ccWithProfiling optimizedAttrs;
-          }
-        ));
-      })
-    
-      (self: super: {
         jetbrains = super.jetbrains // {
           jdk = optimizePkg {} super.jetbrains.jdk;
         };
-
       })
     ];
   };
