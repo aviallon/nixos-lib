@@ -76,6 +76,7 @@ in {
       type = with types; functionTo (functionTo package);
     };
     trace = mkEnableOption "trace attributes in overriden derivations";
+    runtimeOverrides.enable = mkEnableOption "runtime overrides for performance sensitive libraries (glibc, ...)";
     blacklist = mkOption {
       default = [ # Broken
                   "alsa-lib" "glib" "lcms2" "gconf" "gnome-vfs"
@@ -111,11 +112,57 @@ in {
         options.aviallon.optimizations.blacklist.default
         ++ (traceValSeq (forEach config.system.replaceRuntimeDependencies (x: lib.getName x.oldDependency )))
     );
+    system.replaceRuntimeDependencies = mkIf (!lib.inPureEvalMode && cfg.runtimeOverrides.enable) [
+      # glibc usually represents 20% of the userland CPU time. It is therefore very much worth optimizing.
+      /*{
+        original = pkgs.glibc;
+        replacement = let
+          optimizedFlags = [ "-fipa-pta" ];
+          #optimizedFlags = myLib.optimizations.guessOptimizationsFlags pkgs.glibc (defaultOptimizeAttrs // { level = "slower"; recursive = 0; });
+        in pkgs.glibc.overrideAttrs (attrs: myLib.debug.traceValWithPrefix "optimizations (glibc)" {
+          passthru = pkgs.glibc.passthru;
+          env = (attrs.env or {}) // {
+            NIX_CFLAGS_COMPILE = (attrs.env.NIX_CFLAGS_COMPILE or "") + (toString optimizedFlags.CFLAGS);
+          };
+        });
+      }*/
+      # zlib is in second place, given how often it is used
+      #{
+      #  original = pkgs.zlib;
+      #  replacement = optimizePkg { level = "slower"; } pkgs.zlib;
+      #}
+    ];
+
     nixpkgs.overlays = mkAfter [
       (self: super: {
-        jetbrains = super.jetbrains // {
-          jdk = optimizePkg {} super.jetbrains.jdk;
-        };
+        fastStdenv = super.overrideCC super.gccStdenv (super.buildPackages.gcc_latest.overrideAttrs (old:
+          let
+            optimizedAttrs = {}
+              // {
+                configureFlags = [
+                  "--with-cpu-64=${generalCfg.cpu.arch}" "--with-arch-64=${generalCfg.cpu.arch}"
+                  "--with-tune-64=${generalCfg.cpu.tune}"
+                  "--with-build-config=bootstrap-lto-lean"
+                ];
+              }
+            ;
+            ccWithProfiling = old.cc.overrideAttrs (_: { buildFlags = [ "profiledbootstrap" ]; } );
+          in {
+            cc = addAttrs ccWithProfiling optimizedAttrs;
+          }
+        ));
+      })
+    
+      (self: super: {
+        #jetbrains = super.jetbrains // {
+        #  jdk = pipe super.jetbrains.jdk [
+        #    (optimizePkg { level = "normal"; lto = false; })
+        #    (pkg: pkg.overrideAttrs (old: {
+        #      passthru = pkg.passthru or {};
+        #      #configureFlags = (old.configureFlags or []) ++ [ "--with-extra-cflags" "--with-extra-cxxflags" "--with-extra-ldflags" ];
+        #    }))
+        #  ];
+        #};
       })
     ];
   };
