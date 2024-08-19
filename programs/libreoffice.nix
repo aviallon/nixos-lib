@@ -2,11 +2,6 @@
 with lib;
 let
   cfg = config.aviallon.programs.libreoffice;
-  toStringOrFunc = x:
-    if isFunction x
-    then "<function>"
-    else (builtins.toJSON x)
-  ;
   
   applyOverrides = overrides: pkg: pipe pkg overrides;
 in {
