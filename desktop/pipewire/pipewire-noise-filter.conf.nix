@@ -53,6 +53,7 @@ context.modules = [
             playback.props = {
                 node.name = "rnnoise_source.output"
                 media.class = Audio/Source
+                node.virtual = false
             }
         }
     }
