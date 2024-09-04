@@ -185,7 +185,7 @@ in {
         description = "Linux kernel to use";
         default = options.boot.kernelPackages.default.kernel;
         example = "pkgs.kernel";
-        type = types.package;
+        type = myLib.types.package';
       };
 
       addAttributes = mkOption {
