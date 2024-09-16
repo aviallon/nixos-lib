@@ -96,7 +96,7 @@ in {
         "fihnjjcciajhdojfnbdddfaoknhalnja" # I don't care about cookies
         "eimadpbcbfnmbkopoojfekhnkhdbieeh" # Dark Reader
 
-        "lkbebcjgcmobigpeffafkodonchffocl;https://gitlab.com/magnolia1234/bypass-paywalls-chrome-clean/-/raw/master/updates.xml" # Bypass Paywalls
+        "lkbebcjgcmobigpeffafkodonchffocl;https://gitflic.ru/project/magnolia1234/bpc_updates/blob/raw?file=updates.xml" # Bypass Paywalls
 
         "jmkaglaafmhbcpleggkmaliipiilhldn;https://edge.microsoft.com/extensionwebstorebase/v1/crx" # Video DownloadHelper (Edge)
         "ldcclmkclhomnpcnccgbgleikchbnecl;https://edge.microsoft.com/extensionwebstorebase/v1/crx" # FastForward (Edge)
@@ -117,7 +117,8 @@ in {
         "ExtensionInstallSources" = [
           "https://chrome.google.com/webstore/*"
           "https://microsoftedge.microsoft.com/addons/*"
-          "https://gitlab.com/magnolia1234/bypass-paywalls-chrome-clean/*" # */
+          "https://gitlab.com/magnolia1234/bypass-paywalls-chrome-clean/*"
+          "https://gitflic.ru/project/magnolia1234/bpc_updates/*" # */
         ];
         "BuiltInDnsClientEnabled" = false;
         "TranslateEnabled" = false;

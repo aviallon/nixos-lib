@@ -59,12 +59,17 @@ in {
       Extensions = {
         Install = [
           "uBlock0@raymondhill.net"
+          "magnolia@12.34"
         ];             
       };
       ExtensionSettings = {
         "uBlock0@raymondhill.net" = {
           installation_mode = "force_installed";
           install_url = "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi";
+        };
+        "magnolia@12.34" = {
+          installation_mode = "normal_installed";
+          install_url = "https://gitflic.ru/project/magnolia1234/bpc_uploads/blob/raw?file=bypass_paywalls_clean-latest.xpi&inline=false";
         };
       };
       ExtensionUpdate = true;
