@@ -138,11 +138,15 @@ in {
 
       "browser.shell.didSkipDefaultBrowserCheckOnFirstRun" = true;
 
+      "gfx.webrender.all" = true; # Required for any HW accel to work.
+
       "media.ffmpeg.vaapi.enabled" = true;
-      "media.ffvpx.enabled" = true;
-      "media.navigator.mediadatadecoder_vpx_enabled" = true;
+      "media.navigator.mediadatadecoder_vpx_enabled" = true; # Enable VA-API for WebRTC.
+      "media.ffmpeg.vaapi-drm-display.enabled" = true;
       "media.rdd-ffmpeg.enabled" = true;
-      "media.rdd-ffvpx.enabled" = true;
+
+      "media.ffvpx.enabled" = false; # Needs to be set to false for VA-API to work with VP8/VP9.
+      "media.rdd-vpx.enabled" = false; # Needs to be set to **false** for VA-API to work.
       "media.rdd-opus.enabled" = true;
 
       "widget.use-xdg-desktop-portal.file-picker" = 1;
