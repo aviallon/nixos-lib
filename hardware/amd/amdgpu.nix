@@ -34,18 +34,12 @@ in {
       optional cfg.useProprietary "amdgpu-pro"
       ++ [ "modesetting" ];
 
-    hardware.opengl = {
-      enable = true;
-      extraPackages = with pkgs; mkIf (!cfg.useProprietary) (
-        [
-          rocmPackages.clr.icd
-        ]
-        ++ optional (cfg.defaultVulkanImplementation == "amdvlk") amdvlk
-      );
-      extraPackages32 = with pkgs.driversi686Linux; mkIf (!cfg.useProprietary) ([]
-        ++ optional (cfg.defaultVulkanImplementation == "amdvlk") amdvlk
-      );
-    };
+    hardware.amdgpu.opencl.enable = true;
+
+    hardware.amdgpu.amdvlk.enable = cfg.defaultVulkanImplementation == "amdvlk";
+    hardware.amdgpu.amdvlk.support32Bit.enable = mkDefault config.hardware.amdgpu.amdvlk.enable;
+
+    hardware.opengl.enable = true;
 
     systemd.tmpfiles.rules = [
       "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}"
