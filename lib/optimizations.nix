@@ -210,7 +210,7 @@ rec {
   };
 
   addAttrs = pkg: attrs: pkg.overrideAttrs (old:
-    (myLib.attrsets.mergeAttrsRecursive old attrs) // {
+    (myLib.attrsets.mergeAttrsRecursiveWithPriority old attrs) // {
       passthru = (pkg.passthru or {}) // (attrs.passtru or {});
     }
   );
@@ -362,7 +362,7 @@ rec {
         if (! isNull cpuTune) then cpuTune
         else if (! isNull cpuArch) then cpuArch
         else "generic";
-    in myLib.debug.traceValWithPrefix "optimizations" (foldl' myLib.attrsets.mergeAttrsRecursive {} [
+    in myLib.debug.traceValWithPrefix "optimizations" (foldl' myLib.attrsets.mergeAttrsRecursiveWithPriority {} [
     (rec {
       CFLAGS = unique
         ([ ]
