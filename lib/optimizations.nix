@@ -17,6 +17,11 @@ let
     # Perform loop distribution of patterns that can be code generated with calls to a library (activated at O3 and more)
     "-ftree-loop-distribute-patterns"
 
+    # Put each function declaration in its own text section
+    "-ffunction-sections"
+    # Instruct the linker to garbage-collect unused sections, which combined with the above removes dead functions
+    "-Wl,--gc-sections"
+
     "-frecord-gcc-switches" # Record build flags in binary. Also supported by Clang
   ];
 
@@ -26,6 +31,7 @@ let
   ];
   genericLinkerFlags = [
     "-Wl,-sort-common"
+    "-Wl,--gc-sections"
   ];
   ltoFlags = { threads ? 1, thin ? false }: [
     # Fat LTO objects are object files that contain both the intermediate language and the object code. This makes them usable for both LTO linking and normal linking.
