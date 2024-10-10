@@ -335,6 +335,7 @@ in {
         device = mkIf cfg.efi "nodev";
         efiSupport = cfg.efi;
         configurationLimit = cfg.configurationLimit;
+        gfxpayloadBios = "keep";
       };
 
       loader.systemd-boot = {
