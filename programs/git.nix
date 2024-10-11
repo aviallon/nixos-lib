@@ -8,10 +8,6 @@ with lib;
       init = {
         defaultBranch = "main";
       };
-      user = {
-        email = "antoine@lesviallon.fr";
-        name = "Antoine Viallon";
-      };
       core.compression = 6;
       commit.gpgSign = lib.mkDefault true;
       diff = {
@@ -26,8 +22,10 @@ with lib;
       fetch.parallel = config.aviallon.general.cpu.threads;
       pack.threads = myLib.math.log2 config.aviallon.general.cpu.threads;
       checkout.workers = config.aviallon.general.cpu.threads / 2;
-      gpg.program = "${pkgs.gnupg}/bin/gpg";
+      gpg.program = "${lib.getBin config.programs.gnupg.package}/bin/gpg";
       format.pretty = "format:%C(yellow)%H (%t)%Creset %Cblue%aN (%cN)%Creset%Cred% G?%Creset - %Cgreen%ar%Creset %d %n    %s%n";
+      push.autoSetupRemote = true;
+      pull.rebase = true;
     };
   };
 }
