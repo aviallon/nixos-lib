@@ -7,7 +7,15 @@ rec {
     else
       lib.modules.defaultOverridePriority
     ;
-  comparePriority = a: b: (getPriority a) - (getPriority b);
+  _getContent = x:
+    if isAttrs x && (attrByPath [ "_type" ] "" x) == "override" then
+      getAttr "content" x
+    else
+      x
+    ;
+
+  # lower priority = higher precedence. If (comparePriority a b) is positive, b has higher precedence.
+  comparePriority = a: b: myLib.debug.traceValWithPrefix "comparePriority" (getPriority a) - (getPriority b);
   mergeAttrsRecursiveWithPriority = a: b:
     let
       _prio = comparePriority a b;
@@ -15,9 +23,9 @@ rec {
       if _prio == 0 then
         _mergeAttrsRecursive mergeAttrsRecursiveWithPriority a b
       else if _prio > 0 then
-        a
+        _getContent b
       else
-        b
+        _getContent a
     ;
 
   mergeAttrsRecursive = a: b: _mergeAttrsRecursive _mergeAttrsRecursive a b;
