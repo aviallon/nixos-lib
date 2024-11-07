@@ -165,6 +165,12 @@ in {
         QT_QPA_PLATFORM = "wayland;xcb";
         MOZ_DBUS_REMOTE = "1"; # For shared clipboard with Xwayland apps
         _JAVA_AWT_WM_NONREPARENTING = "1";
+
+        # https://wiki.archlinux.org/title/Wayland#Environment_variable
+        ELECTRON_OZONE_PLATFORM_HINT = "auto";
+
+        # https://wiki.archlinux.org/title/Wayland#Java
+        JAVA_TOOL_OPTIONS = "-Dawt.toolkit.name=WLToolkit";
       };
 
       aviallon.programs.allowUnfreeList = [
