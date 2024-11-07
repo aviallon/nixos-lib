@@ -24,6 +24,10 @@ in {
     xdg.portal.enable = mkDefault true;
     xdg.icons.enable = true;
 
+    environment.variables = {
+      ELECTRON_TRASH = "kioclient";
+    };
+
     #environment.systemPackages = [
       #config.programs.gnupg.agent.pinentryPackage
     #];
