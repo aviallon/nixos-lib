@@ -73,7 +73,7 @@ in
             hostName = mkOption {
               type = types.str;
               example = "luke-skywalker-nixos";
-              description = lib.mdDoc ''
+              description = ''
                 Builder's host name
               '';
             };
@@ -94,7 +94,7 @@ in
             threads = mkOption {
               type = with types; addCheck ints.unsigned (n: n >= config.cores);
               example = 16;
-              description = lib.mdDoc "How many physical _threads_ the builder has.";
+              description = "How many physical _threads_ the builder has.";
             };
             x86ver = mkOption {
               default = 1;

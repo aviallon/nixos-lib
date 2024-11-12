@@ -78,7 +78,7 @@ in
         cacheLine = mkOption {
           default = null;
           example = 64;
-          description = lib.mdDoc "Cache-line size in bytes (can be retrieved using `/sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size`)";
+          description = "Cache-line size in bytes (can be retrieved using `/sys/devices/system/cpu/cpu0/cache/index0/coherency_line_size`)";
           type = with types; nullOr ints.positive;
         };
       };

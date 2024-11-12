@@ -67,7 +67,7 @@ in {
         level = "slower";
       };
       example = { level = "unsafe"; recursive = 0; };
-      description = mdDoc "Specify default options passed to optimizePkg";
+      description = "Specify default options passed to optimizePkg";
     };
     optimizePkg = mkOption {
       default = if cfg.enable then optimizePkg else ({...}: pkg: pkg);
@@ -102,7 +102,7 @@ in {
             cmake = pkgs.my-cmake-override;
           }
         '';
-      description = mdDoc "Allow overriding packages found in `nativeBuildInputs` with custom packages.";
+      description = "Allow overriding packages found in `nativeBuildInputs` with custom packages.";
     };
   };
 
