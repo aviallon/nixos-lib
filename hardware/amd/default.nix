@@ -32,9 +32,7 @@ in {
       backend = [ "amd" ];
     };
 
-    hardware.opengl = {
-      enable = true;
-    };
+    hardware.graphics.enable = true;
 
     aviallon.hardware.mesa.enable = mkDefault (!cfg.useProprietary);
   };

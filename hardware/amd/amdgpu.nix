@@ -5,7 +5,7 @@ let
   devCfg = config.aviallon.developer;
   generalCfg = config.aviallon.general;
 in {
-  config = mkIf (cfg.enable && cfg.kernelDriver == "amdgpu") {
+  config = mkIf (cfg.enable && cfg.kernelDriver == "amdgpu") {  
     boot.initrd.kernelModules = [ "amdgpu" ];
 
     aviallon.boot.cmdline = {
@@ -38,8 +38,6 @@ in {
 
     hardware.amdgpu.amdvlk.enable = cfg.defaultVulkanImplementation == "amdvlk";
     hardware.amdgpu.amdvlk.support32Bit.enable = mkDefault config.hardware.amdgpu.amdvlk.enable;
-
-    hardware.opengl.enable = true;
 
     systemd.tmpfiles.rules = [
       "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.clr}"

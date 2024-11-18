@@ -59,7 +59,7 @@ in {
   };
 
   config = mkIf cfg.enable {
-    programs.corectrl.enable = mkDefault config.hardware.opengl.enable;
+    programs.corectrl.enable = mkDefault config.hardware.graphics.enable;
 
     aviallon.hardware.mesa.package = mkIf cfg.unstable pkgs.unstable.mesa;
     aviallon.hardware.mesa.package32 = mkIf cfg.unstable pkgs.unstable.driversi686Linux.mesa;
@@ -71,7 +71,7 @@ in {
         optimizePkg { lto = false; } cfg.package32);
     };
 
-    hardware.opengl = {
+    hardware.graphics = {
       package = with pkgs; cfg.internal.package.drivers;
       package32 = with pkgs; cfg.internal.package32.drivers;
 

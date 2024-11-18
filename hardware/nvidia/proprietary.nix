@@ -144,11 +144,11 @@ in {
     # For now, prefer using package overrides
     # aviallon.programs.config.cudaSupport = mkDefault true;
 
-    hardware.opengl.extraPackages = with pkgs; [
+    hardware.graphics.extraPackages = with pkgs; [
       nvidia-vaapi-driver
     ];
 
-    hardware.opengl.extraPackages32 = with pkgs.pkgsi686Linux; [
+    hardware.graphics.extraPackages32 = with pkgs.pkgsi686Linux; [
       nvidia-vaapi-driver
     ];
 

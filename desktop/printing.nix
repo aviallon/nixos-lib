@@ -26,7 +26,6 @@ in {
         cups-brother-hl1110
         cups-toshiba-estudio
         cups-brother-hl1210w
-        hll2390dw-cups
         cups-brother-hl3140cw
         cups-brother-hll2340dw
         cups-drv-rastertosag-gdi
@@ -65,7 +64,6 @@ in {
       "cups-toshiba-estudio"
       "cups-brother-hl1210w"
       "cups-brother-hl1210W"
-      "hll2390dw-cups"
       "cups-brother-hl3140cw"
       "cups-brother-hll2340dw"
       "cups-drv-rastertosag-gdi"

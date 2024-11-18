@@ -100,9 +100,6 @@ in {
       # Enable color management
       services.colord.enable = true;
 
-      hardware.opengl.driSupport = true;
-
-
       environment.systemPackages = with pkgs; [
         p7zip
       ];
@@ -134,7 +131,7 @@ in {
         # package = pkgs.bluez;
       };
 
-      hardware.opengl.driSupport32Bit = mkDefault cfg.gaming.enable;
+      hardware.graphics.enable32Bit = mkDefault cfg.gaming.enable;
     
       environment.systemPackages = with pkgs; [
         glxinfo
