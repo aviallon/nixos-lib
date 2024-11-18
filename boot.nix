@@ -269,7 +269,7 @@ in {
       initrd.compressorArgs = [ "-T0" "-9" ];
 
       kernelPackages = with myLib.debug; let
-        baseKernel = cfg.kernel.package;
+        baseKernel = traceValWithPrefix "aviallon.boot.kernel.package" cfg.kernel.package;
         
         # Possible CFLAGS source : (myLib.optimizations.makeOptimizationFlags {}).CFLAGS
         kCflags = traceValWithPrefix "kCflags" (
