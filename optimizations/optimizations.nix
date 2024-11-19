@@ -112,7 +112,7 @@ in {
         options.aviallon.optimizations.blacklist.default
         ++ (traceValSeq (forEach config.system.replaceRuntimeDependencies (x: lib.getName x.oldDependency )))
     );
-    system.replaceRuntimeDependencies = mkIf (!lib.inPureEvalMode && cfg.runtimeOverrides.enable) [
+    system.replaceDependencies.replacements = mkIf (!lib.inPureEvalMode && cfg.runtimeOverrides.enable) [
       # glibc usually represents 20% of the userland CPU time. It is therefore very much worth optimizing.
       /*{
         original = pkgs.glibc;
@@ -135,7 +135,7 @@ in {
 
     nixpkgs.overlays = mkAfter [
       (self: super: {
-        fastStdenv = super.overrideCC super.gccStdenv (super.buildPackages.gcc_latest.overrideAttrs (old:
+        veryFastStdenv = super.overrideCC super.gccStdenv (super.buildPackages.gcc_latest.overrideAttrs (old:
           let
             optimizedAttrs = {}
               // {
