@@ -23,6 +23,7 @@ in {
     ./cpu.nix
     ./amdgpu.nix
     ./radeon.nix
+    ./rocm.nix
   ];
   
   config = mkIf cfg.enable {
