@@ -22,7 +22,7 @@ let
     gxf1036 = "10.3.0";
   };
 
-  autoDetectGPU = pkgs: pkgs.callPackage (
+  /*autoDetectGPU = pkgs: pkgs.callPackage (
     { runCommandLocal,
       gnugrep,
       rocmPackages,
@@ -34,7 +34,7 @@ let
         rocminfo &>/dev/stderr
         rocminfo | grep --only-matching --perl-regexp '^\s*Name:\s+\Kgfx[0-9a-f]+' | tee $out/output
        ''
-  ) { };
+  ) { };*/
 
   gfxToCompatible = gfxISA: if (hasAttr gfxISA gfxToCompatibleMap) then (getAttr gfxISA gfxToCompatibleMap) else "";
 in {
@@ -91,7 +91,7 @@ in {
         magma = final.magma-hip;
         magma-cpu = prev.magma;
 
-        autoDetectGPU = autoDetectGPU final;
+        #autoDetectGPU = autoDetectGPU final;
 
         rocmPackages = prev.rocmPackages // rec {
           rocmlir = prev.rocmPackages.rocmlir.overrideAttrs (finalAttrs: previousAttrs: {
