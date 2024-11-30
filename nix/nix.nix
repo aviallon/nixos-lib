@@ -77,7 +77,7 @@ in
         Nice = 19;
         CPUSchedulingPolicy = mkForce "batch";
         CPUWeight = 1;
-        CPUQuota = (toString (generalCfg.cpu.threads * 80)) + "%";
+        CPUQuota = (toString (generalCfg.cpu.threads * 90)) + "%";
         IOSchedulingClass = mkForce "idle";
         IOAccounting = true;
         IOWeight = 1;
