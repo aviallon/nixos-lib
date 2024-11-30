@@ -53,7 +53,7 @@ in {
     environment.systemPackages = with pkgs;
       [
         rocmPackages.rocm-smi
-        rocmPackages.meta.rocm-ml-libraries
+        #rocmPackages.meta.rocm-ml-libraries
         rocmPackages.meta.rocm-hip-runtime
 
         #pkgs.autoDetectGPU
@@ -98,11 +98,11 @@ in {
         rocmPackages = prev.rocmPackages // rec {
           rocmlir = prev.rocmPackages.rocmlir.overrideAttrs (finalAttrs: previousAttrs: {
             patches = [
-              {
+              (prev.fetchpatch {
                 name = "fix-mlir-Conversion-RocMLIRPasses.h.inc-not-found.patch";
                 url = "https://patch-diff.githubusercontent.com/raw/ROCm/rocMLIR/pull/1640.patch";
-                hash = "";
-              }
+                hash = "sha256-przg1AQZTiVbVd/4wA+KlGXu/RISO5n11FBkmUFKRSA=";
+              })
             ];
           });
 
