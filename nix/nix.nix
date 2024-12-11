@@ -85,7 +85,7 @@ in
     };
 
   
-    nix.package = optimizePkg { level = "slower"; } pkgs.nixVersions.latest;
+    nix.package = optimizePkg { stdenv = pkgs.fastStdenv; level = "slower"; } pkgs.nixVersions.latest;
 
     nix.settings.system-features = [ "big-parallel" "kvm" "benchmark" ]
       ++ optional ( ! isNull generalCfg.cpu.arch ) "gccarch-${generalCfg.cpu.arch}"
