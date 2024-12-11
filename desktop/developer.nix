@@ -28,7 +28,7 @@ in {
     '';
   
     environment.systemPackages = with pkgs; [
-      tabnine
+      #tabnine
       numactl
       schedtool
       stress
@@ -125,6 +125,20 @@ in {
     environment.extraOutputsToInstall = [
       "doc" "info" "dev" "debug" "static"
     ];
+
+    services.ollama = {
+      enable = mkDefault true;
+      loadModels = [ "yi-coder:1.5b" ];
+      group = "ollama";
+      user = "ollama";
+      package =
+        if config.aviallon.hardware.amd.enable
+          then pkgs.unstable.ollama-rocm
+        else if (config.aviallon.hardware.nvidia.enable && config.aviallon.hardware.nvidia.variant != "nouveau")
+          then pkgs.unstable.ollama-cuda
+        else pkgs.unstable.ollama
+      ;
+    };
 
     aviallon.services.journald.extraConfig = {
       Storage = mkForce "persistent";
