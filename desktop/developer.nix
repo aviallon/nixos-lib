@@ -123,7 +123,7 @@ in {
     boot.initrd.systemd.emergencyAccess = mkIf (config.users.users.root.hashedPassword != null) config.users.users.root.hashedPassword;
 
     environment.extraOutputsToInstall = [
-      "doc" "info" "dev" "debug" "static"
+      "doc" "info" "dev"
     ];
 
     services.ollama = {
