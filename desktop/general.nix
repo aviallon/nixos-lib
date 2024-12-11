@@ -61,7 +61,7 @@ in {
       aviallon.boot.kernel.package = mkDefault pkgs.linuxKernel.kernels.linux_xanmod;
 
       # Enable the X11 windowing system.
-      services.xserver.enable = true;
+      # services.xserver.enable = true;
       # services.xserver.tty = mkOverride 70 1;
 
       systemd.services."getty@tty1".enable = mkOverride 50 false;
@@ -131,6 +131,8 @@ in {
         enable = true;
         # package = pkgs.bluez;
       };
+
+      programs.thunderbird.enable = true;
 
       hardware.graphics.enable32Bit = mkDefault cfg.gaming.enable;
     
