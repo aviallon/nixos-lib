@@ -18,6 +18,10 @@ in {
 
     aviallon.programs.config.rocmSupport = mkDefault devCfg.enable;
 
+    services.udev.extraRules = mkAfter ''
+      SUBSYSTEM=="pci", DRIVER=="amdgpu", ATTR{power_dpm_force_performance_level}="auto"
+    '';
+
     services.xserver.videoDrivers = 
       optional cfg.useProprietary "amdgpu-pro"
       ++ [ "modesetting" ];
