@@ -249,6 +249,9 @@ in {
         else
           "yes"
         ;
+
+      # 'quiet' is required to silence systemd-efi-stub messages
+      "quiet" = mkIf (config.boot.consoleLogLevel <= 4) true;
     };
 
     nixpkgs.overlays = [(final: prev: {
