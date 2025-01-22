@@ -130,9 +130,10 @@ in
         recipient = "antoine@lesviallon.fr";
       };
       notifications.x11 = {
-        enable = true;
+        enable = config.aviallon.desktop.enable;
         display = ":0";
       };
+      notifications.systembus-notify.enable = config.aviallon.desktop.enable;
     };
   };
 } 
