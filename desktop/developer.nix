@@ -53,7 +53,7 @@ in {
       ccls # C/C++
       lua-language-server # Lua
 
-      clinfo
+      (hiPrio clinfo) # hiPrio to override HIP's clinfo
       binutils
       cpuset
       gptfdisk # gdisk
