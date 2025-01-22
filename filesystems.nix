@@ -74,7 +74,7 @@ in
       )
       (optional (!(builtins.isNull cfg.slowFlashScheduler))
         ''
-        SUBSYSTEM!="block", GOTO="end"
+        SUBSYSTEM!="block", GOTO="aviallon_slowflash_end"
         KERNEL!="sd[a-z]|nvme[0-9]*n[0-9]*|mmcblk[0-9]", GOTO="end"
         ATTR{queue/rotational}!="0", GOTO="end"
         
@@ -84,18 +84,18 @@ in
         ACTION!="remove", TEST=="queue/iosched/back_seek_penalty", ATTR{queue/iosched/back_seek_penalty}="0"
 
         # BEGIN: NCQ disabled
-          ACTION!="remove", ATTR{device/queue_depth}!="1", GOTO="no_ncq_end"
+          ACTION!="remove", ATTR{device/queue_depth}!="1", GOTO="aviallon_no_ncq_end"
 
           # Increase maximum requests in software queue
           ACTION!="remove", ATTR{queue/nr_requests}="256"
 
           # If possible, prefer throughput over latency
-          ACTION!="remove", TEST=="queue/iosched/low_latency", ATTR{queue/iosched/low_latency}="1"
+          ACTION!="remove", TEST=="queue/iosched/low_latency", ATTR{queue/iosched/low_latency}="0"
 
-          LABEL="no_ncq_end"
+          LABEL="aviallon_no_ncq_end"
         # END: NCQ disabledf
         
-        LABEL="end"
+        LABEL="aviallon_slowflash_end"
         ''
       )
       (optional (!(builtins.isNull cfg.nvmeScheduler))
