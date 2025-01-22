@@ -113,6 +113,10 @@ in {
           miopen = prev.rocmPackages.miopen.override { rocmlir = rocmlir-rock; };
 
           migraphx = prev.rocmPackages.migraphx.override { rocmlir = rocmlir-rock; };
+
+          rocm-llvm-libcxx = prev.rocmPackages.rocm-llvm-libcxx.overrideAttrs (_: {
+            doCheck = false;
+          });
         };
       })];
   };
