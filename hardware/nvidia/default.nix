@@ -5,7 +5,6 @@ let
 in {
 
   imports = [
-    ./vgpu.nix
     ./proprietary.nix
     ./opensource.nix
     ( mkRenamedOptionModule [ "aviallon" "hardware" "nvidia" "saveAllVram" ] [ "aviallon" "hardware" "nvidia" "proprietary" "saveAllVram" ] )
