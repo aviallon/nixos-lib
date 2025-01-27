@@ -15,7 +15,6 @@
     ./power.nix
     ./overlays.nix
     ./optimizations
-    ./non-persistence.nix
     ./windows
   ];
 }
