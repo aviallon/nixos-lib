@@ -117,17 +117,13 @@ in
 
     aviallon.boot.cmdline = mkIf cfg.unsafeOptimizations {
       mitigations = "off";
+      "zswap.enabled" = "Y";
+      "zswap.shrinker_enabled" = "Y";
+      "zswap.compressor" = "zstd";
+      "zswap.pool" = "zsmalloc";
     };
 
     powerManagement.cpuFreqGovernor = mkDefault "schedutil";
-
-    # zram is so usefull, we should always have it enabled.
-    zramSwap = {
-      enable = true;
-      priority = 10000;
-      memoryPercent = 100;
-      algorithm = "zstd";
-    };
 
     environment.noXlibs = mkIf (cfg.minimal && (!desktopCfg.enable)) true;
   };
