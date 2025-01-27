@@ -16,7 +16,7 @@ in {
         gutenprint
         splix
         brlaser
-        cups-bjnp  
+        # cups-bjnp  
         # cups-dymo
         # cups-zj-58
         # cups-kyocera
