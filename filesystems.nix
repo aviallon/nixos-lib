@@ -75,8 +75,8 @@ in
       (optional (!(builtins.isNull cfg.slowFlashScheduler))
         ''
         SUBSYSTEM!="block", GOTO="aviallon_slowflash_end"
-        KERNEL!="sd[a-z]|nvme[0-9]*n[0-9]*|mmcblk[0-9]", GOTO="end"
-        ATTR{queue/rotational}!="0", GOTO="end"
+        KERNEL!="sd[a-z]|nvme[0-9]*n[0-9]*|mmcblk[0-9]", GOTO="aviallon_slowflash_end"
+        ATTR{queue/rotational}!="0", GOTO="aviallon_slowflash_end"
         
         ACTION!="remove", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"
 
@@ -93,7 +93,7 @@ in
           ACTION!="remove", TEST=="queue/iosched/low_latency", ATTR{queue/iosched/low_latency}="0"
 
           LABEL="aviallon_no_ncq_end"
-        # END: NCQ disabledf
+        # END: NCQ disabled
         
         LABEL="aviallon_slowflash_end"
         ''
