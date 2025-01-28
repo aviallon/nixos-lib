@@ -20,5 +20,6 @@
     kolourpaint
     krdc
     sddm-kcm
+    filelight
   ];
 }
