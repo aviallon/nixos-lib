@@ -85,7 +85,7 @@ in {
 
     nixpkgs.config.rocmSupport = true;
 
-    nixpkgs.overlays = [(final: prev: {
+    nixpkgs.overlays = mkBefore [(final: prev: {
         # Overlay Blender to use the HIP build if we have a compatible AMD GPU
         blender = final.blender-hip;
         blender-cpu = prev.blender;
@@ -106,6 +106,8 @@ in {
             ];
           });
 
+          rocblas = prev.hello;
+
           rocmlir-rock = rocmlir.override {
             buildRockCompiler = true;
           };
@@ -113,6 +115,14 @@ in {
           miopen = prev.rocmPackages.miopen.override { rocmlir = rocmlir-rock; };
 
           migraphx = prev.rocmPackages.migraphx.override { rocmlir = rocmlir-rock; };
+
+          tensile = prev.rocmPackages.tensile.overrideAttrs (old: {
+            # TODO: remove this workaround once https://github.com/NixOS/nixpkgs/pull/323869
+            # does not cause issues anymore, or at least replace it with a better orkaround
+            setupHook = writeText "setup-hook" ''
+              export TENSILE_ROCM_ASSEMBLER_PATH="${stdenv.cc.cc}/bin/clang++";
+            '';
+          });
         };
       })];
   };
