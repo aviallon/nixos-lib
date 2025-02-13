@@ -44,6 +44,7 @@ in {
       ethtool
       vulkan-tools
       gh # GitHub CLI
+      git-crypt # Encrypted files support in Git repositories
 
       # Language Servers
       nodePackages.yaml-language-server # Yaml
