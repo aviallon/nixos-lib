@@ -85,6 +85,7 @@ in {
     programs.steam.enable = !generalCfg.minimal;
     hardware.steam-hardware.enable = !generalCfg.minimal;
     programs.steam.remotePlay.openFirewall = true;
+    programs.steam.localNetworkGameTransfers.openFirewall = true;
     environment.variables = {
       "__GL_SHADER_DISK_CACHE" = "true";
       "__GL_SHADER_DISK_CACHE_SIZE" = "${toString (50 * 1000)}";
