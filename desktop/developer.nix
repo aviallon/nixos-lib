@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, nixpkgs-unstable, ... }:
 with lib;
 let
   cfg = config.aviallon.developer;
@@ -131,10 +131,10 @@ in {
       user = "ollama";
       package =
         if config.aviallon.hardware.amd.enable
-          then pkgs.unstable.ollama-rocm
+          then (pkgs.callPackage (nixpkgs-unstable + "pkgs/by-name/ol/ollama") { acceleration = "rocm"; })
         else if (config.aviallon.hardware.nvidia.enable && config.aviallon.hardware.nvidia.variant != "nouveau")
-          then pkgs.unstable.ollama-cuda
-        else pkgs.unstable.ollama
+          then (pkgs.callPackage (nixpkgs-unstable + "pkgs/by-name/ol/ollama") { acceleration = "cuda"; })
+        else (pkgs.callPackage (nixpkgs-unstable + "pkgs/by-name/ol/ollama") {})
       ;
     };
 
