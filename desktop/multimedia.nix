@@ -15,7 +15,7 @@ let
   myFFmpeg = let
     withUnfree = pkgs.unstable.ffmpeg-full.override {
       withUnfree = true;
-      withTensorflow = !pkgs.unstable.libtensorflow.meta.broken;
+      withTensorflow = false;
     };
   in withUnfree;
 
