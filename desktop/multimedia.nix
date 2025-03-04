@@ -49,7 +49,7 @@ in {
 
 
     # Enable sound.
-    hardware.pulseaudio.enable = mkOverride 40 false;
+    services.pulseaudio.enable = false;
     services.pipewire = {
       enable = true;
       pulse.enable = true;
