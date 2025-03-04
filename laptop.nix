@@ -33,7 +33,17 @@ in {
       "workqueue.power_efficient" = "1";
       nohz = "on";
 
+      # To save power, batch RCU callbacks and flush after delay, memory pressure or callback list growing too big.
+      "rcutree.enable_rcu_lazy" = "1";
+
       pcie_aspm = mkIf cfg.tweaks.pcieAspmForce "force";
+    };
+
+    boot.kernel.sysctl = {
+      "vm.laptop_mode" = "5";
+
+      # Disable hard-lockup detector
+      "kernel.nmi_watchdog" = "0";
     };
 
     systemd.services.nixos-upgrade = {
@@ -64,6 +74,8 @@ in {
       serviceConfig.ExecStart = let
         script = pkgs.writeShellScriptBin "powertop-auto-tune" ''
           ${pkgs.powertop}/bin/powertop --auto-tune
+
+          # Disable power-saving for HID devices (i.e., keyboard and mouse, as it is makes them frustrating to use)
           HIDDEVICES=$(ls /sys/bus/usb/drivers/usbhid | grep -oE '^[0-9]+-[0-9\.]+' | sort -u)
           for i in $HIDDEVICES; do
             echo -n "Enabling " | cat - /sys/bus/usb/devices/$i/product
