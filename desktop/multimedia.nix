@@ -12,27 +12,19 @@ let
 
   # Multimedia Packages
 
-  myFFmpeg = let
+  ffmpeg-full-unfree = let
     withUnfree = pkgs.unstable.ffmpeg-full.override {
       withUnfree = true;
       withTensorflow = false;
     };
   in withUnfree;
-
   
-  myFFmpeg_opt = config.aviallon.optimizations.optimizePkg { lto = false; } myFFmpeg;
-
-  
-  #ffmpeg_4 = config.aviallon.optimizations.optimizePkg { } pkgs.ffmpeg_4;
-  #obs-studio = pkgs.obs-studio.override { inherit ffmpeg_4; };
-  #myWrapOBS = pkgs.wrapOBS.override { inherit obs-studio; };
-  myWrapOBS = pkgs.wrapOBS;
 in {
   config = mkIf (cfg.enable && !generalCfg.minimal) {
     environment.systemPackages = with pkgs; [
-      myFFmpeg_opt
+      ffmpeg-full-unfree
       krita
-      (myWrapOBS { plugins = with obs-studio-plugins; [
+      (pkgs.wrapOBS { plugins = with obs-studio-plugins; [
         obs-pipewire-audio-capture
       ]; })
       
@@ -44,7 +36,7 @@ in {
     ];
 
     nixpkgs.overlays = [(final: prev: {
-      myFFmpeg = myFFmpeg_opt;
+      inherit ffmpeg-full-unfree;
     })];
 
 
