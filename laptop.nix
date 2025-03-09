@@ -36,6 +36,9 @@ in {
       # To save power, batch RCU callbacks and flush after delay, memory pressure or callback list growing too big.
       "rcutree.enable_rcu_lazy" = "1";
 
+      # Enable lazy preempt by default for kernels newer than 6.13
+      "preempt" = mkIf (config.boot.kernelPackages.kernelAtLeast "6.13") "lazy";
+
       pcie_aspm = mkIf cfg.tweaks.pcieAspmForce "force";
     };
 
