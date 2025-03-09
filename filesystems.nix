@@ -68,6 +68,7 @@ in
 
     boot.supportedFilesystems = [ "ntfs" "ext4" "vfat" "exfat" ];
 
+    hardware.block.defaultSchedulerRotational = mkDefault cfg.hddScheduler;
     aviallon.filesystems.udevRules = mkBefore (concatLists [
       (optional (!(builtins.isNull cfg.hddScheduler))
         ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
@@ -75,8 +76,8 @@ in
       (optional (!(builtins.isNull cfg.slowFlashScheduler))
         ''
         SUBSYSTEM!="block", GOTO="aviallon_slowflash_end"
-        KERNEL!="sd[a-z]|nvme[0-9]*n[0-9]*|mmcblk[0-9]", GOTO="aviallon_slowflash_end"
-        ATTR{queue/rotational}!="0", GOTO="aviallon_slowflash_end"
+        KERNEL!="sd[a-z]|nvme[0-9]*n[0-9]|mmcblk[0-9]", GOTO="aviallon_slowflash_end"
+        ATTR{queue/rotational}=="1", GOTO="aviallon_slowflash_end"
         
         ACTION!="remove", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"
 
