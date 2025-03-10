@@ -53,6 +53,9 @@ in {
       gopls # Go
       ccls # C/C++
       lua-language-server # Lua
+      nil # Nix
+      
+      nixfmt-rfc-style
 
       (hiPrio clinfo) # hiPrio to override HIP's clinfo
       binutils
