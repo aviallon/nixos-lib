@@ -25,15 +25,15 @@ let
     enableRTGroupSched = {
       name = "enable-rt-group-sched";
       patch = null;
-      extraConfig = ''
-        RT_GROUP_SCHED y
-      '';
+      extraConfigStructuredConfig = with lib.kernel; {
+        RT_GROUP_SCHED = yes;
+      };
     };
     enableEnergyModel = {
       name = "enable-energy-model";
-      patch = null; extraConfig = ''
-        ENERGY_MODEL y
-      '';
+      patch = null; extraStructuredConfig = with lib.kernel; {
+        ENERGY_MODEL = yes;
+      };
     };
     removeKernelDRM = {
       name = "remove-kernel-drm";
@@ -41,24 +41,7 @@ let
     };
 
     
-    amdClusterId = {
-      name = "cluster-id-amd";
-      patch = pkgs.fetchpatch {
-        url = "https://lkml.org/lkml/diff/2023/4/10/479/1";
-        hash = "sha256-bpe+iWYQldlGiIlWr4XPbIBPQBetEjfRKZ0Te2I14dk=";
-      };
-      extraConfig = ''
-        SCHED_CLUSTER y
-      '';
-    };
     backports = {
-      zenLLCIdle = {
-        name = "zen-llc-idle";
-        patch = pkgs.fetchpatch {
-          url = "https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/patch/?id=c5214e13ad60bd0022bab45cbac2c9db6bc1e0d4";
-          hash = "sha256-3uDieD7XOaMM5yqOSvyLNsr2OqBxXESB5sM2gnGYoWk=";
-        };
-      };
     };
     
     optimizeForCPUArch = arch: let
@@ -150,7 +133,6 @@ in {
     
     patches = {
       amdClusterId.enable = mkEnableOption "Energy Model";
-      zenLLCIdle.enable = mkEnableOption "Zen LLC Idle patch";
     };
     
     efi = mkOption rec {
@@ -316,16 +298,25 @@ in {
           else
             baseKernel
           ;
+          
 
         moddedKernel = myLib.optimizations.addAttrs noDRMKernel moddedKernelAttrs;
+
+        #patchedKernel =
+        #  if (length config.boot.kernelPatches > 0) then
+        #    moddedKernel.override (old: {
+        #      structuredExtraConfig = mergeAttrs [ (old.structuredExtraConfig or {}) config.boot.kernelPatches.extraStructuredConfig ];
+        #    })
+        #  else
+        #    moddedKernel
+        #  ;
+           
       in mkOverride 2 (pkgs.linuxPackagesFor moddedKernel);
 
       kernelPatches = []
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
         ++ optional cfg.rtGroupSched.enable customKernelPatches.enableRTGroupSched
         ++ optional cfg.energyModel.enable customKernelPatches.enableEnergyModel
-        ++ optional (cfg.patches.amdClusterId.enable && kernelVersionOlder "6.4") customKernelPatches.amdClusterId
-        ++ optional (cfg.patches.zenLLCIdle.enable && kernelVersionOlder "6.5") customKernelPatches.backports.zenLLCIdle
         ++ optional (isXanmod cfg.kernel.package && config.aviallon.optimizations.enable) (customKernelPatches.optimizeForCPUArch config.aviallon.general.cpu.arch)
         ++ optional config.aviallon.optimizations.enable customKernelPatches.zstd
       ;
