@@ -32,7 +32,7 @@ in {
       yt-dlp
       jellyfin-media-player
 
-      jamesdsp # Audio post-processing
+      #jamesdsp # Audio post-processing
     ];
 
     nixpkgs.overlays = [(final: prev: {
