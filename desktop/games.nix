@@ -101,9 +101,12 @@ in {
     };
 
     programs.steam.package = pkgs.steam.override {
-      extraPkgs = pkgs: [
-        pkgs.gamescope
-      ];
+      #extraPkgs = pkgs: [
+      #  config.programs.gamescope.package
+      #];
+      #extraLibraries = pkgs: [
+      #  config.programs.gamescope.package.override { enableExecutable = false; enableWsi = true; }
+      #];
     };
 
     aviallon.programs.allowUnfreeList = [
