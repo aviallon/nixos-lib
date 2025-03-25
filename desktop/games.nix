@@ -71,12 +71,13 @@ in {
       enable = true;
     };
     security.wrappers = {
-      my-gamemoderun = {
-        source = "${pkgs.gamemode}/bin/gamemoderun";
+      gamemoded = {
+        source = "${pkgs.gamemode}/bin/gamemoded";
         owner = "root";
-        group = "gamers";
-        capabilities = "cap_sys_nice=eip";
-        permissions = "u+rx,g+x,o=";
+        group = "root";
+        #group = "gamers";
+        capabilities = "cap_sys_nice+pie";
+        #permissions = "u+rx,g+x,o=";
       };
     };
 
@@ -100,10 +101,13 @@ in {
       MESA_GLSL_CACHE_DIR = "${XDG_CACHE_HOME}/mesa";
     };
 
+    hardware.graphics.extraPackages = [ pkgs.gamescope-wsi ];
+    hardware.graphics.extraPackages32 = [ pkgs.pkgsi686Linux.gamescope-wsi ];
+
     programs.steam.package = pkgs.steam.override {
-      #extraPkgs = pkgs: [
-      #  config.programs.gamescope.package
-      #];
+      extraPkgs = pkgs: [
+        config.programs.gamescope.package
+      ];
       #extraLibraries = pkgs: [
       #  config.programs.gamescope.package.override { enableExecutable = false; enableWsi = true; }
       #];
