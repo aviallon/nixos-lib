@@ -47,6 +47,26 @@ in {
       example = "gfx902";
       type = types.string;
     };
+    gpuTargets = mkOption {
+      description = "Override supported GPU ISAs in some ROCm packages.";
+      default = [ "803"
+                "900"
+                "906:xnack-"
+                "908:xnack-"
+                "90a:xnack+" "90a:xnack-"
+                "940"
+                "941"
+                "942"
+                "1010"
+                "1012"
+                "1030"
+                "1031"
+                "1100"
+                "1101"
+                "1102" ];
+      example = [ "900" "1031" ];
+      type = with types; nullOr (listOf string);
+    };
   };
 
   config = mkIf (cfg.enable && localCfg.enable) {  
@@ -86,9 +106,15 @@ in {
     nixpkgs.config.rocmSupport = true;
 
     nixpkgs.overlays = mkBefore [(final: prev: {
-        # Overlay Blender to use the HIP build if we have a compatible AMD GPU
-        blender = prev.blender-hip;
-        blender-cpu = prev.blender;
-      })];
+        rocmPackages = prev.rocmPackages // {
+          clr = prev.rocmPackages.clr.overrideAttrs (oldAttrs: {
+            passthru = oldAttrs.passthru // {
+              # We cannot use this for each ROCm library, as each defines their own supported targets
+              # See: https://github.com/ROCm/ROCm/blob/77cbac4abab13046ee93d8b5bf410684caf91145/README.md#library-target-matrix
+              gpuTargets = lib.forEach localCfg.gpuTargets (target: "gfx${target}");
+            };
+          });
+        };
+    })];
   };
 }
