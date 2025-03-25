@@ -2,7 +2,7 @@
 with lib;
 let
   generalCfg = config.aviallon.general;
-  cpuIsZen = ! isNull (builtins.match "znver[0-9]" generalCfg.cpu.arch);
+  enableZenpower = (! isNull (builtins.match "znver[1-3]" generalCfg.cpu.arch)) && (versionOlder kernelVersion "6.13");
   kernelVersion = getVersion config.boot.kernelPackages.kernel;
 in {
   config = mkIf (generalCfg.cpu.vendor == "amd") {
@@ -27,20 +27,18 @@ in {
       "amd_pstate.shared_memory" = 1;
     };
 
-    aviallon.boot.patches = mkIf config.aviallon.optimizations.enable {
-      amdClusterId.enable = mkIf cpuIsZen true;
-    };
+    aviallon.boot.patches = mkIf config.aviallon.optimizations.enable {};
 
     boot.extraModulePackages = with config.boot.kernelPackages; [] 
-      ++ optional cpuIsZen (info "enable zenpower for Ryzen CPU" zenpower)
+      ++ optional enableZenpower (info "enable zenpower for Ryzen [1-3] CPU" zenpower)
     ;
 
     boot.kernelModules = []
-      ++ optional cpuIsZen "zenpower"
+      ++ optional enableZenpower "zenpower"
     ;
 
     boot.blacklistedKernelModules = []
-      ++ optional cpuIsZen "k10-temp" # Superseded by zenpower
+      ++ optional enableZenpower "k10-temp" # Superseded by zenpower
     ;
   };
 }
