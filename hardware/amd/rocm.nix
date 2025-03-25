@@ -87,43 +87,8 @@ in {
 
     nixpkgs.overlays = mkBefore [(final: prev: {
         # Overlay Blender to use the HIP build if we have a compatible AMD GPU
-        blender = final.blender-hip;
+        blender = prev.blender-hip;
         blender-cpu = prev.blender;
-
-        magma = prev.magma-hip;
-        magma-cpu = prev.magma;
-
-        #autoDetectGPU = autoDetectGPU final;
-
-        rocmPackages = prev.rocmPackages // rec {
-          rocmlir = prev.rocmPackages.rocmlir.overrideAttrs (finalAttrs: previousAttrs: {
-            patches = [
-              (prev.fetchpatch {
-                name = "fix-mlir-Conversion-RocMLIRPasses.h.inc-not-found.patch";
-                url = "https://patch-diff.githubusercontent.com/raw/ROCm/rocMLIR/pull/1640.patch";
-                hash = "sha256-przg1AQZTiVbVd/4wA+KlGXu/RISO5n11FBkmUFKRSA=";
-              })
-            ];
-          });
-
-          rocblas = prev.hello;
-
-          rocmlir-rock = rocmlir.override {
-            buildRockCompiler = true;
-          };
-
-          miopen = prev.rocmPackages.miopen.override { rocmlir = rocmlir-rock; };
-
-          migraphx = prev.rocmPackages.migraphx.override { rocmlir = rocmlir-rock; };
-
-          tensile = prev.rocmPackages.tensile.overrideAttrs (old: {
-            # TODO: remove this workaround once https://github.com/NixOS/nixpkgs/pull/323869
-            # does not cause issues anymore, or at least replace it with a better orkaround
-            setupHook = writeText "setup-hook" ''
-              export TENSILE_ROCM_ASSEMBLER_PATH="${stdenv.cc.cc}/bin/clang++";
-            '';
-          });
-        };
       })];
   };
 }
