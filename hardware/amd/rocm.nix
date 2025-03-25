@@ -90,7 +90,7 @@ in {
         blender = final.blender-hip;
         blender-cpu = prev.blender;
 
-        magma = final.magma-hip;
+        magma = prev.magma-hip;
         magma-cpu = prev.magma;
 
         #autoDetectGPU = autoDetectGPU final;
