@@ -114,6 +114,10 @@ in {
               gpuTargets = lib.forEach localCfg.gpuTargets (target: "gfx${target}");
             };
           });
+
+          rocblas = prev.rocmPackages.rocblas.override {
+            gpuTargets = lib.forEach localCfg.gpuTargets (target: "gfx${target}");
+          };
         };
     })];
   };
