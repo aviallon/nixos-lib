@@ -74,7 +74,7 @@ in {
       [
         rocmPackages.rocm-smi
         #rocmPackages.meta.rocm-ml-libraries
-        rocmPackages.meta.rocm-hip-runtime
+        #rocmPackages.meta.rocm-hip-runtime
 
         #pkgs.autoDetectGPU
       ] ++ optionals devCfg.enable [
@@ -106,6 +106,7 @@ in {
     nixpkgs.config.rocmSupport = true;
 
     nixpkgs.overlays = mkBefore [(final: prev: {
+        rocmPackages_5 = final.rocmPackages;
         rocmPackages = prev.rocmPackages // {
           clr = prev.rocmPackages.clr.overrideAttrs (oldAttrs: {
             passthru = oldAttrs.passthru // {
