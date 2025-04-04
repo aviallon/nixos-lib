@@ -60,8 +60,8 @@ in {
       mkdir -p $DATA_DIR
       exec ${pkgs.duperemove}/bin/duperemove \
         --io-threads=${toString cfg.autoDedup.ioThreads} --cpu-threads=${toString cfg.autoDedup.cpuThreads} \
-        --dedupe-options=fiemap,same \
-        --hashfile=$DATA_DIR/hashes.db -h -v -Ard "$@"
+        --dedupe-options=same \
+        --hashfile=$DATA_DIR/hashes.db -h -v -rd "$@"
       '';
       scriptArgs = concatStringsSep " " cfg.autoDedup.paths;
       # %S : state
