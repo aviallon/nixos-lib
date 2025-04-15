@@ -70,16 +70,6 @@ in {
       };
       enable = true;
     };
-    security.wrappers = {
-      gamemoded = {
-        source = "${pkgs.gamemode}/bin/gamemoded";
-        owner = "root";
-        group = "root";
-        #group = "gamers";
-        capabilities = "cap_sys_nice+pie";
-        #permissions = "u+rx,g+x,o=";
-      };
-    };
 
     users.groups.gamers = { };
 
