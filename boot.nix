@@ -92,7 +92,9 @@ let
 
   toCmdlineList = set: mapAttrsToList
       (key: value:
-        if (value == "") then
+        if (isNull value) then
+          null
+        else if (value == "") then
           "${key}"
         else
           "${key}=${toCmdlineValue value}"
@@ -156,10 +158,14 @@ in {
     };
 
     cmdline = mkOption {
-      description = "Kernel params as attributes (instead of list)";
+      description = "Kernel params as attributes (instead of list). Set a parameter to `null` to remove it.";
       default = { };
       example = { "i915.fastboot" = true; };
-      type = with types; attrsOf (oneOf [ bool int str (listOf str) ]);
+      type = with types; lazyAttrsOf (
+        nullOr (
+          oneOf [ bool int str (listOf str) ]
+        )
+      );
     };
 
     kernel = {
@@ -204,7 +210,7 @@ in {
       }
     ];
 
-    boot.kernelParams = toCmdlineList cfg.cmdline;
+    boot.kernelParams = filter (v: ! (isNull v)) (toCmdlineList cfg.cmdline);
   } 
   (mkIf cfg.enable {
   
