@@ -45,7 +45,7 @@ in {
       description = "What is the GFX ISA of your system. Leave blank if you have several GPUs of incompatible ISAs";
       default = "";
       example = "gfx902";
-      type = types.string;
+      type = types.str;
     };
     gpuTargets = mkOption {
       description = "Override supported GPU ISAs in some ROCm packages.";
@@ -105,21 +105,22 @@ in {
 
     nixpkgs.config.rocmSupport = true;
 
-    nixpkgs.overlays = mkBefore [(final: prev: {
-        rocmPackages_5 = final.rocmPackages;
+    nixpkgs.overlays = mkIf (! isNull localCfg.gpuTargets) (mkBefore [(final: prev: {
+        #rocmPackages_5 = final.rocmPackages;
         rocmPackages = prev.rocmPackages // {
-          clr = prev.rocmPackages.clr.overrideAttrs (oldAttrs: {
-            passthru = oldAttrs.passthru // {
-              # We cannot use this for each ROCm library, as each defines their own supported targets
-              # See: https://github.com/ROCm/ROCm/blob/77cbac4abab13046ee93d8b5bf410684caf91145/README.md#library-target-matrix
-              gpuTargets = lib.forEach localCfg.gpuTargets (target: "gfx${target}");
-            };
-          });
+          clr = prev.rocmPackages.clr.override { localGpuTargets = localCfg.gpuTargets; };
+          # (oldAttrs: {
+          #  passthru = oldAttrs.passthru // {
+          #    # We cannot use this for each ROCm library, as each defines their own supported targets
+          #    # See: https://github.com/ROCm/ROCm/blob/77cbac4abab13046ee93d8b5bf410684caf91145/README.md#library-target-matrix
+          #    gpuTargets = lib.forEach localCfg.gpuTargets (target: "gfx${target}");
+          #  };
+          #});
 
-          rocblas = prev.rocmPackages.rocblas.override {
-            gpuTargets = lib.forEach localCfg.gpuTargets (target: "gfx${target}");
-          };
+          #rocblas = prev.rocmPackages.rocblas.override {
+          #  gpuTargets = lib.forEach localCfg.gpuTargets (target: "gfx${target}");
+          #};
         };
-    })];
+    })]);
   };
 }
