@@ -136,9 +136,9 @@ in {
 
     services.avahi = {
       enable = !generalCfg.minimal; # .lan/.local resolution
-      nssmdns4 = true; # .lan/.local resolution
+      nssmdns4 = !config.services.resolved.enable; # .lan/.local resolution
       openFirewall = true;
-      reflector = true;
+      reflector = !config.services.resolved.enable;
       publish = {
         enable = true;
         domain = true;
@@ -147,7 +147,17 @@ in {
         workstation = mkDefault (desktopCfg.enable && !laptopCfg.enable);
         hinfo = true; # Whether to register a mDNS HINFO record which contains information about the local operating system and CPU.
       };
+      extraConfig = mkIf config.services.resolved.enable ''
+      [server]
+      enable-dbus=warn
+      #disallow-other-stacks=yes
+      '';
     };
+
+    services.resolved.extraConfig =
+      ''
+      mDNS=no
+      '';
 
 
     services.nginx = {
