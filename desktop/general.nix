@@ -122,6 +122,7 @@ in {
       boot.plymouth.enable = mkDefault true;
 
       fonts.enableDefaultPackages = true;
+      fonts.fontconfig.useEmbeddedBitmaps = true; # Fixes Emojis not showing in Firefox
 
       hardware.acpilight.enable = true;
       hardware.opentabletdriver.enable = true;
