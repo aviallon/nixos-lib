@@ -108,7 +108,8 @@ in {
     nixpkgs.overlays = mkIf (! isNull localCfg.gpuTargets) (mkBefore [(final: prev: {
         #rocmPackages_5 = final.rocmPackages;
         rocmPackages = prev.rocmPackages // {
-          clr = prev.rocmPackages.clr.override { localGpuTargets = localCfg.gpuTargets; };
+          clr = prev.rocmPackages.clr.override { localGpuTargets = lib.forEach localCfg.gpuTargets (target: "gfx${target}"); };
+          rocdbgapi = prev.rocmPackages.rocdbgapi.override { buildDocs = false; };
           # (oldAttrs: {
           #  passthru = oldAttrs.passthru // {
           #    # We cannot use this for each ROCm library, as each defines their own supported targets
