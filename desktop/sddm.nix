@@ -2,7 +2,7 @@
 with lib;
 let
   cfg = config.aviallon.desktop;
-  sddmCfg = config.services.xserver.displayManager.sddm;
+  sddmCfg = config.services.displayManager.sddm;
 in {
   options.aviallon.desktop.sddm.unstable = mkEnableOption "bleeding-edge SDDM";
   options.aviallon.desktop.sddm.enable = mkEnableOption "custom SDDM configuration";
@@ -11,7 +11,7 @@ in {
 
     # Prevents blinking cursor
     services.displayManager.sddm = {
-      enable = true;
+      enable = mkOverride 20 true;
       wayland.enable = mkDefault true;
       wayland.compositor = "kwin";
       settings = {
