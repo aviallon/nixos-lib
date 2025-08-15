@@ -72,8 +72,8 @@ in {
     };
 
     hardware.graphics = {
-      package = with pkgs; cfg.internal.package.drivers;
-      package32 = with pkgs; cfg.internal.package32.drivers;
+      package = with pkgs; cfg.internal.package;
+      package32 = with pkgs; cfg.internal.package32;
 
       extraPackages = optional (hasAttr "opencl" cfg.internal.package.out) cfg.internal.package.out.opencl;
       extraPackages32 = optional (hasAttr "opencl" cfg.internal.package32.out) cfg.internal.package32.out.opencl;
