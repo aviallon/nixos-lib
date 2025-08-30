@@ -282,8 +282,10 @@ in {
           optionalAttrs config.aviallon.optimizations.enable (
             myLib.attrsets.mergeAttrsRecursive
               {
-                KCFLAGS = kCflags;
-                KRUSTFLAGS = kRustflags;
+                env = {
+                  KCFLAGS = kCflags;
+                  KRUSTFLAGS = kRustflags;
+                };
               }
               (traceValWithPrefix "aviallon.boot.kernel.addOptimizationAttributes" cfg.kernel.addOptimizationAttributes)
           )
