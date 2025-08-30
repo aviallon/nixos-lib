@@ -319,7 +319,7 @@ in {
         #    moddedKernel
         #  ;
            
-      in mkOverride 2 (pkgs.linuxPackagesFor moddedKernel);
+      in mkOverride 2 (pkgs.linuxPackagesFor noDRMKernel);
 
       kernelPatches = []
         ++ optional cfg.x32abi.enable customKernelPatches.enableX32ABI
