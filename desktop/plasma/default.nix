@@ -6,7 +6,6 @@ let
 in {
 
   imports = [
-    ./plasma5.nix
     ./plasma6.nix
   ];
 
