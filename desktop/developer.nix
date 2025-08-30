@@ -76,8 +76,7 @@ in {
       virt-viewer
       qtemu
 
-      libsForQt5.kdevelop
-      unstable.adbfs-rootless
+      adbfs-rootless
 
       amdctl
     ];
