@@ -19,8 +19,8 @@ in {
       ryujinx.package = mkOption {
         description = "Ryujinx Switch emulator package";
         type = myLib.types.package';
-        default = pkgs.unstable.ryujinx;
-        example = literalExpression "pkgs.unstable.ryujinx";
+        default = pkgs.ryubing;
+        example = literalExpression "pkgs.ryujinx";
       };
     };
   };
