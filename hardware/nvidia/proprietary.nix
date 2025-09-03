@@ -178,13 +178,7 @@ in {
     nix.settings.substituters = [ "https://cuda-maintainers.cachix.org" ];
     nix.settings.trusted-public-keys = [ "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E=" ];
 
-    nixpkgs.overlays =
-      [(final: prev: {
-        jellyfin-media-player = prev.runCommand "jellyfinmediaplayer" { nativeBuildInputs = [ prev.makeBinaryWrapper ]; } ''
-          mkdir -p $out/bin
-          makeWrapper ${getBin prev.jellyfin-media-player}/bin/jellyfinmediaplayer $out/bin/jellyfinmediaplayer --inherit-argv0 --add-flags "--platform=xcb"
-        '';
-      })]
+    nixpkgs.overlays = []
       ++ optional (cfg.proprietary.version == "unstable_beta") (final: prev: {
         cudaPackages_11 = final.unstable.cudaPackages_11;
         cudaPackages_12 = final.unstable.cudaPackages_12;
