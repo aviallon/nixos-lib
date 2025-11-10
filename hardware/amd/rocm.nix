@@ -65,7 +65,7 @@ in {
                 "1101"
                 "1102" ];
       example = [ "900" "1031" ];
-      type = with types; nullOr (listOf string);
+      type = with types; nullOr (listOf str);
     };
   };
 
