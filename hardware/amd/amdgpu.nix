@@ -28,11 +28,7 @@ in {
 
     hardware.amdgpu.opencl.enable = true;
 
-    hardware.amdgpu.amdvlk.enable = cfg.defaultVulkanImplementation == "amdvlk";
-    hardware.amdgpu.amdvlk.support32Bit.enable = mkDefault config.hardware.amdgpu.amdvlk.enable;
-
     environment.variables = {
-      AMD_VULKAN_ICD = mkIf (cfg.defaultVulkanImplementation == "amdvlk") (strings.toUpper cfg.defaultVulkanImplementation);
       ROC_ENABLE_PRE_VEGA = "1"; # Enable OpenCL with Polaris GPUs
     };
 

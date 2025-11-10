@@ -8,8 +8,8 @@ in {
     enable = mkEnableOption "AMD gpus";
     useProprietary = mkEnableOption "Use proprietary AMDGPU Pro";
     defaultVulkanImplementation = mkOption {
-      description = "Wether to use RADV or AMDVLK by default";
-      type = with types; enum [ "amdvlk" "radv" ];
+      description = "Legacy, can only be set to radv";
+      type = with types; enum [ "radv" ];
       default = "radv";
     };
     kernelDriver = mkOption {
