@@ -82,10 +82,10 @@ in {
       ]
     ;
 
-    systemd.tmpfiles.rules = [
-      "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.meta.rocm-hip-runtime}"
+    #systemd.tmpfiles.rules = [
+    #  "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.meta.rocm-hip-runtime}"
       #"L+    /tmp/hsa-version - - - - ${pkgs.autoDetectGPU}"
-    ];
+    #];
 
     environment.variables = {
       ROC_ENABLE_PRE_VEGA = "1"; # Enable OpenCL with Polaris GPUs  
