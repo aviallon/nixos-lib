@@ -138,7 +138,7 @@ in {
       hardware.graphics.enable32Bit = mkDefault cfg.gaming.enable;
     
       environment.systemPackages = with pkgs; [
-        glxinfo
+        mesa-demos
         vdpauinfo
         libva-utils
         spotify
