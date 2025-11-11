@@ -95,8 +95,6 @@ in {
       onBoot = "ignore"; # We are doing development, not a server
       qemu = {
         package = pkgs.qemu_full;
-        ovmf.enable = true;
-        ovmf.packages = [ pkgs.OVMFFull ];
         swtpm.enable = true;
       };
     };
