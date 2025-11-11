@@ -126,7 +126,7 @@ in {
 
       hardware.acpilight.enable = true;
       hardware.opentabletdriver.enable = true;
-      hardware.opentabletdriver.package = opentabletdriver.packages.${pkgs.system}.opentabletdriver;
+      #hardware.opentabletdriver.package = opentabletdriver.packages.${pkgs.system}.opentabletdriver;
 
       hardware.bluetooth = {
         enable = true;
