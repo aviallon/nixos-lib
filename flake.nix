@@ -19,7 +19,7 @@
 
     opentabletdriver = {
       url = "github:OpenTabletDriver/OpenTabletDriver";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
