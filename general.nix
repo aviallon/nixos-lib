@@ -3,6 +3,8 @@ with lib;
 let
   cfg = config.aviallon.general;
   desktopCfg = config.aviallon.desktop;
+  cmdline = config.aviallon.boot.cmdline;
+  zswapEnabled = if cmdline ? "zswap.enabled" then cmdline."zswap.enabled" == "Y" else false
 in
 {
   imports = [
@@ -117,10 +119,23 @@ in
 
     aviallon.boot.cmdline = mkIf cfg.unsafeOptimizations {
       mitigations = "off";
-      "zswap.enabled" = "Y";
+      #"zswap.enabled" = "Y";
       "zswap.shrinker_enabled" = "Y";
       "zswap.compressor" = "zstd";
       "zswap.pool" = "zsmalloc";
+    };
+
+    assertions = [
+      {
+        assertion = zswapEnabled -> (!config.zramSwap.enable);
+        message = "If using zswap, you should disable zram, as both conflict with each other";
+      }
+    ];
+
+    zramSwap = {
+      enable = !zswapEnabled;
+      priority = 1000;
+      memoryPercent = 50;
     };
 
     powerManagement.cpuFreqGovernor = mkDefault "schedutil";
