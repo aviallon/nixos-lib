@@ -16,11 +16,6 @@
     fps.url = "github:wamserma/flake-programs-sqlite";
     fps.inputs.nixpkgs.follows = "nixpkgs";
     flake-utils.url = "github:numtide/flake-utils";
-
-    opentabletdriver = {
-      url = "github:OpenTabletDriver/OpenTabletDriver";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -30,7 +25,6 @@
     , nixpkgs-unstable
     , fps
     , suyu
-    , opentabletdriver
     , ...
     }: let
       lib = nixpkgs.lib;

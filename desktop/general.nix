@@ -1,4 +1,4 @@
-{ config, pkgs, lib, myLib, opentabletdriver, ... }:
+{ config, pkgs, lib, myLib, ... }:
 with lib;
 let
   cfg = config.aviallon.desktop;
@@ -126,7 +126,6 @@ in {
 
       hardware.acpilight.enable = true;
       hardware.opentabletdriver.enable = true;
-      #hardware.opentabletdriver.package = opentabletdriver.packages.${pkgs.system}.opentabletdriver;
 
       hardware.bluetooth = {
         enable = true;
