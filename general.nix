@@ -4,7 +4,7 @@ let
   cfg = config.aviallon.general;
   desktopCfg = config.aviallon.desktop;
   cmdline = config.aviallon.boot.cmdline;
-  zswapEnabled = if cmdline ? "zswap.enabled" then cmdline."zswap.enabled" == "Y" else false
+  zswapEnabled = if cmdline ? "zswap.enabled" then cmdline."zswap.enabled" == "Y" else false;
 in
 {
   imports = [
