@@ -42,18 +42,23 @@ context.modules = [
                         plugin = ${rnnoise-plugin}/lib/ladspa/librnnoise_ladspa.so
                         label = noise_suppressor_stereo
                         control = {
-                            "VAD Threshold (%)" ${toString noiseFilterStrength}
+                            "VAD Threshold (%)" = ${toString noiseFilterStrength}
+                            "VAD Grace Period (ms)" = 200
+                            "Retroactive VAD Grace (ms)" = 0
                         }
                     }
                 ]
             }
             capture.props = {
+                node.name =  "capture.rnnoise_source"
                 node.passive = true
+                audio.rate = 48000
             }
             playback.props = {
                 node.name = "rnnoise_source.output"
                 media.class = Audio/Source
                 node.virtual = false
+                audio.rate = 48000
             }
         }
     }
