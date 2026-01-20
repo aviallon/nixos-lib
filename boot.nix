@@ -25,13 +25,14 @@ let
     enableRTGroupSched = {
       name = "enable-rt-group-sched";
       patch = null;
-      extraConfigStructuredConfig = with lib.kernel; {
+      structuredExtraConfig = with lib.kernel; {
         RT_GROUP_SCHED = yes;
       };
     };
     enableEnergyModel = {
       name = "enable-energy-model";
-      patch = null; extraStructuredConfig = with lib.kernel; {
+      patch = null;
+      structuredExtraConfig = with lib.kernel; {
         ENERGY_MODEL = yes;
       };
     };
