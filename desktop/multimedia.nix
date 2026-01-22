@@ -28,7 +28,7 @@ in {
         obs-pipewire-audio-capture
       ]; })
       
-      scribus
+      #scribus
       yt-dlp
       #jellyfin-media-player # https://github.com/NixOS/nixpkgs/issues/437865 https://github.com/jellyfin/jellyfin-media-player/issues/282
       jellyfin-mpv-shim
