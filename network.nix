@@ -35,10 +35,10 @@ in
 
     services.resolved = {
       enable = (cfg.dns == "systemd-resolved");
-      llmnr = mkForce "false"; # https://www.blackhillsinfosec.com/how-to-disable-llmnr-why-you-want-to/
-      dnssec = "false"; # Causes issues with masquerading DNS
-      extraConfig = myLib.config.toSystemd {
-        "DNS" = [
+      settings.Resolve = {
+        LLMNR = mkForce false; # https://www.blackhillsinfosec.com/how-to-disable-llmnr-why-you-want-to/
+        DNSSEC = false;
+        DNS = [
           # cloudflare-dns.com
           "1.1.1.1"
           "2606:4700:4700::1111"

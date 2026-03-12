@@ -154,10 +154,9 @@ in {
       '';
     };
 
-    services.resolved.extraConfig =
-      ''
-      mDNS=no
-      '';
+    services.resolved.settings.Resolve = {
+      MulticastDNS = false;
+    };
 
 
     services.nginx = {
