@@ -3,7 +3,6 @@ with lib;
 let
   cfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
-  vdhcoapp = pkgs.unstable.vdhcoapp;
 in {
   options.aviallon.desktop.browser = {
     firefox.overrides = mkOption {
@@ -40,8 +39,6 @@ in {
     environment.systemPackages = with pkgs; [
         (cfg.browser.chromium.package.override cfg.browser.chromium.overrides)
         # firefox is added by plasma or gnome
-
-        vdhcoapp
       ];
 
 
@@ -49,17 +46,7 @@ in {
       myFirefox = (final.callPackage ../packages/firefox.nix cfg.browser.firefox.overrides);
     })];
 
-    aviallon.desktop.browser.firefox.overrides.extraNativeMessengingHosts = [
-      vdhcoapp
-    ];
     aviallon.desktop.browser.chromium.overrides.enableWideVine = true;
-
-    environment.etc = with builtins; let    
-      vdhcoappManifestFile = "${vdhcoapp}/etc/chromium/native-messaging-hosts/net.downloadhelper.coapp.json";
-    in {
-      "chromium/native-messaging-hosts/net.downloadhelper.coapp.json".source =
-        "${vdhcoappManifestFile}";
-    };
 
     aviallon.programs.allowUnfreeList = [
       "chromium-unwrapped" "chrome-widevine-cdm"
