@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.hardening;
@@ -32,11 +37,18 @@ in
   };
 
   imports = [
-    (mkRemovedOptionModule [ "aviallon" "hardening" "services" "dbus" ] "dbus should use AppArmor hardening instead")
+    (mkRemovedOptionModule [
+      "aviallon"
+      "hardening"
+      "services"
+      "dbus"
+    ] "dbus should use AppArmor hardening instead")
   ];
 
   config = mkIf cfg.enable {
-    aviallon.boot.kernel.package = mkIf cfg.hardcore (mkDefault pkgs.linuxKernel.kernels.linux_hardened);
+    aviallon.boot.kernel.package = mkIf cfg.hardcore (
+      mkDefault pkgs.linuxKernel.kernels.linux_hardened
+    );
     security.lockKernelModules = mkIf cfg.hardcore (mkQuasiForce true);
     # security.protectKernelImage = mkIf cfg.hardcore (mkOverride 500 false); # needed for kexec
 
@@ -44,27 +56,26 @@ in
 
     security.sudo.execWheelOnly = true;
 
-    services.openssh.settings.PermitRootLogin =
-      if cfg.hardcore then
-        "no"
-      else "prohibit-password";
+    services.openssh.settings.PermitRootLogin = if cfg.hardcore then "no" else "prohibit-password";
 
     security.apparmor.enable = true;
     services.dbus.apparmor = "enabled";
 
     aviallon.boot.cmdline = {
-      "lsm" = [ "landlock" ]
-        ++ optional cfg.hardcore "lockdown"
-        ++ [ "yama" ]
-        # Apparmor https://wiki.archlinux.org/title/AppArmor#Installation
-        ++ optionals config.security.apparmor.enable [ "apparmor" ]
-        ++ [ "bpf" ]
-      ;
+      "lsm" = [
+        "landlock"
+      ]
+      ++ optional cfg.hardcore "lockdown"
+      ++ [ "yama" ]
+      # Apparmor https://wiki.archlinux.org/title/AppArmor#Installation
+      ++ optionals config.security.apparmor.enable [ "apparmor" ]
+      ++ [ "bpf" ];
       "lockdown" = if cfg.hardcore then "confidentiality" else "integrity";
 
       # Vsyscall page not readable (default is "emulate". "none" might break statically-linked binaries.)
       vsyscall = mkIf cfg.hardcore "xonly";
-    } // (ifEnable cfg.expensive {
+    }
+    // (ifEnable cfg.expensive {
       # Slab/slub sanity checks, redzoning, and poisoning
       "init_on_alloc" = 1;
       "init_on_free" = 1;
@@ -93,7 +104,7 @@ in
 
     # Is used in podman containers, for instance
     security.allowUserNamespaces = mkDefault true;
-#    boot.blacklistedKernelModules = mkForce [ ];
+    #    boot.blacklistedKernelModules = mkForce [ ];
 
     # Only authorize admins to use nix in hardcore mode
     nix.allowedUsers = mkIf cfg.hardcore (mkQuasiForce [ "@wheel" ]);
@@ -101,34 +112,36 @@ in
     # Can really badly affect performance in some occasions.
     security.audit.enable = mkDefault true;
     security.auditd.enable = mkQuasiForce false;
-    
-    systemd.services.systemd-journald = let
-      rules = pkgs.writeText "audit.rules" (concatStringsSep "\n" config.security.audit.rules);
-    in mkIf config.security.audit.enable {
-      serviceConfig = {
-        #ExecStartPre = "-${pkgs.audit}/bin/augenrules --load";
-        ExecStartPre = ''-${pkgs.audit}/bin/auditctl -R ${rules} -e 1 -f 1 -r 1000 -b 64'';
-        Sockets = [ "systemd-journald-audit.socket" ];
-      };
-      aliases = [ "auditd.service" ];
-      path = [ pkgs.audit ];
-    };
 
-    security.audit.rules = []
+    systemd.services.systemd-journald =
+      let
+        rules = pkgs.writeText "audit.rules" (concatStringsSep "\n" config.security.audit.rules);
+      in
+      mkIf config.security.audit.enable {
+        serviceConfig = {
+          #ExecStartPre = "-${pkgs.audit}/bin/augenrules --load";
+          ExecStartPre = ''-${pkgs.audit}/bin/auditctl -R ${rules} -e 1 -f 1 -r 1000 -b 64'';
+          Sockets = [ "systemd-journald-audit.socket" ];
+        };
+        aliases = [ "auditd.service" ];
+        path = [ pkgs.audit ];
+      };
+
+    security.audit.rules =
+      [ ]
       ++ [
-          "-A exclude,always -F msgtype=SERVICE_START"
-          "-A exclude,always -F msgtype=SERVICE_STOP"
-          "-A exclude,always -F msgtype=BPF"
-          "-w /etc/apparmor/ -p wa -k apparmor_changes"
-          "-w /etc/apparmor.d/ -p wa -k apparmor_changes"
-          
-          "-a exit,always -F arch=b64 -S init_module -S finit_module -k module_insertion"
-          "-a exit,always -F arch=b32 -S init_module -S finit_module -k module_insertion"
-          "-a exit,always -F arch=b64 -C auid!=euid -F auid!=unset -F euid=0 -S execve -k privesc_execve"
-          "-a exit,always -F arch=b32 -C auid!=euid -F auid!=unset -F euid=0 -S execve -k privesc_execve"
-         ]
-      ++ optional cfg.expensive "-a exit,always -F arch=b64 -S execve -k execve_calls"
-    ;
+        "-A exclude,always -F msgtype=SERVICE_START"
+        "-A exclude,always -F msgtype=SERVICE_STOP"
+        "-A exclude,always -F msgtype=BPF"
+        "-w /etc/apparmor/ -p wa -k apparmor_changes"
+        "-w /etc/apparmor.d/ -p wa -k apparmor_changes"
+
+        "-a exit,always -F arch=b64 -S init_module -S finit_module -k module_insertion"
+        "-a exit,always -F arch=b32 -S init_module -S finit_module -k module_insertion"
+        "-a exit,always -F arch=b64 -C auid!=euid -F auid!=unset -F euid=0 -S execve -k privesc_execve"
+        "-a exit,always -F arch=b32 -C auid!=euid -F auid!=unset -F euid=0 -S execve -k privesc_execve"
+      ]
+      ++ optional cfg.expensive "-a exit,always -F arch=b64 -S execve -k execve_calls";
 
     environment.systemPackages = with pkgs; [
       sbctl # Secure Boot keys generation

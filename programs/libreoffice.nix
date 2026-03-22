@@ -1,14 +1,26 @@
-{ config, pkgs, lib, myLib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  myLib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.programs.libreoffice;
-  
+
   applyOverrides = overrides: pkg: pipe pkg overrides;
-in {
+in
+{
   options.aviallon.programs.libreoffice = {
     enable = mkEnableOption "LibreOffice";
     variant = mkOption {
-      type = with types; types.enum [ "still" "fresh" ];
+      type =
+        with types;
+        types.enum [
+          "still"
+          "fresh"
+        ];
       default = "fresh";
       description = "Which LibreOffice variant to use";
     };
@@ -35,18 +47,26 @@ in {
   config = mkIf cfg.enable {
     aviallon.programs.libreoffice.package =
       let
-        overridesList = []
-          ++ [(pkg: pkg.override {
-              variant = cfg.variant;
-            })]
-          ++ optional cfg.opencl (pkg: pkg.overrideAttrs (old: {
+        overridesList =
+          [ ]
+          ++ [
+            (
+              pkg:
+              pkg.override {
+                variant = cfg.variant;
+              }
+            )
+          ]
+          ++ optional cfg.opencl (
+            pkg:
+            pkg.overrideAttrs (old: {
               buildInputs = old.buildInputs ++ [ pkgs.ocl-icd ];
-            }))
-        ;
-      in pkgs.libreoffice.override {
-          unwrapped = applyOverrides overridesList cfg.package';
-        };
-        
+            })
+          );
+      in
+      pkgs.libreoffice.override {
+        unwrapped = applyOverrides overridesList cfg.package';
+      };
 
     environment.systemPackages = [
       cfg.package

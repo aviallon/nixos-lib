@@ -1,4 +1,10 @@
-{ config, pkgs, lib, myLib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  myLib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.network;
@@ -16,15 +22,27 @@ in
       default = "systemd-networkd";
       example = "NetworkManager";
       description = "Set network backend";
-      type = types.enum [ "systemd-networkd" "NetworkManager" "dhcpcd" ];
+      type = types.enum [
+        "systemd-networkd"
+        "NetworkManager"
+        "dhcpcd"
+      ];
     };
     dns = mkOption {
       default = "systemd-resolved";
       example = "dnsmasq";
       description = "Set network DNS";
-      type = types.enum [ "systemd-resolved" "dnsmasq" "unbound" "none" "default" ];
+      type = types.enum [
+        "systemd-resolved"
+        "dnsmasq"
+        "unbound"
+        "none"
+        "default"
+      ];
     };
-    vpnSupport = mkEnableOption "VPN support of many kinds in NetworkManager" // { default = desktopCfg.enable; };
+    vpnSupport = mkEnableOption "VPN support of many kinds in NetworkManager" // {
+      default = desktopCfg.enable;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -32,11 +50,10 @@ in
     networking.networkmanager.enable = (cfg.backend == "NetworkManager");
     networking.dhcpcd.enable = (cfg.backend == "dhcpcd");
 
-
     services.resolved = {
       enable = (cfg.dns == "systemd-resolved");
       settings.Resolve = {
-        LLMNR = mkForce false; # https://www.blackhillsinfosec.com/how-to-disable-llmnr-why-you-want-to/
+        LLMNR = mkForce false; # https://www.blackhillsinfosec.com/how-to-disable-llmnr-why-you-want-to/
         DNSSEC = false;
         DNS = [
           # cloudflare-dns.com
@@ -50,7 +67,7 @@ in
 
     services.udev.extraRules = concatStringsSep "\n" [
       (optionalString (!config.aviallon.laptop.enable) ''
-      ACTION=="add", SUBSYSTEM=="net", NAME=="enp*", RUN+="${pkgs.ethtool}/bin/ethtool -s $name wol gu"
+        ACTION=="add", SUBSYSTEM=="net", NAME=="enp*", RUN+="${pkgs.ethtool}/bin/ethtool -s $name wol gu"
       '')
     ];
 
@@ -59,7 +76,9 @@ in
     networking.networkmanager = {
       wifi.backend = mkDefault "iwd";
       dns = mkDefault cfg.dns;
-      plugins = with pkgs; []
+      plugins =
+        with pkgs;
+        [ ]
         ++ optional (cfg.dns == "dnsmasq") dnsmasq
         ++ optionals cfg.vpnSupport [
           networkmanager_strongswan
@@ -67,8 +86,7 @@ in
           networkmanager-openconnect
           networkmanager-sstp
           networkmanager-l2tp
-        ]
-      ;
+        ];
     };
     networking.wireless.enable = (cfg.backend != "NetworkManager");
     networking.wireless.iwd.enable = true;
@@ -78,7 +96,9 @@ in
     # Must always be false
     networking.useDHCP = false;
 
-    networking.hostId = mkDefault (substring 0 8 (builtins.hashString "sha256" config.networking.hostName));
+    networking.hostId = mkDefault (
+      substring 0 8 (builtins.hashString "sha256" config.networking.hostName)
+    );
     networking.hostName = mkDefault (builtins.abort "Default hostname not changed" null);
 
     # Needed for proper WiFi support in some countries (like France, for instance)

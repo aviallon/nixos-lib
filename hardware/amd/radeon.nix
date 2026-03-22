@@ -1,10 +1,16 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.hardware.amd;
   devCfg = config.aviallon.developer;
   generalCfg = config.aviallon.general;
-in {
+in
+{
   config = mkIf (cfg.enable && cfg.kernelDriver == "radeon") {
     boot.initrd.kernelModules = [ "radeon" ];
 
@@ -12,13 +18,13 @@ in {
     };
 
     environment.systemPackages = with pkgs; [
-      
+
     ];
 
     services.xserver.videoDrivers = [
       "modesetting"
     ];
 
-    environment.variables = {};
+    environment.variables = { };
   };
 }

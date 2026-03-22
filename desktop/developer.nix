@@ -1,12 +1,20 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.developer;
   generalCfg = config.aviallon.general;
-in {
+in
+{
   options.aviallon.developer = {
     enable = mkEnableOption "enable developer mode on this machine";
-    virtualization.host.enable = (mkEnableOption "hypervisor virtualization services") // { default = true; };
+    virtualization.host.enable = (mkEnableOption "hypervisor virtualization services") // {
+      default = true;
+    };
     virtualbox.unstable = mkEnableOption "use unstable virtualbox";
   };
   config = mkIf cfg.enable {
@@ -26,7 +34,7 @@ in {
         PROMPT_COMMAND="_direnv_hook''${PROMPT_COMMAND:+;$PROMPT_COMMAND}"
       fi
     '';
-  
+
     environment.systemPackages = with pkgs; [
       #tabnine
       numactl
@@ -54,20 +62,22 @@ in {
       ccls # C/C++
       lua-language-server # Lua
       nil # Nix
-      
+
       nixfmt-rfc-style
 
       (hiPrio clinfo) # hiPrio to override HIP's clinfo
       binutils
       cpuset
       gptfdisk # gdisk
-    
+
       gcc
       gnumake
       cmake
 
-      linux-manual man-pages man-pages-posix
-      
+      linux-manual
+      man-pages
+      man-pages-posix
+
       linuxHeaders
 
       # Virtualization tools
@@ -99,7 +109,6 @@ in {
       };
     };
 
-    
     virtualisation.spiceUSBRedirection.enable = true; # Quality of life
     security.virtualisation.flushL1DataCache = "never"; # We do not care, we are on a dev platform
 
@@ -109,19 +118,25 @@ in {
       host.enableHardening = false; # Causes kernel build failures
     };
 
-    nixpkgs.overlays = []
-      ++ optional cfg.virtualbox.unstable (final: prev: {
-        virtualbox = final.unstable.virtualbox;
-        virtualboxExtpack = final.unstable.virtualboxExtpack;
-      })
-    ;
+    nixpkgs.overlays =
+      [ ]
+      ++ optional cfg.virtualbox.unstable (
+        final: prev: {
+          virtualbox = final.unstable.virtualbox;
+          virtualboxExtpack = final.unstable.virtualboxExtpack;
+        }
+      );
 
     console.enable = true;
 
-    boot.initrd.systemd.emergencyAccess = mkIf (config.users.users.root.hashedPassword != null) config.users.users.root.hashedPassword;
+    boot.initrd.systemd.emergencyAccess = mkIf (
+      config.users.users.root.hashedPassword != null
+    ) config.users.users.root.hashedPassword;
 
     environment.extraOutputsToInstall = [
-      "doc" "info" "dev"
+      "doc"
+      "info"
+      "dev"
     ];
 
     services.ollama = {
@@ -130,12 +145,14 @@ in {
       group = "ollama";
       user = "ollama";
       package =
-        if config.aviallon.hardware.amd.enable
-          then pkgs.unstable.ollama-rocm
-        else if (config.aviallon.hardware.nvidia.enable && config.aviallon.hardware.nvidia.variant != "nouveau")
-          then pkgs.unstable.ollama-cuda
-        else pkgs.unstable.ollama
-      ;
+        if config.aviallon.hardware.amd.enable then
+          pkgs.unstable.ollama-rocm
+        else if
+          (config.aviallon.hardware.nvidia.enable && config.aviallon.hardware.nvidia.variant != "nouveau")
+        then
+          pkgs.unstable.ollama-cuda
+        else
+          pkgs.unstable.ollama;
     };
 
     aviallon.services.journald.extraConfig = {
@@ -145,8 +162,10 @@ in {
     aviallon.boot.configurationLimit = mkDefault 10;
 
     aviallon.programs.allowUnfreeList = [
-      "tabnine" "clion"
-      "Oracle_VM_VirtualBox_Extension_Pack" "virtualbox"
+      "tabnine"
+      "clion"
+      "Oracle_VM_VirtualBox_Extension_Pack"
+      "virtualbox"
       "intelephense"
     ];
   };

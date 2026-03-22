@@ -1,12 +1,17 @@
-{config, pkgs, lib, ...}:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 {
   programs.htop.enable = true;
   programs.htop.settings = {
-#    fields=0 48 17 18 38 39 40 2 46 47 49 1
-#    sort_key=46
-#    sort_direction=-1
-#    tree_sort_key=0
-#    tree_sort_direction=1
+    #    fields=0 48 17 18 38 39 40 2 46 47 49 1
+    #    sort_key=46
+    #    sort_direction=-1
+    #    tree_sort_key=0
+    #    tree_sort_direction=1
     hide_kernel_threads = true;
     hide_userland_threads = true;
     shadow_other_users = 0;
@@ -38,9 +43,29 @@
     delay = 10;
     hide_function_bar = 0;
     header_layout = "two_50_50";
-    column_meters_0 = [ "AllCPUs" "Memory" "Swap" ];
-    column_meter_modes_0 = [ 1 1 1 ];
-    column_meters_1 = [ "Tasks" "LoadAverage" "Uptime" "DiskIO" "NetworkIO" ];
-    column_meter_modes_1 = [ 2 2 2 2 2 ];
+    column_meters_0 = [
+      "AllCPUs"
+      "Memory"
+      "Swap"
+    ];
+    column_meter_modes_0 = [
+      1
+      1
+      1
+    ];
+    column_meters_1 = [
+      "Tasks"
+      "LoadAverage"
+      "Uptime"
+      "DiskIO"
+      "NetworkIO"
+    ];
+    column_meter_modes_1 = [
+      2
+      2
+      2
+      2
+      2
+    ];
   };
 }

@@ -1,11 +1,19 @@
-{ config, pkgs, lib, myLib, suyu, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  myLib,
+  suyu,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
   optimizePkg = config.aviallon.optimizations.optimizePkg;
   mkTmpDir = dirpath: cleanup: "D ${dirpath} 777 root root ${cleanup}";
-in {
+in
+{
 
   options = {
     aviallon.desktop.gaming = {
@@ -24,27 +32,40 @@ in {
       };
     };
   };
-  
+
   config = mkIf cfg.gaming.enable {
     assertions = [
-      { assertion = cfg.gaming.enable -> cfg.enable; message = "Gaming features requires desktop to be enabled"; }
-      { assertion = cfg.gaming.enable -> !generalCfg.minimal; message = "Gaming features are incompatible with minimal mode"; }
+      {
+        assertion = cfg.gaming.enable -> cfg.enable;
+        message = "Gaming features requires desktop to be enabled";
+      }
+      {
+        assertion = cfg.gaming.enable -> !generalCfg.minimal;
+        message = "Gaming features are incompatible with minimal mode";
+      }
     ];
-  
-    environment.systemPackages = let
-      my_yuzu = cfg.gaming.yuzu.package.overrideAttrs (old: {
-        cmakeFlags = old.cmakeFlags ++ [
-          #"-DYUZU_USE_PRECOMPILED_HEADERS=OFF"
-          #"-DDYNARMIC_USE_PRECOMPILED_HEADERS=OFF"
-        ];
-      });
-    in with pkgs; [
+
+    environment.systemPackages =
+      let
+        my_yuzu = cfg.gaming.yuzu.package.overrideAttrs (old: {
+          cmakeFlags = old.cmakeFlags ++ [
+            #"-DYUZU_USE_PRECOMPILED_HEADERS=OFF"
+            #"-DDYNARMIC_USE_PRECOMPILED_HEADERS=OFF"
+          ];
+        });
+      in
+      with pkgs;
+      [
         gamescope
         mangohud
         lutris
         bottles
-      ] ++ optionals cfg.gaming.emulation [
-        (optimizePkg { recursive = 0; lto = false; } my_yuzu)
+      ]
+      ++ optionals cfg.gaming.emulation [
+        (optimizePkg {
+          recursive = 0;
+          lto = false;
+        } my_yuzu)
         (optimizePkg { } cfg.gaming.ryujinx.package)
       ];
 
@@ -104,7 +125,10 @@ in {
     };
 
     aviallon.programs.allowUnfreeList = [
-      "steam" "steam-original" "steam-runtime" "steam-run"
+      "steam"
+      "steam-original"
+      "steam-runtime"
+      "steam-run"
     ];
 
   };

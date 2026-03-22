@@ -1,10 +1,18 @@
-{config, pkgs, lib, ...}:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.security.tpm;
-in {
+in
+{
   options.aviallon.security.tpm = {
-    enable = (mkEnableOption "TPM") // { default = true; };
+    enable = (mkEnableOption "TPM") // {
+      default = true;
+    };
     tpm1_2.enable = mkEnableOption "TPM 1.2 support";
   };
   config = mkIf cfg.enable {
@@ -12,18 +20,20 @@ in {
       enable = true;
       tctiEnvironment.enable = true;
       pkcs11.enable = true;
-    };    
+    };
 
     environment.systemPackages = [
       pkgs.tpm2-tools
-    ] ++ optional cfg.tpm1_2.enable pkgs.tpm-tools;
+    ]
+    ++ optional cfg.tpm1_2.enable pkgs.tpm-tools;
 
     services.tcsd = mkIf cfg.tpm1_2.enable {
       enable = true;
     };
 
     boot.initrd.availableKernelModules = [
-      "tpm_tis" "tpm_crb"
+      "tpm_tis"
+      "tpm_crb"
     ];
   };
 }

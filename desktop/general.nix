@@ -1,9 +1,16 @@
-{ config, pkgs, lib, myLib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  myLib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
-in {
+in
+{
   options.aviallon.desktop = {
     enable = mkOption {
       default = true;
@@ -14,7 +21,13 @@ in {
     environment = mkOption {
       default = "plasma";
       example = "gnome";
-      type = with types; enum [ "plasma" "plasma6" "gnome" ];
+      type =
+        with types;
+        enum [
+          "plasma"
+          "plasma6"
+          "gnome"
+        ];
       description = "What Desktop Environment to use";
     };
     layout = mkOption {
@@ -51,7 +64,13 @@ in {
   };
 
   imports = [
-    (mkRemovedOptionModule [ "aviallon" "desktop" "graphics" "shaderCache" "path" ] "Now always relative to $XDG_CACHE_HOME" )
+    (mkRemovedOptionModule [
+      "aviallon"
+      "desktop"
+      "graphics"
+      "shaderCache"
+      "path"
+    ] "Now always relative to $XDG_CACHE_HOME")
   ];
 
   config = mkIf cfg.enable (mkMerge [
@@ -70,7 +89,6 @@ in {
       # Configure keymap in X11
       services.xserver.xkb.layout = cfg.layout;
       services.xserver.xkb.options = "eurosign:e";
-
 
       aviallon.boot.cmdline = {
         splash = mkIf (!generalCfg.debug) "";
@@ -93,7 +111,7 @@ in {
 
       # Enable running X11 apps on Wayland
       programs.xwayland.enable = true;
-      
+
       # Enable touchpad support (enabled default in most desktopManager).
       services.libinput.enable = true;
 
@@ -104,9 +122,7 @@ in {
         p7zip
       ];
 
-
-      security.sudo.extraConfig =
-        ''
+      security.sudo.extraConfig = ''
         # Keep X and Wayland related variables for better GUI integration
         Defaults:root,%wheel env_keep+=DISPLAY
         Defaults:root,%wheel env_keep+=XAUTHORITY
@@ -114,8 +130,7 @@ in {
         Defaults:root,%wheel env_keep+=WAYLAND_DISPLAY
         Defaults:root,%wheel env_keep+=WAYLAND_SOCKET
         Defaults:root,%wheel env_keep+=XDG_RUNTIME_DIR
-        ''
-      ;
+      '';
 
     }
     (mkIf (!generalCfg.minimal) {
@@ -135,7 +150,7 @@ in {
       programs.thunderbird.enable = true;
 
       hardware.graphics.enable32Bit = mkDefault cfg.gaming.enable;
-    
+
       environment.systemPackages = with pkgs; [
         mesa-demos
         vdpauinfo
@@ -174,16 +189,16 @@ in {
       };
 
       aviallon.programs.allowUnfreeList = [
-        "spotify" "spotify-unwrapped"
+        "spotify"
+        "spotify-unwrapped"
 
         "veracrypt"
       ];
 
-    
       aviallon.programs.libreoffice.enable = true;
-    
+
       services.packagekit.enable = mkDefault true;
-    
+
       # SmartCards
       #services.pcscd.enable = mkDefault true;
 

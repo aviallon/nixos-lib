@@ -1,8 +1,14 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.laptop;
-in {
+in
+{
   options.aviallon.laptop = {
     enable = mkOption {
       default = false;
@@ -14,7 +20,11 @@ in {
       default = "tlp";
       example = "power-profiles-daemon";
       description = "Change service used to manage power consumption on laptop";
-      type = types.enum [ "tlp" "power-profiles-daemon" false ];
+      type = types.enum [
+        "tlp"
+        "power-profiles-daemon"
+        false
+      ];
     };
     tweaks = {
       pcieAspmForce = mkEnableOption "hardcore tweaks to power consumption. Warning: Might be dangerous to use.";
@@ -55,37 +65,40 @@ in {
       };
     };
 
-
-    systemd.services.aspm-force-enable = let
-      aspm_enable = pkgs.callPackage ./packages/aspm_enable { };
-    in {
-      serviceConfig = {
-        ExecStart = [
-          "${aspm_enable}/bin/aspm_enable"
-        ];
-        Type = "simple";
+    systemd.services.aspm-force-enable =
+      let
+        aspm_enable = pkgs.callPackage ./packages/aspm_enable { };
+      in
+      {
+        serviceConfig = {
+          ExecStart = [
+            "${aspm_enable}/bin/aspm_enable"
+          ];
+          Type = "simple";
+        };
+        wantedBy = [ "multi-user.target" ];
+        description = "Force-enable PCIe ASPM";
+        enable = cfg.tweaks.pcieAspmForce;
       };
-      wantedBy = [ "multi-user.target" ];
-      description = "Force-enable PCIe ASPM";
-      enable = cfg.tweaks.pcieAspmForce;
-    };
 
     services.tlp.enable = (cfg.power-manager == "tlp");
     services.power-profiles-daemon.enable = (cfg.power-manager == "power-profiles-daemon");
     powerManagement.powertop.enable = mkDefault true;
     systemd.services.powertop = mkIf config.powerManagement.powertop.enable {
-      serviceConfig.ExecStart = let
-        script = pkgs.writeShellScriptBin "powertop-auto-tune" ''
-          ${pkgs.powertop}/bin/powertop --auto-tune
+      serviceConfig.ExecStart =
+        let
+          script = pkgs.writeShellScriptBin "powertop-auto-tune" ''
+            ${pkgs.powertop}/bin/powertop --auto-tune
 
-          # Disable power-saving for HID devices (i.e., keyboard and mouse, as it is makes them frustrating to use)
-          HIDDEVICES=$(ls /sys/bus/usb/drivers/usbhid | grep -oE '^[0-9]+-[0-9\.]+' | sort -u)
-          for i in $HIDDEVICES; do
-            echo -n "Enabling " | cat - /sys/bus/usb/devices/$i/product
-            echo 'on' > /sys/bus/usb/devices/$i/power/control
-          done
-        '';
-      in mkOverride 10 "${script}/bin/powertop-auto-tune";
+            # Disable power-saving for HID devices (i.e., keyboard and mouse, as it is makes them frustrating to use)
+            HIDDEVICES=$(ls /sys/bus/usb/drivers/usbhid | grep -oE '^[0-9]+-[0-9\.]+' | sort -u)
+            for i in $HIDDEVICES; do
+              echo -n "Enabling " | cat - /sys/bus/usb/devices/$i/product
+              echo 'on' > /sys/bus/usb/devices/$i/power/control
+            done
+          '';
+        in
+        mkOverride 10 "${script}/bin/powertop-auto-tune";
     };
   };
 }

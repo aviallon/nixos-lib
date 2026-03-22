@@ -1,9 +1,15 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.desktop;
   sddmCfg = config.services.displayManager.sddm;
-in {
+in
+{
   options.aviallon.desktop.sddm.unstable = mkEnableOption "bleeding-edge SDDM";
   options.aviallon.desktop.sddm.enable = mkEnableOption "custom SDDM configuration";
 
@@ -20,7 +26,7 @@ in {
         };
       };
     };
-  
+
     systemd.services.display-manager = {
       serviceConfig = {
         Restart = mkOverride 50 "on-failure";

@@ -1,56 +1,77 @@
-{ config, pkgs, lib, myLib, options, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  myLib,
+  options,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.desktop;
   generalCfg = config.aviallon.general;
-in {
+in
+{
   options.aviallon.desktop.browser = {
     firefox.overrides = mkOption {
       internal = true;
       description = "Override firefox package settings";
       type = types.attrs;
-      default = {};
-      example = { enablePlasmaIntegration = true; };
+      default = { };
+      example = {
+        enablePlasmaIntegration = true;
+      };
     };
     chromium = {
       package = mkOption {
         internal = true;
         type = myLib.types.package';
         default = pkgs.chromium;
-        example = literalExpression '' pkgs.ungoogled-chromium '';
+        example = literalExpression ''pkgs.ungoogled-chromium '';
       };
       overrides = mkOption {
         internal = true;
         description = "Override chromium package settings";
         type = types.attrs;
-        default = {};
-        example = { commandLineArgs = [ "--enable-features=UseOzonePlatform" "--ozone-platform=wayland" ]; };
+        default = { };
+        example = {
+          commandLineArgs = [
+            "--enable-features=UseOzonePlatform"
+            "--ozone-platform=wayland"
+          ];
+        };
       };
       commandLineArgs = mkOption {
         description = "Override chromium flags";
         type = with types; listOf str;
         default = [ "--ozone-platform-hint=auto" ];
-        example = [ "--ozone-platform-hint=auto" "--ignore-gpu-blacklist" ];
+        example = [
+          "--ozone-platform-hint=auto"
+          "--ignore-gpu-blacklist"
+        ];
       };
     };
   };
 
   config = mkIf (cfg.enable && !generalCfg.minimal) {
     environment.systemPackages = with pkgs; [
-        (cfg.browser.chromium.package.override cfg.browser.chromium.overrides)
-        # firefox is added by plasma or gnome
-      ];
+      (cfg.browser.chromium.package.override cfg.browser.chromium.overrides)
+      # firefox is added by plasma or gnome
+    ];
 
-
-    nixpkgs.overlays = [(final: prev: {
-      myFirefox = (final.callPackage ../packages/firefox.nix cfg.browser.firefox.overrides);
-    })];
+    nixpkgs.overlays = [
+      (final: prev: {
+        myFirefox = (final.callPackage ../packages/firefox.nix cfg.browser.firefox.overrides);
+      })
+    ];
 
     aviallon.desktop.browser.chromium.overrides.enableWideVine = true;
 
     aviallon.programs.allowUnfreeList = [
-      "chromium-unwrapped" "chrome-widevine-cdm"
-      "ungoogled-chromium" "chromium" # because of widevine
+      "chromium-unwrapped"
+      "chrome-widevine-cdm"
+      "ungoogled-chromium"
+      "chromium" # because of widevine
     ];
 
     environment.variables = {
@@ -58,8 +79,10 @@ in {
     };
 
     aviallon.desktop.browser.chromium.overrides.commandLineArgs = cfg.browser.chromium.commandLineArgs;
-    aviallon.desktop.browser.chromium.commandLineArgs = mkIf generalCfg.unsafeOptimizations (options.aviallon.desktop.browser.chromium.commandLineArgs.default ++ [
-      "--flag-switches-begin" 
+    aviallon.desktop.browser.chromium.commandLineArgs = mkIf generalCfg.unsafeOptimizations (
+      options.aviallon.desktop.browser.chromium.commandLineArgs.default
+      ++ [
+        "--flag-switches-begin"
         "--ignore-gpu-blacklist"
         "--enable-gpu-rasterization"
         "--enable-quic"
@@ -68,8 +91,9 @@ in {
         "--canvas-oop-rasterization"
         "--enable-features=VaapiVideoDecoder,VaapiVideoEncoder,WebRTCPipeWireCapturer"
         "--disable-features=UseChromeOSDirectVideoDecoder"
-      "--flag-switches-end"
-    ]);
+        "--flag-switches-end"
+      ]
+    );
 
     programs.chromium = {
       enable = true;

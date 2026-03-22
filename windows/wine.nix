@@ -1,8 +1,14 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.windows.wine;
-in {
+in
+{
   options.aviallon.windows.wine = {
     enable = mkEnableOption "windows executable support on Linux";
     package = mkOption {

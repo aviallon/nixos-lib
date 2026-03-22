@@ -1,16 +1,32 @@
-{ config, pkgs, lib, myLib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  myLib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.programs.nvtop;
-in {
+in
+{
   options.aviallon.programs.nvtop = {
     enable = mkEnableOption "nvtop";
     backend = mkOption {
       description = "Which backend to enable";
-      type = with types; listOf (enum [ "nvidia" "amd" "intel" "panthor" "panfrost" "msm" ]);
+      type =
+        with types;
+        listOf (enum [
+          "nvidia"
+          "amd"
+          "intel"
+          "panthor"
+          "panfrost"
+          "msm"
+        ]);
       default = [ "amd" ];
     };
-    
+
     nvidia = mkEnableOption "Nvidia GPU with proprietary drivers is used";
     package = mkOption {
       internal = true;
@@ -25,7 +41,8 @@ in {
     aviallon.programs.nvtop.package = mkDefault (
       if (length cfg.backend > 1) then
         pkgs.nvtopPackages.full
-      else pkgs.nvtopPackages.${elemAt cfg.backend 0}
+      else
+        pkgs.nvtopPackages.${elemAt cfg.backend 0}
     );
 
     environment.systemPackages = [

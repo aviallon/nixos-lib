@@ -1,4 +1,10 @@
-{ config, pkgs, lib, myLib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  myLib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.general;
@@ -8,7 +14,12 @@ let
 in
 {
   imports = [
-    (mkRemovedOptionModule [ "aviallon" "general" "flakes" "enable" ] "Flakes are now enabled by default")
+    (mkRemovedOptionModule [
+      "aviallon"
+      "general"
+      "flakes"
+      "enable"
+    ] "Flakes are now enabled by default")
     (mkRenamedOptionModule [ "aviallon" "general" "cpuVendor" ] [ "aviallon" "general" "cpu" "vendor" ])
     (mkRenamedOptionModule [ "aviallon" "general" "cpuArch" ] [ "aviallon" "general" "cpu" "arch" ])
     (mkRenamedOptionModule [ "aviallon" "general" "cpuTune" ] [ "aviallon" "general" "cpu" "tune" ])
@@ -24,7 +35,7 @@ in
     };
 
     minimal = mkEnableOption "minimal installation";
-    
+
     cpu = {
       threads = mkOption {
         default = null;
@@ -32,21 +43,16 @@ in
         description = "Number of physical threads of the machine";
         type = with types; nullOr ints.positive;
       };
-    
+
       vendor = mkOption {
         default = null;
         example = "amd";
         description = "Vendor of you CPU. Either AMD or Intel";
         type = types.str;
       };
-    
+
       arch = mkOption {
-        default = 
-          if cfg.cpu.x86.level >= 2 then
-            "x86-64-v${toString cfg.cpu.x86.level}"
-          else
-            "x86-64"
-          ;
+        default = if cfg.cpu.x86.level >= 2 then "x86-64-v${toString cfg.cpu.x86.level}" else "x86-64";
         example = "x86-64-v2";
         description = "Set CPU arch used in overlays, ...";
         type = types.str;
@@ -57,7 +63,7 @@ in
         description = "Set CPU tuning for compilers";
         type = types.str;
       };
-      
+
       caches = {
         l1d = mkOption {
           default = null;
@@ -84,7 +90,7 @@ in
           type = with types; nullOr ints.positive;
         };
       };
-      
+
       x86 = {
         level = mkOption {
           default = 1;
@@ -113,9 +119,11 @@ in
       font = "Lat2-Terminus16";
     };
 
-    boot.initrd.systemd.contents = mkIf (config.boot.initrd.systemd.enable && !config.console.earlySetup) {
-      "/etc/kbd/consolefonts".source = "${pkgs.kbd}/share/consolefonts";
-    };
+    boot.initrd.systemd.contents =
+      mkIf (config.boot.initrd.systemd.enable && !config.console.earlySetup)
+        {
+          "/etc/kbd/consolefonts".source = "${pkgs.kbd}/share/consolefonts";
+        };
 
     aviallon.boot.cmdline = mkIf cfg.unsafeOptimizations {
       mitigations = "off";

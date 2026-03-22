@@ -1,15 +1,13 @@
-{lib, myLib, ...}:
+{ lib, myLib, ... }:
 with lib;
 rec {
-  isBroken = x:
+  isBroken =
+    x:
     let
       tryX = builtins.tryEval x;
     in
-      if
-        tryX.success && (isDerivation tryX.value)
-      then
-        tryX.value.meta.insecure || tryX.value.meta.broken
-      else   
-        true
-    ;
+    if tryX.success && (isDerivation tryX.value) then
+      tryX.value.meta.insecure || tryX.value.meta.broken
+    else
+      true;
 }

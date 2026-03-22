@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.hardware;
@@ -6,7 +11,7 @@ let
   generalCfg = config.aviallon.general;
 in
 {
-  options.aviallon.hardware = {  };
+  options.aviallon.hardware = { };
 
   imports = [
     ./amd
@@ -15,6 +20,6 @@ in
     ./mesa.nix
   ];
 
-  config = {};
+  config = { };
 
 }

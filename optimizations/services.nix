@@ -1,4 +1,10 @@
-{ config, options, pkgs, lib, ... }:
+{
+  config,
+  options,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.optimizations;
@@ -8,7 +14,8 @@ let
   };
   man-db = optimizePkg { level = "moderately-unsafe"; } pkgs.man-db;
   mandoc = optimizePkg { level = "moderately-unsafe"; } pkgs.mandoc;
-in {
+in
+{
   config = mkIf cfg.enable {
     documentation.man.man-db.package = man-db;
     documentation.man.mandoc.package = mandoc;

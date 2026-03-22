@@ -1,10 +1,17 @@
-{ config, pkgs, lib, myLib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  myLib,
+  ...
+}:
 with lib;
 let
   generalCfg = config.aviallon.general;
   cfg = config.aviallon.power;
   undervoltType = with types; nullOr (addCheck int (x: (x < 0 && x > -200)));
-in {
+in
+{
   options.aviallon.power = {
     enable = mkOption {
       default = true;
@@ -16,7 +23,10 @@ in {
       default = "performance";
       example = "efficiency";
       description = "What to optimize towards";
-      type = types.enum [ "performance" "efficiency" ];
+      type = types.enum [
+        "performance"
+        "efficiency"
+      ];
     };
     powerLimit = {
       enable = mkEnableOption "power limiting";
@@ -101,7 +111,7 @@ in {
         ConditionACPower = true;
       };
     };
-    
+
     systemd.targets.battery-power = {
       description = "Target is active when power is drawn from a battery.";
       conflicts = [ "ac-power.target" ];
@@ -113,22 +123,28 @@ in {
     services.udev.extraRules = ''
       ACTION!="remove", KERNEL=="AC*", SUBSYSTEM=="power_supply", ATTR{online}=="0", RUN+="${pkgs.systemd}/bin/systemctl stop ac-power.target"
       ACTION!="remove", KERNEL=="AC*", SUBSYSTEM=="power_supply", ATTR{online}=="1", RUN+="${pkgs.systemd}/bin/systemctl start ac-power.target"
-      
+
       ACTION!="remove", KERNEL=="BAT*", SUBSYSTEM=="power_supply", ATTR{status}=="Discharging", RUN+="${pkgs.systemd}/bin/systemctl start battery-power.target"
       ACTION!="remove", KERNEL=="BAT*", SUBSYSTEM=="power_supply", ATTR{status}=="Charging", RUN+="${pkgs.systemd}/bin/systemctl stop battery-power.target"
 
       ACTION!="remove", DEVPATH=="*intel-rapl:*", SUBSYSTEM=="powercap", RUN+="${pkgs.coreutils}/bin/chmod g+r '/sys%p/energy_uj'"
     '';
 
-    users.groups.power = {};
-  
+    users.groups.power = { };
+
     systemd.services.undervolt-intel = {
-      script = ""
+      script =
+        ""
         + "${pkgs.undervolt}/bin/undervolt"
-        + (optionalString (! isNull cfg.undervolt.cpu.coreOffset ) " --core ${toString cfg.undervolt.cpu.coreOffset}")
-        + (optionalString (! isNull cfg.undervolt.cpu.cacheOffset ) " --cache ${toString cfg.undervolt.cpu.cacheOffset}")
-        + (optionalString (! isNull cfg.undervolt.cpu.iGPUOffset ) " --gpu ${toString cfg.undervolt.cpu.iGPUOffset}")
-      ;
+        + (optionalString (
+          !isNull cfg.undervolt.cpu.coreOffset
+        ) " --core ${toString cfg.undervolt.cpu.coreOffset}")
+        + (optionalString (
+          !isNull cfg.undervolt.cpu.cacheOffset
+        ) " --cache ${toString cfg.undervolt.cpu.cacheOffset}")
+        + (optionalString (
+          !isNull cfg.undervolt.cpu.iGPUOffset
+        ) " --gpu ${toString cfg.undervolt.cpu.iGPUOffset}");
       serviceConfig = {
         RemainAfterExit = true;
       };
@@ -138,11 +154,15 @@ in {
     };
 
     systemd.services.intel-powerlimit-ac = {
-      script = "${pkgs.undervolt}/bin/undervolt"
-        + optionalString (! isNull cfg.powerLimit.ac.cpu ) " --power-limit-long ${toString cfg.powerLimit.ac.cpu} 28"
-        + optionalString (! isNull cfg.powerLimit.ac.cpuBoost ) " --power-limit-short ${toString cfg.powerLimit.ac.cpuBoost} 0.1"
-        + optionalString (! isNull cfg.temperature.ac.cpu ) " --temp ${toString cfg.temperature.ac.cpu}"
-      ;
+      script =
+        "${pkgs.undervolt}/bin/undervolt"
+        + optionalString (
+          !isNull cfg.powerLimit.ac.cpu
+        ) " --power-limit-long ${toString cfg.powerLimit.ac.cpu} 28"
+        + optionalString (
+          !isNull cfg.powerLimit.ac.cpuBoost
+        ) " --power-limit-short ${toString cfg.powerLimit.ac.cpuBoost} 0.1"
+        + optionalString (!isNull cfg.temperature.ac.cpu) " --temp ${toString cfg.temperature.ac.cpu}";
       unitConfig = {
         ConditionACPower = true;
       };
@@ -154,13 +174,19 @@ in {
       partOf = [ "ac-power.target" ];
       enable = (cfg.powerLimit.enable || cfg.temperature.enable) && (generalCfg.cpu.vendor == "intel");
     };
-    
+
     systemd.services.intel-powerlimit-battery = {
-      script = "${pkgs.undervolt}/bin/undervolt"
-        + optionalString (! isNull cfg.powerLimit.battery.cpu ) " --power-limit-long ${toString cfg.powerLimit.battery.cpu} 28"
-        + optionalString (! isNull cfg.powerLimit.battery.cpuBoost ) " --power-limit-short ${toString cfg.powerLimit.battery.cpuBoost} 0.1"
-        + optionalString (! isNull cfg.temperature.battery.cpu ) " --temp ${toString cfg.temperature.battery.cpu}"
-      ;
+      script =
+        "${pkgs.undervolt}/bin/undervolt"
+        + optionalString (
+          !isNull cfg.powerLimit.battery.cpu
+        ) " --power-limit-long ${toString cfg.powerLimit.battery.cpu} 28"
+        + optionalString (
+          !isNull cfg.powerLimit.battery.cpuBoost
+        ) " --power-limit-short ${toString cfg.powerLimit.battery.cpuBoost} 0.1"
+        + optionalString (
+          !isNull cfg.temperature.battery.cpu
+        ) " --temp ${toString cfg.temperature.battery.cpu}";
       unitConfig = {
         ConditionACPower = false;
       };
@@ -172,6 +198,6 @@ in {
       partOf = [ "battery-power.target" ];
       enable = (cfg.powerLimit.enable || cfg.temperature.enable) && (generalCfg.cpu.vendor == "intel");
     };
-    
+
   };
 }

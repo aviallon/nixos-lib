@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.services;
@@ -6,23 +11,28 @@ let
   laptopCfg = config.aviallon.laptop;
   generalCfg = config.aviallon.general;
 
-  journaldConfigValue = value:
-    if value == true then "true"
-    else if value == false then "false"
-    else if isList value then toString value
-    else generators.mkValueStringDefault { } value;
+  journaldConfigValue =
+    value:
+    if value == true then
+      "true"
+    else if value == false then
+      "false"
+    else if isList value then
+      toString value
+    else
+      generators.mkValueStringDefault { } value;
 
-  isNullOrEmpty = v: (v == null) ||
-      (isList v && (length v == 0));
+  isNullOrEmpty = v: (v == null) || (isList v && (length v == 0));
 
-  journaldConfig = settings: (generators.toKeyValue {
-    mkKeyValue = generators.mkKeyValueDefault {
-      mkValueString = journaldConfigValue;
-    } "=";
-  } (filterAttrs (n: v: !(isNullOrEmpty v))
-    settings)
-  );
-in {
+  journaldConfig =
+    settings:
+    (generators.toKeyValue {
+      mkKeyValue = generators.mkKeyValueDefault {
+        mkValueString = journaldConfigValue;
+      } "=";
+    } (filterAttrs (n: v: !(isNullOrEmpty v)) settings));
+in
+{
 
   options.aviallon.services = {
     enable = mkOption {
@@ -33,9 +43,15 @@ in {
     };
 
     journald.extraConfig = mkOption {
-      default = {};
-      example = {};
-      type = with types; attrsOf (oneOf [ bool int str ]);
+      default = { };
+      example = { };
+      type =
+        with types;
+        attrsOf (oneOf [
+          bool
+          int
+          str
+        ]);
       description = "Add extra config to journald with Nix language";
     };
   };
@@ -64,28 +80,29 @@ in {
       scriptArgs = "%I";
       wantedBy = [ "sshd@.service" ];
     };
-    
+
     programs.ssh.setXAuthLocation = config.services.xserver.enable;
     programs.ssh.forwardX11 = mkDefault config.services.xserver.enable;
     security.pam.services.sudo.forwardXAuth = mkDefault true; # Easier to start GUI programs as root
 
     environment.systemPackages = with pkgs; [ waypipe ];
 
-
     # Better reliability and performance
     services.dbus.implementation = "broker";
 
-    
-
-    
     networking.firewall.allowedTCPPorts = [ 22 ];
-    networking.firewall.allowedUDPPorts = [ 22 5353 ];
+    networking.firewall.allowedUDPPorts = [
+      22
+      5353
+    ];
 
     services.rsyncd.enable = !desktopCfg.enable;
 
     services.fstrim.enable = true;
 
-    services.haveged.enable = (builtins.compareVersions config.boot.kernelPackages.kernel.version "5.6" < 0);
+    services.haveged.enable = (
+      builtins.compareVersions config.boot.kernelPackages.kernel.version "5.6" < 0
+    );
 
     services.irqbalance.enable = true;
 
@@ -103,23 +120,38 @@ in {
       loglevel = "info";
       cgroup_realtime_workaround = false;
     };
-    services.ananicy.extraRules = concatStringsSep "\n" ( forEach [
-      { name = "cp";
-        type = "BG_CPUIO"; }
-      { name = "nix-build";
-        type = "BG_CPUIO"; }
-      { name = "nix-store";
-        type = "BG_CPUIO"; }
-      { name = "nix-collect-garbage";
-        type = "BG_CPUIO"; }
-      { name = "nix";
-        type = "BG_CPUIO"; }
-      { name = "X";
-        type = "LowLatency_RT"; }
-      { name = "htop";
-        type = "LowLatency_RT"; }
-    ] (x: builtins.toJSON x));
-
+    services.ananicy.extraRules = concatStringsSep "\n" (
+      forEach [
+        {
+          name = "cp";
+          type = "BG_CPUIO";
+        }
+        {
+          name = "nix-build";
+          type = "BG_CPUIO";
+        }
+        {
+          name = "nix-store";
+          type = "BG_CPUIO";
+        }
+        {
+          name = "nix-collect-garbage";
+          type = "BG_CPUIO";
+        }
+        {
+          name = "nix";
+          type = "BG_CPUIO";
+        }
+        {
+          name = "X";
+          type = "LowLatency_RT";
+        }
+        {
+          name = "htop";
+          type = "LowLatency_RT";
+        }
+      ] (x: builtins.toJSON x)
+    );
 
     # Enusre low-latency response for this time-critical service
     systemd.services."hdapsd@" = {
@@ -148,16 +180,15 @@ in {
         hinfo = true; # Whether to register a mDNS HINFO record which contains information about the local operating system and CPU.
       };
       extraConfig = mkIf config.services.resolved.enable ''
-      [server]
-      enable-dbus=warn
-      #disallow-other-stacks=yes
+        [server]
+        enable-dbus=warn
+        #disallow-other-stacks=yes
       '';
     };
 
     services.resolved.settings.Resolve = {
       MulticastDNS = false;
     };
-
 
     services.nginx = {
       recommendedProxySettings = true;

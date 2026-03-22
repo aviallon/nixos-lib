@@ -1,17 +1,23 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   gpgNoTTY = pkgs.writeShellScriptBin "gpg-no-tty" ''
     exec ${pkgs.gnupg}/bin/gpg --batch --no-tty "$@"
   '';
-  pinentrySwitcher = pkgs.callPackage ../packages/pinentry.nix {};
-in {
+  pinentrySwitcher = pkgs.callPackage ../packages/pinentry.nix { };
+in
+{
   config = {
 
     programs.gnupg = {
       agent.enable = true;
       dirmngr.enable = true;
-      
+
       agent.pinentryPackage = pkgs.pinentry-all;
       agent.enableSSHSupport = true;
       agent.enableExtraSocket = true;
@@ -29,6 +35,6 @@ in {
     environment.systemPackages = [
       gpgNoTTY
     ];
-  
+
   };
 }

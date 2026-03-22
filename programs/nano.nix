@@ -1,4 +1,4 @@
-{config, pkgs, ...}:
+{ config, pkgs, ... }:
 {
   environment.systemPackages = [ pkgs.nanorc ];
   programs.nano.syntaxHighlight = false;

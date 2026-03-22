@@ -1,4 +1,10 @@
-{ config, pkgs, lib, myLib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  myLib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.programs;
@@ -6,12 +12,15 @@ let
   generalCfg = config.aviallon.general;
   optimizeCfg = config.aviallon.optimizations;
 
-  myOpenssh = if optimizeCfg.enable then (optimizeCfg.optimizePkg {} pkgs.openssh) else pkgs.openssh;
+  myOpenssh = if optimizeCfg.enable then (optimizeCfg.optimizePkg { } pkgs.openssh) else pkgs.openssh;
 in
 {
   imports = [
     ./programs
-    (mkRenamedOptionModule [ "aviallon" "programs" "compileFlags" ] [ "aviallon" "optimizations" "extraCompileFlags" ])
+    (mkRenamedOptionModule
+      [ "aviallon" "programs" "compileFlags" ]
+      [ "aviallon" "optimizations" "extraCompileFlags" ]
+    )
   ];
 
   options.aviallon.programs = {
@@ -23,14 +32,19 @@ in
     };
     allowUnfreeList = mkOption {
       default = [ ];
-      example = [ "nvidia-x11" "steam" ];
+      example = [
+        "nvidia-x11"
+        "steam"
+      ];
       description = "Allow specific unfree software to be installed";
       type = types.listOf types.str;
     };
     config = mkOption {
-      default = {};
+      default = { };
       type = types.attrs;
-      example = { cudaSupport = true; };
+      example = {
+        cudaSupport = true;
+      };
       description = "nixpkgs config settings to be applied to all nixpkgs instances";
     };
   };
@@ -39,33 +53,36 @@ in
 
     programs.java.enable = mkDefault (!generalCfg.minimal);
 
-    aviallon.programs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) cfg.allowUnfreeList;
+    aviallon.programs.config.allowUnfreePredicate =
+      pkg: builtins.elem (lib.getName pkg) cfg.allowUnfreeList;
 
-    environment.systemPackages = with pkgs; []
-    ++ [
-      vim
-      wget
-      nano
-      myOpenssh
-      psmisc
-      pciutils
-      ripgrep
-      fd
-      htop
-      unstable.cachix
-      usbutils
-    ]
-    ++ optionals (!generalCfg.minimal) [
-      rsync
-      par2cmdline # .par2 archive verification
-      python3
-      parallel
-      coreutils-full
-      nmap
-      pv
-      xxHash
-      unzip
-    ];
+    environment.systemPackages =
+      with pkgs;
+      [ ]
+      ++ [
+        vim
+        wget
+        nano
+        myOpenssh
+        psmisc
+        pciutils
+        ripgrep
+        fd
+        htop
+        unstable.cachix
+        usbutils
+      ]
+      ++ optionals (!generalCfg.minimal) [
+        rsync
+        par2cmdline # .par2 archive verification
+        python3
+        parallel
+        coreutils-full
+        nmap
+        pv
+        xxHash
+        unzip
+      ];
 
     programs.ssh.package = myOpenssh;
 
@@ -77,7 +94,7 @@ in
     };
 
     programs.ccache.enable = true;
-    
+
     nix.settings.extra-sandbox-paths = [
       (toString config.programs.ccache.cacheDir)
     ];

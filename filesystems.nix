@@ -1,14 +1,25 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.filesystems;
-  
-  ioSchedType = types.enum [ "bfq" "kyber" "mq-deadline" "none" null ];
+
+  ioSchedType = types.enum [
+    "bfq"
+    "kyber"
+    "mq-deadline"
+    "none"
+    null
+  ];
 in
 {
   imports = [
     ./filesystems
-    (mkRemovedOptionModule [ "aviallon" "filesystems" "resumeDevice"] "Use boot.resumeDevice instead")
+    (mkRemovedOptionModule [ "aviallon" "filesystems" "resumeDevice" ] "Use boot.resumeDevice instead")
   ];
 
   options.aviallon.filesystems = {
@@ -43,7 +54,7 @@ in
       type = types.bool;
     };
     udevRules = mkOption {
-      default = [];
+      default = [ ];
       example = [ ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sda", ATTR{queue/scheduler}="none"'' ];
       description = "Additional udev rules";
       type = types.listOf types.str;
@@ -59,26 +70,43 @@ in
       boot.vdo.enable = config.aviallon.boot.kvdo.enable;
     };
     boot.initrd.kernelModules = ifEnable cfg.lvm [
-      "dm-cache" "dm-cache-smq" "dm-cache-mq" "dm-cache-cleaner"
+      "dm-cache"
+      "dm-cache-smq"
+      "dm-cache-mq"
+      "dm-cache-cleaner"
     ];
-    boot.kernelModules = []
-      ++ optionals cfg.lvm [ "dm-cache" "dm-cache-smq" "dm-persistent-data" "dm-bio-prison" "dm-clone" "dm-crypt" "dm-writecache" "dm-mirror" "dm-snapshot" ]
-      ++ optionals config.aviallon.boot.kvdo.enable [ "kvdo" ]
-    ;
+    boot.kernelModules =
+      [ ]
+      ++ optionals cfg.lvm [
+        "dm-cache"
+        "dm-cache-smq"
+        "dm-persistent-data"
+        "dm-bio-prison"
+        "dm-clone"
+        "dm-crypt"
+        "dm-writecache"
+        "dm-mirror"
+        "dm-snapshot"
+      ]
+      ++ optionals config.aviallon.boot.kvdo.enable [ "kvdo" ];
 
-    boot.supportedFilesystems = [ "ntfs" "ext4" "vfat" "exfat" ];
+    boot.supportedFilesystems = [
+      "ntfs"
+      "ext4"
+      "vfat"
+      "exfat"
+    ];
 
     hardware.block.defaultSchedulerRotational = mkDefault cfg.hddScheduler;
     aviallon.filesystems.udevRules = mkBefore (concatLists [
       (optional (!(builtins.isNull cfg.hddScheduler))
         ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]", ATTR{queue/rotational}=="1", ATTR{queue/scheduler}="${cfg.hddScheduler}"''
       )
-      (optional (!(builtins.isNull cfg.slowFlashScheduler))
-        ''
+      (optional (!(builtins.isNull cfg.slowFlashScheduler)) ''
         SUBSYSTEM!="block", GOTO="aviallon_slowflash_end"
         KERNEL!="sd[a-z]|nvme[0-9]*n[0-9]|mmcblk[0-9]", GOTO="aviallon_slowflash_end"
         ATTR{queue/rotational}=="1", GOTO="aviallon_slowflash_end"
-        
+
         ACTION!="remove", ATTR{queue/scheduler}="${cfg.slowFlashScheduler}"
 
         # If possible, disable back_seek_penalty as it is effectively null on SSDs
@@ -95,16 +123,13 @@ in
 
           LABEL="aviallon_no_ncq_end"
         # END: NCQ disabled
-        
+
         LABEL="aviallon_slowflash_end"
-        ''
-      )
+      '')
       (optional (!(builtins.isNull cfg.nvmeScheduler))
         ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="nvme[0-9]*n[0-9]", ATTR{queue/scheduler}="${cfg.nvmeScheduler}"''
       )
-      (optional cfg.queuePriority
-        ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]", ATTR{device/ncq_prio_supported}=="1", ATTR{device/ncq_prio_enable}="1"''
-      )
+      (optional cfg.queuePriority ''ACTION!="remove", SUBSYSTEM=="block", KERNEL=="sd[a-z]", ATTR{device/ncq_prio_supported}=="1", ATTR{device/ncq_prio_enable}="1"'')
     ]);
 
     boot.initrd.services.udev.rules = concatStringsSep "\n" cfg.udevRules;
@@ -118,8 +143,7 @@ in
       let
         hasSwap = length config.swapDevices > 0;
       in
-        if hasSwap then "150%" else "75%"
-      ;
+      if hasSwap then "150%" else "75%";
 
     services.smartd = {
       enable = mkDefault true;
@@ -137,4 +161,4 @@ in
       notifications.systembus-notify.enable = config.aviallon.desktop.enable;
     };
   };
-} 
+}

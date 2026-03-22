@@ -1,4 +1,11 @@
-{ config, pkgs, options, lib, myLib, ... }:
+{
+  config,
+  pkgs,
+  options,
+  lib,
+  myLib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.optimizations;
@@ -24,18 +31,18 @@ let
     lto = cfg.lto.enable;
   };
 
-  optimizePkg = {
-      attributes ? {},
+  optimizePkg =
+    {
+      attributes ? { },
       stdenv ? null,
       ...
-    }@attrs: pkg:
-      myLib.optimizations.optimizePkg pkg (
-        defaultOptimizeAttrs
-        // cfg.defaultSettings
-        // { inherit stdenv attributes; }
-        // attrs
-      );
-in {
+    }@attrs:
+    pkg:
+    myLib.optimizations.optimizePkg pkg (
+      defaultOptimizeAttrs // cfg.defaultSettings // { inherit stdenv attributes; } // attrs
+    );
+in
+{
   options.aviallon.optimizations = {
     enable = mkOption {
       default = true;
@@ -52,12 +59,22 @@ in {
       blacklist = mkOption {
         description = "Packages to blacklist from LTO";
         type = types.listOf types.str;
-        default = [ "x265" "cpio" "cups" "gtk+3" "which" "openssh" ];
+        default = [
+          "x265"
+          "cpio"
+          "cups"
+          "gtk+3"
+          "which"
+          "openssh"
+        ];
       };
     };
     extraCompileFlags = mkOption {
       default = [ ];
-      example = [ "-O2" "-mavx" ];
+      example = [
+        "-O2"
+        "-mavx"
+      ];
       description = "Add specific compile flags";
       type = types.listOf types.str;
     };
@@ -66,11 +83,14 @@ in {
         recursive = 0;
         level = "slower";
       };
-      example = { level = "unsafe"; recursive = 0; };
+      example = {
+        level = "unsafe";
+        recursive = 0;
+      };
       description = "Specify default options passed to optimizePkg";
     };
     optimizePkg = mkOption {
-      default = if cfg.enable then optimizePkg else ({...}: pkg: pkg);
+      default = if cfg.enable then optimizePkg else ({ ... }: pkg: pkg);
       example = "pkg: pkg.override { stdenv = pkgs.fastStdenv; }";
       description = "Function used for optimizing packages";
       type = with types; functionTo (functionTo package);
@@ -78,15 +98,26 @@ in {
     trace = mkEnableOption "trace attributes in overriden derivations";
     runtimeOverrides.enable = mkEnableOption "runtime overrides for performance sensitive libraries (glibc, ...)";
     blacklist = mkOption {
-      default = [ # Broken
-                  "alsa-lib" "glib" "lcms2" "gconf" "gnome-vfs"
+      default = [
+        # Broken
+        "alsa-lib"
+        "glib"
+        "lcms2"
+        "gconf"
+        "gnome-vfs"
 
-                  # Very slow
-                  "llvm" "clang" "clang-wrapper" "valgrind" "rustc" "tensorflow" "qtwebengine"
+        # Very slow
+        "llvm"
+        "clang"
+        "clang-wrapper"
+        "valgrind"
+        "rustc"
+        "tensorflow"
+        "qtwebengine"
 
-                  # Fixable with work, but slow for now
-                  "rapidjson"
-                ];
+        # Fixable with work, but slow for now
+        "rapidjson"
+      ];
       example = [ "bash" ];
       description = "Blacklist specific packages from optimizations";
       type = types.listOf types.str;
@@ -95,13 +126,12 @@ in {
       type = with types; attrsOf package;
       default = {
       };
-      example = literalExpression
-        ''
-          {
-            ninja = pkgs.ninja-samurai;
-            cmake = pkgs.my-cmake-override;
-          }
-        '';
+      example = literalExpression ''
+        {
+          ninja = pkgs.ninja-samurai;
+          cmake = pkgs.my-cmake-override;
+        }
+      '';
       description = "Allow overriding packages found in `nativeBuildInputs` with custom packages.";
     };
   };
@@ -109,50 +139,59 @@ in {
   config = mkIf cfg.enable {
 
     aviallon.optimizations.blacklist = mkDefault (
-        options.aviallon.optimizations.blacklist.default
-        ++ (traceValSeq (forEach config.system.replaceRuntimeDependencies (x: lib.getName x.oldDependency )))
+      options.aviallon.optimizations.blacklist.default
+      ++ (traceValSeq (forEach config.system.replaceRuntimeDependencies (x: lib.getName x.oldDependency)))
     );
-    system.replaceDependencies.replacements = mkIf (!lib.inPureEvalMode && cfg.runtimeOverrides.enable) [
-      # glibc usually represents 20% of the userland CPU time. It is therefore very much worth optimizing.
-      /*{
-        original = pkgs.glibc;
-        replacement = let
-          optimizedFlags = [ "-fipa-pta" ];
-          #optimizedFlags = myLib.optimizations.guessOptimizationsFlags pkgs.glibc (defaultOptimizeAttrs // { level = "slower"; recursive = 0; });
-        in pkgs.glibc.overrideAttrs (attrs: myLib.debug.traceValWithPrefix "optimizations (glibc)" {
-          passthru = pkgs.glibc.passthru;
-          env = (attrs.env or {}) // {
-            NIX_CFLAGS_COMPILE = (attrs.env.NIX_CFLAGS_COMPILE or "") + (toString optimizedFlags.CFLAGS);
-          };
-        });
-      }*/
-      # zlib is in second place, given how often it is used
-      #{
-      #  original = pkgs.zlib;
-      #  replacement = optimizePkg { level = "slower"; } pkgs.zlib;
-      #}
-    ];
+    system.replaceDependencies.replacements =
+      mkIf (!lib.inPureEvalMode && cfg.runtimeOverrides.enable)
+        [
+          # glibc usually represents 20% of the userland CPU time. It is therefore very much worth optimizing.
+          /*
+            {
+              original = pkgs.glibc;
+              replacement = let
+                optimizedFlags = [ "-fipa-pta" ];
+                #optimizedFlags = myLib.optimizations.guessOptimizationsFlags pkgs.glibc (defaultOptimizeAttrs // { level = "slower"; recursive = 0; });
+              in pkgs.glibc.overrideAttrs (attrs: myLib.debug.traceValWithPrefix "optimizations (glibc)" {
+                passthru = pkgs.glibc.passthru;
+                env = (attrs.env or {}) // {
+                  NIX_CFLAGS_COMPILE = (attrs.env.NIX_CFLAGS_COMPILE or "") + (toString optimizedFlags.CFLAGS);
+                };
+              });
+            }
+          */
+          # zlib is in second place, given how often it is used
+          #{
+          #  original = pkgs.zlib;
+          #  replacement = optimizePkg { level = "slower"; } pkgs.zlib;
+          #}
+        ];
 
     nixpkgs.overlays = mkAfter [
       (self: super: {
-        veryFastStdenv = super.overrideCC super.gccStdenv (super.buildPackages.gcc_latest.overrideAttrs (old:
-          let
-            optimizedAttrs = {}
-              // {
+        veryFastStdenv = super.overrideCC super.gccStdenv (
+          super.buildPackages.gcc_latest.overrideAttrs (
+            old:
+            let
+              optimizedAttrs = { } // {
                 configureFlags = [
-                  "--with-cpu-64=${generalCfg.cpu.arch}" "--with-arch-64=${generalCfg.cpu.arch}"
+                  "--with-cpu-64=${generalCfg.cpu.arch}"
+                  "--with-arch-64=${generalCfg.cpu.arch}"
                   "--with-tune-64=${generalCfg.cpu.tune}"
                   "--with-build-config=bootstrap-lto-lean"
                 ];
-              }
-            ;
-            ccWithProfiling = old.cc.overrideAttrs (_: { buildFlags = [ "profiledbootstrap" ]; } );
-          in {
-            cc = addAttrs ccWithProfiling optimizedAttrs;
-          }
-        ));
+              };
+              ccWithProfiling = old.cc.overrideAttrs (_: {
+                buildFlags = [ "profiledbootstrap" ];
+              });
+            in
+            {
+              cc = addAttrs ccWithProfiling optimizedAttrs;
+            }
+          )
+        );
       })
-    
+
       (self: super: {
         #jetbrains = super.jetbrains // {
         #  jdk = pipe super.jetbrains.jdk [

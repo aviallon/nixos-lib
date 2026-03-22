@@ -1,9 +1,15 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.hardware.amd;
   generalCfg = config.aviallon.general;
-in {
+in
+{
   options.aviallon.hardware.amd = {
     enable = mkEnableOption "AMD gpus";
     useProprietary = mkEnableOption "Use proprietary AMDGPU Pro";
@@ -14,7 +20,12 @@ in {
     };
     kernelDriver = mkOption {
       description = "wether to use radeon or amdgpu kernel driver";
-      type = with types; enum [ "radeon" "amdgpu" ];
+      type =
+        with types;
+        enum [
+          "radeon"
+          "amdgpu"
+        ];
       default = "amdgpu";
     };
   };
@@ -25,7 +36,7 @@ in {
     ./radeon.nix
     ./rocm.nix
   ];
-  
+
   config = mkIf cfg.enable {
 
     aviallon.programs.nvtop = {

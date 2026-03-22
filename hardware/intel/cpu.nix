@@ -1,9 +1,15 @@
-{config, pkgs, lib, ...}:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   generalCfg = config.aviallon.general;
   throttledService = "throttled";
-in {
+in
+{
   config = mkIf (generalCfg.cpu.vendor == "intel") {
     aviallon.boot.cmdline = {
       "intel_pstate" = "passive";

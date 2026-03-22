@@ -19,33 +19,36 @@
   };
 
   outputs =
-    inputs@{ self
-    , nixpkgs
-    , nur
-    , nixpkgs-unstable
-    , fps
-    , suyu
-    , ...
-    }: let
+    inputs@{
+      self,
+      nixpkgs,
+      nur,
+      nixpkgs-unstable,
+      fps,
+      suyu,
+      ...
+    }:
+    let
       lib = nixpkgs.lib;
       myLib = import ./lib {
         inherit lib;
       };
-      mkPkgs = pkgs: { system ? system
-                     , config
-                     , overlays ? [ ]
-                     , ...
-                     }: import pkgs { inherit system config overlays; };
-    in {
+      mkPkgs =
+        pkgs:
+        {
+          system ? system,
+          config,
+          overlays ? [ ],
+          ...
+        }:
+        import pkgs { inherit system config overlays; };
+    in
+    {
       inherit self inputs myLib;
 
-      overlays.default = final: prev:
-        self.overlay
-          final
-          (nur.overlay final prev)
-        ;
+      overlays.default = final: prev: self.overlay final (nur.overlay final prev);
 
-      overlay = (final: prev: {});
+      overlay = (final: prev: { });
 
       nixosModules = rec {
         aviallon = import ./default.nix;
@@ -54,6 +57,8 @@
 
       nixpkgsConfig = self.nixosModules.aviallon.aviallon.programs.config;
 
-      specialArgs = inputs // { inherit myLib; };
+      specialArgs = inputs // {
+        inherit myLib;
+      };
     };
 }

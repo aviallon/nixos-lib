@@ -1,13 +1,22 @@
-{config, pkgs, lib, ...}:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.hardware.nvidia;
-in {
+in
+{
 
   imports = [
     ./proprietary.nix
     ./opensource.nix
-    ( mkRenamedOptionModule [ "aviallon" "hardware" "nvidia" "saveAllVram" ] [ "aviallon" "hardware" "nvidia" "proprietary" "saveAllVram" ] )
+    (mkRenamedOptionModule
+      [ "aviallon" "hardware" "nvidia" "saveAllVram" ]
+      [ "aviallon" "hardware" "nvidia" "proprietary" "saveAllVram" ]
+    )
   ];
 
   options.aviallon.hardware.nvidia = {
@@ -16,7 +25,13 @@ in {
       default = (cfg.variant == "proprietary");
     };
     variant = mkOption {
-      type = with types; enum [ "proprietary" "open" "nouveau" ];
+      type =
+        with types;
+        enum [
+          "proprietary"
+          "open"
+          "nouveau"
+        ];
       description = "What driver variant to use";
       default = "proprietary";
       example = "nouveau";
@@ -28,7 +43,7 @@ in {
       enable = true;
     };
 
-    aviallon.hardware.nvidia.useProprietary = mkForce ( cfg.variant == "proprietary" );
+    aviallon.hardware.nvidia.useProprietary = mkForce (cfg.variant == "proprietary");
   };
 
 }

@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.hardware.amd;
@@ -22,25 +27,31 @@ let
     gxf1036 = "10.3.0";
   };
 
-  /*autoDetectGPU = pkgs: pkgs.callPackage (
-    { runCommandLocal,
-      gnugrep,
-      rocmPackages,
-    }: runCommandLocal "hsa-version" { nativeBuildInputs = [ gnugrep rocmPackages.rocminfo ]; } ''
-        set +e
-        mkdir -p $out/
-        echo "Computing HSA version" &>/dev/stderr
-        ls -l /dev/kfd
-        rocminfo &>/dev/stderr
-        rocminfo | grep --only-matching --perl-regexp '^\s*Name:\s+\Kgfx[0-9a-f]+' | tee $out/output
-       ''
-  ) { };*/
+  /*
+    autoDetectGPU = pkgs: pkgs.callPackage (
+      { runCommandLocal,
+        gnugrep,
+        rocmPackages,
+      }: runCommandLocal "hsa-version" { nativeBuildInputs = [ gnugrep rocmPackages.rocminfo ]; } ''
+          set +e
+          mkdir -p $out/
+          echo "Computing HSA version" &>/dev/stderr
+          ls -l /dev/kfd
+          rocminfo &>/dev/stderr
+          rocminfo | grep --only-matching --perl-regexp '^\s*Name:\s+\Kgfx[0-9a-f]+' | tee $out/output
+         ''
+    ) { };
+  */
 
-  gfxToCompatible = gfxISA: if (hasAttr gfxISA gfxToCompatibleMap) then (getAttr gfxISA gfxToCompatibleMap) else "";
-in {
+  gfxToCompatible =
+    gfxISA: if (hasAttr gfxISA gfxToCompatibleMap) then (getAttr gfxISA gfxToCompatibleMap) else "";
+in
+{
 
   options.aviallon.hardware.amd.rocm = {
-    enable = (mkEnableOption "ROCm configuration") // { default = true; };
+    enable = (mkEnableOption "ROCm configuration") // {
+      default = true;
+    };
     gfxISA = mkOption {
       description = "What is the GFX ISA of your system. Leave blank if you have several GPUs of incompatible ISAs";
       default = "";
@@ -49,47 +60,55 @@ in {
     };
     gpuTargets = mkOption {
       description = "Override supported GPU ISAs in some ROCm packages.";
-      default = [ "803"
-                "900"
-                "906:xnack-"
-                "908:xnack-"
-                "90a:xnack+" "90a:xnack-"
-                "940"
-                "941"
-                "942"
-                "1010"
-                "1012"
-                "1030"
-                "1031"
-                "1100"
-                "1101"
-                "1102" ];
-      example = [ "900" "1031" ];
+      default = [
+        "803"
+        "900"
+        "906:xnack-"
+        "908:xnack-"
+        "90a:xnack+"
+        "90a:xnack-"
+        "940"
+        "941"
+        "942"
+        "1010"
+        "1012"
+        "1030"
+        "1031"
+        "1100"
+        "1101"
+        "1102"
+      ];
+      example = [
+        "900"
+        "1031"
+      ];
       type = with types; nullOr (listOf str);
     };
   };
 
-  config = mkIf (cfg.enable && localCfg.enable) {  
-    environment.systemPackages = with pkgs;
+  config = mkIf (cfg.enable && localCfg.enable) {
+    environment.systemPackages =
+      with pkgs;
       [
         rocmPackages.rocm-smi
         #rocmPackages.meta.rocm-ml-libraries
         #rocmPackages.meta.rocm-hip-runtime
 
         #pkgs.autoDetectGPU
-      ] ++ optionals devCfg.enable [
-        rocmPackages.rocminfo
       ]
-    ;
+      ++ optionals devCfg.enable [
+        rocmPackages.rocminfo
+      ];
 
     #systemd.tmpfiles.rules = [
     #  "L+    /opt/rocm/hip   -    -    -     -    ${pkgs.rocmPackages.meta.rocm-hip-runtime}"
-      #"L+    /tmp/hsa-version - - - - ${pkgs.autoDetectGPU}"
+    #"L+    /tmp/hsa-version - - - - ${pkgs.autoDetectGPU}"
     #];
 
     environment.variables = {
-      ROC_ENABLE_PRE_VEGA = "1"; # Enable OpenCL with Polaris GPUs  
-    } // (mkIf (gfxToCompatible cfg.rocm.gfxISA != "") {
+      ROC_ENABLE_PRE_VEGA = "1"; # Enable OpenCL with Polaris GPUs
+    }
+    // (mkIf (gfxToCompatible cfg.rocm.gfxISA != "") {
       HSA_OVERRIDE_GFX_VERSION = gfxToCompatible cfg.rocm.gfxISA;
     });
 
@@ -101,14 +120,19 @@ in {
     ];
 
     nix.settings.substituters = [ "https://nixos-rocm.cachix.org" ];
-    nix.settings.trusted-public-keys = [ "nixos-rocm.cachix.org-1:VEpsf7pRIijjd8csKjFNBGzkBqOmw8H9PRmgAq14LnE=" ];
+    nix.settings.trusted-public-keys = [
+      "nixos-rocm.cachix.org-1:VEpsf7pRIijjd8csKjFNBGzkBqOmw8H9PRmgAq14LnE="
+    ];
 
     nixpkgs.config.rocmSupport = true;
 
-    nixpkgs.overlays = mkIf (! isNull localCfg.gpuTargets) (mkBefore [(final: prev: {
+    nixpkgs.overlays = mkIf (!isNull localCfg.gpuTargets) (mkBefore [
+      (final: prev: {
         #rocmPackages_5 = final.rocmPackages;
         rocmPackages = prev.rocmPackages // {
-          clr = prev.rocmPackages.clr.override { localGpuTargets = lib.forEach localCfg.gpuTargets (target: "gfx${target}"); };
+          clr = prev.rocmPackages.clr.override {
+            localGpuTargets = lib.forEach localCfg.gpuTargets (target: "gfx${target}");
+          };
           rocdbgapi = prev.rocmPackages.rocdbgapi.override { buildDocs = false; };
           # (oldAttrs: {
           #  passthru = oldAttrs.passthru // {
@@ -122,6 +146,7 @@ in {
           #  gpuTargets = lib.forEach localCfg.gpuTargets (target: "gfx${target}");
           #};
         };
-    })]);
+      })
+    ]);
   };
 }

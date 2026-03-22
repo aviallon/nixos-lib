@@ -33,4 +33,3 @@ writeShellScriptBin "pinentry" ''
 
   exec ''${pinentryFlavors[$flavor]}/bin/pinentry
 ''
-

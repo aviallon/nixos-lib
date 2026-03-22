@@ -1,12 +1,13 @@
-{lib
-,bc
-,pciutils
-,gnugrep
-,coreutils
-,bash
-,writeText
-,stdenv
-,substituteAll
+{
+  lib,
+  bc,
+  pciutils,
+  gnugrep,
+  coreutils,
+  bash,
+  writeText,
+  stdenv,
+  substituteAll,
 }:
 with lib;
 stdenv.mkDerivation rec {
@@ -26,13 +27,23 @@ stdenv.mkDerivation rec {
     substituteAllInPlace $out/bin/aspm_enable;
   '';
 
-  buildInputs = [ pciutils bc coreutils gnugrep ];
+  buildInputs = [
+    pciutils
+    bc
+    coreutils
+    gnugrep
+  ];
 
   meta = {
     description = "A program to forcibly enable PCIe ASPM for compatible devices";
     homepage = "https://wireless.wiki.kernel.org/en/users/Documentation/ASPM";
     license = licenses.gpl3Plus;
-    patforms = [ "x86_64-linux" "i686-linux" "aarch64-linux" "mipsel-linux" ];
+    patforms = [
+      "x86_64-linux"
+      "i686-linux"
+      "aarch64-linux"
+      "mipsel-linux"
+    ];
     maintainers = with maintainers; [ ];
   };
 }

@@ -1,8 +1,14 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.security.encryption;
-in {
+in
+{
   options.aviallon.security.encryption = {
     enable = mkEnableOption "encryption-related tools and programs";
     cryptsetup.package = mkOption {
@@ -24,7 +30,7 @@ in {
     };
 
     boot.initrd.systemd.enable = mkOverride 10 true;
-    
+
     boot.initrd.availableKernelModules = [ "cryptd" ];
     boot.initrd.kernelModules = [ "jitterentropy_rng" ];
   };

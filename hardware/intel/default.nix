@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.hardware.intel;
@@ -15,17 +20,19 @@ in
   imports = [
     ./cpu.nix
   ];
-  
+
   config = mkIf cfg.enable {
     aviallon.programs.nvtop = {
       enable = true;
       backend = [ "intel" ];
     };
-  
+
     boot.initrd.kernelModules = [ "i915" ];
     hardware.graphics = {
       enable = true;
-      extraPackages = with pkgs; []
+      extraPackages =
+        with pkgs;
+        [ ]
         ++ [
           vaapiVdpau
           libvdpau-va-gl
@@ -38,24 +45,25 @@ in
       ;
     };
 
-    aviallon.boot.cmdline = {}
-    // optionalAttrs generalCfg.unsafeOptimizations {
-      "i915.mitigations" = "off";
-      "i915.enable_fbc" = 1;
-    }
-    // optionalAttrs laptopCfg.enable {
-      "i915.enable_fbc" = 1;
-      "i915.enable_dc" = 4;
-    }
-    // optionalAttrs (generalCfg.unsafeOptimizations && laptopCfg.enable) {
-      "i915.enable_psr" = 1;
-    }
-    // optionalAttrs devCfg.enable {
-      "i915.enable_gvt" = 1;
-    }
-    // {
-      "i915.fastboot" = 1;
-    };
+    aviallon.boot.cmdline =
+      { }
+      // optionalAttrs generalCfg.unsafeOptimizations {
+        "i915.mitigations" = "off";
+        "i915.enable_fbc" = 1;
+      }
+      // optionalAttrs laptopCfg.enable {
+        "i915.enable_fbc" = 1;
+        "i915.enable_dc" = 4;
+      }
+      // optionalAttrs (generalCfg.unsafeOptimizations && laptopCfg.enable) {
+        "i915.enable_psr" = 1;
+      }
+      // optionalAttrs devCfg.enable {
+        "i915.enable_gvt" = 1;
+      }
+      // {
+        "i915.fastboot" = 1;
+      };
     aviallon.hardware.mesa.enable = mkDefault true;
   };
 }

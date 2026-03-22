@@ -1,4 +1,10 @@
-{ config, pkgs, lib, options, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  options,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.hardware.mesa;
@@ -7,13 +13,18 @@ let
   optimizationsCfg = config.aviallon.optimizations;
   optimizePkg = optimizationsCfg.optimizePkg;
   packageWithDefaults = types.package // {
-    merge = loc: defs:
-      let res = mergeDefaultOption loc defs;
-      in if builtins.isPath res || (builtins.isString res && ! builtins.hasContext res)
-        then toDerivation res
-        else res;
+    merge =
+      loc: defs:
+      let
+        res = mergeDefaultOption loc defs;
+      in
+      if builtins.isPath res || (builtins.isString res && !builtins.hasContext res) then
+        toDerivation res
+      else
+        res;
   };
-in {
+in
+{
   options.aviallon.hardware.mesa = {
     enable = mkOption {
       default = false;
@@ -50,7 +61,7 @@ in {
       type = packageWithDefaults;
       default = cfg.package;
     };
-    
+
     internal.package32 = mkOption {
       internal = true;
       type = packageWithDefaults;
@@ -65,10 +76,8 @@ in {
     aviallon.hardware.mesa.package32 = mkIf cfg.unstable pkgs.unstable.driversi686Linux.mesa;
 
     aviallon.hardware.mesa.internal = mkIf cfg.optimized {
-      package = mkDefault (
-        optimizePkg { lto = false; } cfg.package);
-      package32 = mkDefault (
-        optimizePkg { lto = false; } cfg.package32);
+      package = mkDefault (optimizePkg { lto = false; } cfg.package);
+      package32 = mkDefault (optimizePkg { lto = false; } cfg.package32);
     };
 
     hardware.graphics = {

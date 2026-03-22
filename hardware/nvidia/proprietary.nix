@@ -1,4 +1,11 @@
-{ config, pkgs, lib, options, nixpkgs-unstable, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  options,
+  nixpkgs-unstable,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.hardware.nvidia;
@@ -9,9 +16,14 @@ let
     exec ${options.programs.xwayland.package.default}/bin/xwayland -eglstream "$@"
   '';
 
-  nvidiaUnstable = config.boot.kernelPackages.callPackage (nixpkgs-unstable + /pkgs/os-specific/linux/nvidia-x11/default.nix) {};
-  cudaUnstable = pkgs: cudaVersion: pkgs.callPackages (nixpkgs-unstable + /pkgs/top-level/cuda-packages.nix) { inherit cudaVersion; };
-in {
+  nvidiaUnstable = config.boot.kernelPackages.callPackage (
+    nixpkgs-unstable + /pkgs/os-specific/linux/nvidia-x11/default.nix
+  ) { };
+  cudaUnstable =
+    pkgs: cudaVersion:
+    pkgs.callPackages (nixpkgs-unstable + /pkgs/top-level/cuda-packages.nix) { inherit cudaVersion; };
+in
+{
   options = {
     aviallon.hardware.nvidia.proprietary = {
       gsync = mkEnableOption "Screen is GSYNC monitor";
@@ -39,7 +51,12 @@ in {
       saveAllVram = mkEnableOption "back up all VRAM in /var/tmp before going to sleep. May reduce artifacts after resuming";
       version = mkOption {
         description = "What Nvidia version variant to use";
-        type = types.enum [ "production" "stable" "beta" "unstable_beta" ];
+        type = types.enum [
+          "production"
+          "stable"
+          "beta"
+          "unstable_beta"
+        ];
         default = if generalCfg.unsafeOptimizations then "beta" else "stable";
         example = "unstable_beta";
       };
@@ -49,16 +66,21 @@ in {
         # Very useful resource.
         # https://forums.developer.nvidia.com/t/power-mizer-difference-between-powermizerdefault-and-powermizerlevel/46884/3
         example = [ "PerfLevelSrc=0x2222" ];
-        default = [ "PowerMizerEnable=0x1" "OverrideMaxPerf=0x1" "PowerMizerDefault=0x3" "PowerMizerDefaultAC=0x3" ];
+        default = [
+          "PowerMizerEnable=0x1"
+          "OverrideMaxPerf=0x1"
+          "PowerMizerDefault=0x3"
+          "PowerMizerDefaultAC=0x3"
+        ];
         type = with types; listOf str;
       };
     };
   };
-  
+
   config = mkIf (cfg.enable && cfg.variant == "proprietary") {
 
-    assertions = [];
-  
+    assertions = [ ];
+
     boot.initrd.kernelModules = [
       "nvidia"
       "nvidia_drm"
@@ -71,13 +93,15 @@ in {
     ];
 
     services.xserver.screenSection = ''
-    Option "Coolbits" "${toString cfg.proprietary.coolbits}"
-    Option "InbandStereoSignaling" "true"
+      Option "Coolbits" "${toString cfg.proprietary.coolbits}"
+      Option "InbandStereoSignaling" "true"
     '';
 
     services.xserver.exportConfiguration = true;
 
-    services.xserver.displayManager.sddm.wayland.enable = mkIf (!config.aviallon.hardware.intel.enable) (mkDefault false); # Frequent issues with Nvidia GPUs
+    services.xserver.displayManager.sddm.wayland.enable = mkIf (
+      !config.aviallon.hardware.intel.enable
+    ) (mkDefault false); # Frequent issues with Nvidia GPUs
 
     # Fix hybrid sleep with Nvidia GPU
     systemd.services.nvidia-suspend = {
@@ -85,18 +109,19 @@ in {
       before = [ "systemd-hybrid-sleep.service" ];
     };
     hardware.nvidia = {
-      powerManagement = mkIf (config.hardware.nvidia.prime.offload.enable || cfg.proprietary.saveAllVram) {
-        enable = true;
-        finegrained = mkIf config.hardware.nvidia.prime.offload.enable true;
-      };
+      powerManagement =
+        mkIf (config.hardware.nvidia.prime.offload.enable || cfg.proprietary.saveAllVram)
+          {
+            enable = true;
+            finegrained = mkIf config.hardware.nvidia.prime.offload.enable true;
+          };
       modesetting.enable = true;
       nvidiaSettings = true;
       package =
         if cfg.proprietary.version == "unstable_beta" then
           nvidiaUnstable.beta # Use bleeding edge version
         else
-          config.boot.kernelPackages.nvidiaPackages.${cfg.proprietary.version}
-        ;
+          config.boot.kernelPackages.nvidiaPackages.${cfg.proprietary.version};
     };
 
     aviallon.hardware.nvidia.proprietary.EGLStream = mkDefault (
@@ -108,7 +133,8 @@ in {
     boot.extraModprobeConfig = ''
       options nvidia NVreg_RegistryDwords="${concatStringsSep ";" cfg.proprietary.registryDwords}"
     '';
-    aviallon.boot.cmdline = {}
+    aviallon.boot.cmdline =
+      { }
       // {
         "nvidia-drm.modeset" = 1;
         "nvidia-drm.fbdev" = 1;
@@ -120,14 +146,13 @@ in {
         "nvidia.NVreg_DynamicPowerManagement" = "0x02";
         "nvidia.NVreg_EnableS0ixPowerManagement" = 1;
         "nvidia.NVreg_TemporaryFilePath" = "/var/tmp";
-      }
-    ;
+      };
 
     programs.xwayland.package = mkIf cfg.proprietary.EGLStream xwaylandEGLStream;
     aviallon.programs.allowUnfreeList = [
       "nvidia-x11"
       "nvidia-settings"
-      
+
       "cudatoolkit"
       "cuda_cccl"
       "libnpp"
@@ -157,13 +182,12 @@ in {
       "__GL_YIELD" = "USLEEP"; # use usleep(0) instead of sched_yield() -> better performance in most cases
       "__GL_ALLOW_UNOFFICIAL_PROTOCOL" = "1"; # allow unofficial GLX protocol if also set in Xorg conf
       "__GL_VRR_ALLOWED" = "1"; # Try to enable G-SYNC VRR if screen AND app is compatible
-      "__GL_SYNC_TO_VBLANK" = mkIf (!cfg.proprietary.vsync) (toValue cfg.proprietary.vsync); 
+      "__GL_SYNC_TO_VBLANK" = mkIf (!cfg.proprietary.vsync) (toValue cfg.proprietary.vsync);
 
       # Causes Kwin to fail
       # https://github.com/ValveSoftware/gamescope/issues/526#issuecomment-1733739097
       # "__GL_THREADED_OPTIMIZATIONS" = toValue generalCfg.unsafeOptimizations;
       "KWIN_DRM_USE_EGL_STREAMS" = toValue cfg.proprietary.EGLStream; # Make KWin use EGL Streams if needed, because otherwise performance will be horrible.
-
 
       # Undocumented, fix for EGL not being found by Nvidia driver: https://github.com/NVIDIA/egl-wayland/issues/39#issuecomment-927288015
       __EGL_EXTERNAL_PLATFORM_CONFIG_DIRS = "/run/opengl-driver/share/egl/egl_external_platform.d";
@@ -176,15 +200,19 @@ in {
     };
 
     nix.settings.substituters = [ "https://cuda-maintainers.cachix.org" ];
-    nix.settings.trusted-public-keys = [ "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E=" ];
+    nix.settings.trusted-public-keys = [
+      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
+    ];
 
-    nixpkgs.overlays = []
-      ++ optional (cfg.proprietary.version == "unstable_beta") (final: prev: {
-        cudaPackages_11 = final.unstable.cudaPackages_11;
-        cudaPackages_12 = final.unstable.cudaPackages_12;
-        cudaPackages = final.unstable.cudaPackages;
+    nixpkgs.overlays =
+      [ ]
+      ++ optional (cfg.proprietary.version == "unstable_beta") (
+        final: prev: {
+          cudaPackages_11 = final.unstable.cudaPackages_11;
+          cudaPackages_12 = final.unstable.cudaPackages_12;
+          cudaPackages = final.unstable.cudaPackages;
 
-      })
-    ;
+        }
+      );
   };
 }

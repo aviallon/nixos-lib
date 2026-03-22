@@ -1,17 +1,27 @@
-{config, pkgs, lib, ...}:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
-  genPrefList = {locked ? false}: prefs:
+  genPrefList =
+    {
+      locked ? false,
+    }:
+    prefs:
     let
       prefFuncName = if locked then "lockPref" else "defaultPref";
     in
     concatStringsSep "\n" (
-      mapAttrsToList
-        (key: value: ''${prefFuncName}(${builtins.toJSON key}, ${builtins.toJSON value});'' )
-        prefs
-      );
+      mapAttrsToList (
+        key: value: ''${prefFuncName}(${builtins.toJSON key}, ${builtins.toJSON value});''
+      ) prefs
+    );
   cfg = config.programs.firefox;
-in {
+in
+{
   config = mkIf cfg.enable {
     programs.firefox.wrapperConfig = {
       smartcardSupport = true;
@@ -60,7 +70,7 @@ in {
         Install = [
           "uBlock0@raymondhill.net"
           "magnolia@12.34"
-        ];             
+        ];
       };
       ExtensionSettings = {
         "uBlock0@raymondhill.net" = {
@@ -126,8 +136,9 @@ in {
 
       #"privacy.trackingprotection.origin_telemetry.enabled" = false;
 
-    } // {
-      "intl.accept_languages" =	"fr-fr,en-us,en";
+    }
+    // {
+      "intl.accept_languages" = "fr-fr,en-us,en";
       "intl.locale.requested" = "fr,en-US";
       "media.eme.enabled" = true; # DRM
       "general.autoScroll" = true; # Middleclick scrolling

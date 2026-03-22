@@ -1,12 +1,19 @@
-{ config, pkgs, lib, myLib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  myLib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.filesystems.btrfs;
   #fsCfg = config.fileSystems;
   btrfsPaths = [ "/" ];
-#  btrfsPaths = filterAttrs (n: v: v.fsType == "btrfs") fsCfg;
+  #  btrfsPaths = filterAttrs (n: v: v.fsType == "btrfs") fsCfg;
   generalCfg = config.aviallon.general;
-in {
+in
+{
   options.aviallon.filesystems.btrfs = {
     enable = mkEnableOption "BTRFS support";
     autoScrub = {
@@ -57,11 +64,11 @@ in {
     };
     systemd.services.duperemove = {
       script = ''
-      mkdir -p $DATA_DIR
-      exec ${pkgs.duperemove}/bin/duperemove \
-        --io-threads=${toString cfg.autoDedup.ioThreads} --cpu-threads=${toString cfg.autoDedup.cpuThreads} \
-        --dedupe-options=same \
-        --hashfile=$DATA_DIR/hashes.db -h -v -rd "$@"
+        mkdir -p $DATA_DIR
+        exec ${pkgs.duperemove}/bin/duperemove \
+          --io-threads=${toString cfg.autoDedup.ioThreads} --cpu-threads=${toString cfg.autoDedup.cpuThreads} \
+          --dedupe-options=same \
+          --hashfile=$DATA_DIR/hashes.db -h -v -rd "$@"
       '';
       scriptArgs = concatStringsSep " " cfg.autoDedup.paths;
       # %S : state

@@ -1,11 +1,17 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 with lib;
 let
   cfg = config.aviallon.hardware.amd;
   devCfg = config.aviallon.developer;
   generalCfg = config.aviallon.general;
-in {
-  config = mkIf (cfg.enable && cfg.kernelDriver == "amdgpu") {  
+in
+{
+  config = mkIf (cfg.enable && cfg.kernelDriver == "amdgpu") {
     boot.initrd.kernelModules = [ "amdgpu" ];
 
     hardware.amdgpu.legacySupport.enable = true;
@@ -22,9 +28,7 @@ in {
       SUBSYSTEM=="pci", DRIVER=="amdgpu", ATTR{power_dpm_force_performance_level}="auto"
     '';
 
-    services.xserver.videoDrivers = 
-      optional cfg.useProprietary "amdgpu-pro"
-      ++ [ "modesetting" ];
+    services.xserver.videoDrivers = optional cfg.useProprietary "amdgpu-pro" ++ [ "modesetting" ];
 
     hardware.amdgpu.opencl.enable = true;
 
