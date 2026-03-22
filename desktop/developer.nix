@@ -74,7 +74,7 @@ in
       gnumake
       cmake
 
-      linux-manual
+      #linux-manual # Broken as of 2026-03-22
       man-pages
       man-pages-posix
 
