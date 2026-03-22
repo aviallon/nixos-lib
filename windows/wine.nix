@@ -14,7 +14,7 @@ in
     package = mkOption {
       description = "Wine package to use";
       type = types.package;
-      default = pkgs.wineWowPackages.waylandFull;
+      default = pkgs.wineWow64Packages.waylandFull;
       example = pkgs.winePackages.stable;
     };
   };
