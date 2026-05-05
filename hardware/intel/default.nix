@@ -34,14 +34,14 @@ in
         with pkgs;
         [ ]
         ++ [
-          vaapiVdpau
+          libva-vdpau-driver
           libvdpau-va-gl
 
           intel-graphics-compiler
           intel-compute-runtime
         ]
         ++ optional cfg.iHD intel-media-driver # LIBVA_DRIVER_NAME=iHD
-        ++ optional (!cfg.iHD) vaapiIntel # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
+        ++ optional (!cfg.iHD) intel-vaapi-driver # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
       ;
     };
 
