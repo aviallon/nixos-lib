@@ -92,6 +92,19 @@ in
       };
     };
 
+    systemd.services.nix-delete-generations = mkIf (config.aviallon.boot.configurationLimit != null) {
+      script = ''
+        nix-env --delete-generations +${toString config.aviallon.boot.configurationLimit} --profile /nix/var/nix/profiles/system
+      '';
+      path = [ config.nix.package ];
+      restartIfChanged = false;
+      reloadIfChanged = false;
+      startAt = "Sun 03:00:00";
+      enableStrictShellChecks = true;
+      after = [ "multi-user.target" "nix-daemon.socket" ];
+      wants = [ "multi-user.target" "nix-daemon.socket" ];
+    };
+
     nix.package = optimizePkg {
       stdenv = pkgs.fastStdenv;
       level = "slower";
