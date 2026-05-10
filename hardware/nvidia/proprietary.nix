@@ -99,9 +99,7 @@ in
 
     services.xserver.exportConfiguration = true;
 
-    services.xserver.displayManager.sddm.wayland.enable = mkIf (
-      !config.aviallon.hardware.intel.enable
-    ) (mkDefault false); # Frequent issues with Nvidia GPUs
+    services.displayManager.sddm.wayland.enable = mkIf (!config.aviallon.hardware.intel.enable) (mkDefault false); # Frequent issues with Nvidia GPUs
 
     # Fix hybrid sleep with Nvidia GPU
     systemd.services.nvidia-suspend = {
