@@ -59,7 +59,7 @@ in
         gamescope
         mangohud
         lutris
-        bottles
+        #bottles
       ]
       ++ optionals cfg.gaming.emulation [
         (optimizePkg {
