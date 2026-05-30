@@ -55,9 +55,9 @@ in
       git-crypt # Encrypted files support in Git repositories
 
       # Language Servers
-      nodePackages.yaml-language-server # Yaml
-      nodePackages.bash-language-server # Bash
-      nodePackages.intelephense # PHP
+      yaml-language-server # Yaml
+      bash-language-server # Bash
+      intelephense # PHP
       gopls # Go
       ccls # C/C++
       lua-language-server # Lua
