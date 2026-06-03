@@ -94,10 +94,28 @@ in
 
     users.groups.gamers = { };
 
-    programs.steam.enable = !generalCfg.minimal;
     hardware.steam-hardware.enable = !generalCfg.minimal;
-    programs.steam.remotePlay.openFirewall = true;
-    programs.steam.localNetworkGameTransfers.openFirewall = true;
+    
+    programs.steam = {
+      enable = !generalCfg.minimal;
+      extraPackages = with pkgs; [ config.programs.gamescope.package ];
+      extest.enable = true;
+      localNetworkGameTransfers.openFirewall = true;
+      remotePlay.openFirewall = true;
+      protontricks.enable = true;
+    };
+
+
+    # Workaround for https://github.com/NixOS/nixpkgs/issues/523200
+    security.wrappers.bwrap = lib.mkForce {
+      source = "${pkgs.bubblewrap}/bin/bwrap";
+      owner = "root";
+      group = "root";
+      setuid = false;
+      setgid = false;
+    };
+
+
     environment.variables = {
       "__GL_SHADER_DISK_CACHE" = "true";
       "__GL_SHADER_DISK_CACHE_SIZE" = "${toString (50 * 1000)}";
@@ -115,14 +133,6 @@ in
     hardware.graphics.extraPackages = [ pkgs.gamescope-wsi ];
     hardware.graphics.extraPackages32 = [ pkgs.pkgsi686Linux.gamescope-wsi ];
 
-    programs.steam.package = pkgs.steam.override {
-      extraPkgs = pkgs: [
-        config.programs.gamescope.package
-      ];
-      #extraLibraries = pkgs: [
-      #  config.programs.gamescope.package.override { enableExecutable = false; enableWsi = true; }
-      #];
-    };
 
     aviallon.programs.allowUnfreeList = [
       "steam"
