@@ -167,6 +167,7 @@ in
           })
           // {
             enable = cfg.audio.noise-filter.strength > 0.0;
+            environment.LADSPA_PATH = "${pkgs.rnnoise-plugin}/lib/ladspa";
           }
         );
         pipewire-airplay-sink = mkIf cfg.audio.airplay.enable (mkPipewireModule {
