@@ -24,7 +24,7 @@ in
       "cimiefiiaegbelhefglklhhakcgmhkai" # Plasma Browser Integration
     ];
 
-    aviallon.desktop.sddm.enable = true;
+    aviallon.desktop.plasma-login-manager.enable = true;
     aviallon.programs.libreoffice.qt = true;
 
     xdg.portal.enable = mkDefault true;

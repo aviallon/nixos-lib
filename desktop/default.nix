@@ -17,5 +17,6 @@ with lib;
     ./printing.nix
     ./flatpak.nix
     ./sddm.nix
+    ./plasma-login-manager.nix
   ];
 }

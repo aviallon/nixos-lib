@@ -10,23 +10,15 @@ let
   sddmCfg = config.services.displayManager.sddm;
 in
 {
-  options.aviallon.desktop.sddm.unstable = mkEnableOption "bleeding-edge SDDM";
-  options.aviallon.desktop.sddm.enable = mkEnableOption "custom SDDM configuration";
+  options.aviallon.desktop.plasma-login-manager.enable = mkEnableOption "custom Plasma configuration";
 
-  config = mkIf cfg.sddm.enable {
-
-    # Prevents blinking cursor
-    services.displayManager.sddm = {
+  config = {
+    services.displayManager.plasma-login-manager = {
       enable = mkOverride 20 true;
-      wayland.enable = mkDefault true;
-      wayland.compositor = "kwin";
-      settings = {
-        Theme = {
-          CursorTheme = "breeze_cursors";
-        };
-      };
+      settings = { };
     };
 
+    # Prevents blinking cursor
     systemd.services.display-manager = {
       serviceConfig = {
         Restart = mkOverride 50 "on-failure";
@@ -40,5 +32,6 @@ in
         "getty@tty1.service"
       ];
     };
+
   };
 }
