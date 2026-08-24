@@ -63,7 +63,7 @@ in
       lua-language-server # Lua
       nil # Nix
 
-      nixfmt-rfc-style
+      nixfmt
 
       (hiPrio clinfo) # hiPrio to override HIP's clinfo
       binutils
