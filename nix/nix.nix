@@ -105,10 +105,10 @@ in
       wants = [ "multi-user.target" "nix-daemon.socket" ];
     };
 
-    nix.package = optimizePkg {
+    nix.package = mkDefault (optimizePkg {
       stdenv = pkgs.fastStdenv;
       level = "slower";
-    } pkgs.nixVersions.latest;
+    } pkgs.nixVersions.latest);
 
     nix.settings.system-features = [
       "big-parallel"
