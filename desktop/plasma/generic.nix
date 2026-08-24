@@ -11,6 +11,7 @@
     calendarsupport
 
     korganizer
+    merkuro # Merkuro is a application suite designed to make handling your emails, calendars, contacts, and tasks simple. (https://invent.kde.org/pim/merkuro)
     dolphin
     konsole
     kate
@@ -21,5 +22,6 @@
     krdc
     sddm-kcm
     filelight
+    qrca # Barcode scanner used for scanning WiFi QR codes, among others
   ];
 }
