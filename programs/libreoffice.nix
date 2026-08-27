@@ -18,10 +18,11 @@ in
       type =
         with types;
         types.enum [
-          "still"
-          "fresh"
+          "stable"
+          "collabora"
+          "collabora-coda"
         ];
-      default = "fresh";
+      default = "stable";
       description = "Which LibreOffice variant to use";
     };
     qt = mkEnableOption "Qt support";
@@ -31,7 +32,6 @@ in
       type = types.bool;
       internal = true;
     };
-    opencl = mkEnableOption "OpenCL support";
     package = mkOption {
       description = "Which final LibreOffice package to use";
       type = myLib.types.package';
@@ -39,7 +39,7 @@ in
     package' = mkOption {
       internal = true;
       description = "Which base (unwrapped) LibreOffice package to use";
-      default = if cfg.qt then pkgs.libreoffice-qt.unwrapped else pkgs.libreoffice.unwrapped;
+      default = if cfg.qt then pkgs.libreoffice-qt-unwrapped else pkgs.libreoffice-unwrapped;
       type = myLib.types.package';
     };
   };
@@ -48,25 +48,15 @@ in
     aviallon.programs.libreoffice.package =
       let
         overridesList =
-          [ ]
-          ++ [
+          [
             (
-              pkg:
-              pkg.override {
-                variant = cfg.variant;
-              }
+              pkg: pkg.override { variant = cfg.variant; }
             )
-          ]
-          ++ optional cfg.opencl (
-            pkg:
-            pkg.overrideAttrs (old: {
+            (pkg: pkg.overrideAttrs (old: {
               buildInputs = old.buildInputs ++ [ pkgs.ocl-icd ];
-            })
-          );
-      in
-      pkgs.libreoffice.override {
-        unwrapped = applyOverrides overridesList cfg.package';
-      };
+            }))
+          ];
+      in pkgs.libreoffice.override { unwrapped = applyOverrides overridesList cfg.package'; };
 
     environment.systemPackages = [
       cfg.package
