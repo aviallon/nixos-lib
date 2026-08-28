@@ -425,57 +425,27 @@ in
           enable = cfg.efi && (!cfg.useGrub);
           configurationLimit = cfg.configurationLimit;
           consoleMode = mkDefault "max";
+          bootCounting.enable = true;
           extraInstallCommands =
             let
               efiDir = config.boot.loader.efi.efiSysMountPoint;
             in
             ''
-              export PATH="$PATH:${getBin pkgs.coreutils-full}/bin:${getBin pkgs.gnused}/bin"
-              rpath=
-              generation=
-              specialization=
-              boot_generation_path=$(realpath /run/booted-system)  
-              for path in /nix/var/nix/profiles/system-*-link; do
-                rpath=$(realpath "$path")
-                ok=false
-                if [ "$rpath" = "$boot_generation_path" ]; then
-                  echo "Good path: $path"
-                  ok=true
-                fi
-                for spec in "$path"/specialisation/*; do
-                  if [ "$(realpath $spec)" = "$boot_generation_path" ]; then
-                    ok=true
-                    specialization="$spec"
-                    echo "Good specialization: $specialization"
-                    break
-                  fi
-                done
-                if $ok; then
-                  generation="''${path##*/system-}"
-                  generation="''${generation%%-link}"
+              export PATH="$PATH:${getBin pkgs.coreutils-full}/bin:${getBin pkgs.gnugrep}/bin:${getBin pkgs.gnused}/bin"
+              boot_generation_path=$(realpath /run/booted-system)
+              loader_entry=""
+              for entry in "${efiDir}"/loader/entries/nixos-*.conf; do
+                if grep -qF "init=''${boot_generation_path}/init" "$entry"; then
+                  loader_entry="$entry"
                   break
                 fi
               done
-              if [ -z "$generation" ]; then
-                echo "Failed to find current boot's generation!"
-                exit 1
+              if [ -z "$loader_entry" ]; then
+                echo "WARNING: failed to find boot entry for booted system ''${boot_generation_path}"
+              else
+                sed -i 's/version /version <LAST> /' "$loader_entry"
+                echo "Marked ''${loader_entry} as last successfully booted"
               fi
-
-              loader_entry="${efiDir}/loader/entries/nixos-generation-''${generation}.conf"
-              if ! [ -z "$specialization" ]; then
-                specialization_name=$(basename -- "$specialization")
-                echo "Specialization is: $specialization_name"
-                loader_entry="${efiDir}/loader/entries/nixos-generation-''${generation}-specialisation-''${specialization_name}.conf"
-              fi
-
-              if ! [ -f "$loader_entry" ]; then
-                echo "Failed to find corresponding loader generation entry:" ''${loader_entry} "not found"
-                echo -e "\e[33mWARNING:\e[0m This may mean that your aviallon.boot.configurationLimit is set too low!"
-                exit 1
-              fi
-
-              sed -i 's/version /version <LAST> /' "$loader_entry" &&
-              echo "Marked generation $generation as last sucessfully booted"
             '';
         };
 
