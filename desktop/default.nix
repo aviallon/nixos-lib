@@ -16,6 +16,7 @@ with lib;
     ./gnome.nix
     ./printing.nix
     ./flatpak.nix
+    ./flatpak-host-gl.nix
     ./sddm.nix
     ./plasma-login-manager.nix
   ];
