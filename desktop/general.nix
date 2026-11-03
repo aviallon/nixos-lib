@@ -151,16 +151,23 @@ in
 
       hardware.graphics.enable32Bit = mkDefault cfg.gaming.enable;
 
+      # Desktop apps delivered by Flathub now (see ./flatpak.nix).
+      # veracrypt stays commented below: no Flathub entry, not installed for now.
+      aviallon.flatpak.packages = [
+        { id = "org.telegram.desktop"; }
+        { id = "org.videolan.VLC"; }
+        { id = "com.spotify.Client"; }
+        { id = "org.signal.Signal"; }
+      ];
+
       environment.systemPackages = with pkgs; [
         mesa-demos
         vdpauinfo
         libva-utils
-        spotify
+        # spotify
         nextcloud-client
-        unstable.telegram-desktop
-        signal-desktop
-        vlc
-        veracrypt
+        # signal-desktop
+        # veracrypt
 
         # Clipboard support on Wayland
         wl-clipboard
