@@ -42,7 +42,12 @@ let
   globalOverride = cfg.overrides.global or { };
   effectiveOverrides = cfg.overrides // {
     global = globalOverride // {
-      filesystems = [ "/usr/share/icons:ro" ] ++ (globalOverride.filesystems or [ ]);
+      # `/usr/share/icons` is rejected by flatpak ("Path \"/usr\" is reserved"),
+      # so use the stable NixOS profile path, plus the legacy user icon dir.
+      filesystems = [
+        "/run/current-system/sw/share/icons:ro"
+        "~/.icons:ro"
+      ] ++ (globalOverride.filesystems or [ ]);
     };
   };
 
@@ -222,12 +227,13 @@ in
         Per-app sandbox permissions, written to
         `/var/lib/flatpak/overrides/<id>` (`global` is just another key; a
         `global` entry always also grants read access to
-        `/usr/share/icons`).
+        `/run/current-system/sw/share/icons` and `~/.icons`).
 
-        The file is a symlink to the store (`L+`), so a manual
-        `flatpak override --system` is reverted by the next
-        `nixos-rebuild switch`. Effective order: system global -> system app
-        -> user global -> user app, so a user override still wins.
+        The file is a symlink to the store (`L+`): it is (re)applied at boot
+        and whenever this declaration changes, so a manual
+        `flatpak override --system` does not survive those. Effective order:
+        system global -> system app -> user global -> user app, so a user
+        override still wins at run time.
       '';
     };
 
@@ -315,17 +321,5 @@ in
       name = "/var/lib/flatpak/overrides/${id}";
       value."L+".argument = toString (pkgs.writeText "flatpak-override-${id}" (overrideIni ctx));
     }) effectiveOverrides;
-
-    # Make the nix icon theme available where the `global` override grants
-    # access to it (NixOS does not populate /usr/share).
-    fileSystems."/usr/share/icons" = {
-      device = "/run/current-system/sw/share/icons";
-      fsType = "none";
-      options = [
-        "rbind"
-        "ro"
-        "x-gvfs-hide"
-      ];
-    };
   };
 }
