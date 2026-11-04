@@ -17,15 +17,7 @@ let
 
   # Multimedia Packages
 
-  ffmpeg-full-unfree =
-    let
-      withUnfree = pkgs.unstable.ffmpeg-full.override {
-        withUnfree = true;
-        withTensorflow = false;
-      };
-    in
-    withUnfree;
-
+  ffmpeg-full-unfree = pkgs.unstable.ffmpeg-full.override { withUnfree = true; };
 in
 {
   config = mkIf (cfg.enable && !generalCfg.minimal) {
