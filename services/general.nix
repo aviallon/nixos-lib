@@ -10,27 +10,6 @@ let
   desktopCfg = config.aviallon.desktop;
   laptopCfg = config.aviallon.laptop;
   generalCfg = config.aviallon.general;
-
-  journaldConfigValue =
-    value:
-    if value == true then
-      "true"
-    else if value == false then
-      "false"
-    else if isList value then
-      toString value
-    else
-      generators.mkValueStringDefault { } value;
-
-  isNullOrEmpty = v: (v == null) || (isList v && (length v == 0));
-
-  journaldConfig =
-    settings:
-    (generators.toKeyValue {
-      mkKeyValue = generators.mkKeyValueDefault {
-        mkValueString = journaldConfigValue;
-      } "=";
-    } (filterAttrs (n: v: !(isNullOrEmpty v)) settings));
 in
 {
 
@@ -108,11 +87,7 @@ in
 
     services.fwupd.enable = true;
 
-    services.journald.extraConfig = mkOverride 2 (journaldConfig cfg.journald.extraConfig);
-
-    aviallon.services.journald.extraConfig = {
-      Storage = mkIf generalCfg.unsafeOptimizations "volatile";
-    };
+    services.journald.settings.Journal = cfg.journald.extraConfig;
 
     services.ananicy.enable = false;
     services.ananicy.package = pkgs.ananicy-cpp;
