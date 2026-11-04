@@ -93,7 +93,7 @@ in
       newSession = true;
     };
 
-    programs.ccache.enable = true;
+    programs.ccache.enable = false; # Breaks with new security wrappers
 
     nix.settings.extra-sandbox-paths = [
       (toString config.programs.ccache.cacheDir)
