@@ -88,13 +88,13 @@ in
           networkmanager-l2tp
         ];
     };
-    networking.wireless.enable = (cfg.backend != "NetworkManager");
-    networking.wireless.iwd.enable = true;
+    #networking.wireless.enable = (cfg.backend != "NetworkManager");
+    #networking.wireless.iwd.enable = true;
     networking.wireless.dbusControlled = true;
     networking.wireless.athUserRegulatoryDomain = true;
 
     # Must always be false
-    networking.useDHCP = false;
+    networking.useDHCP = mkDefault false;
 
     networking.hostId = mkDefault (
       substring 0 8 (builtins.hashString "sha256" config.networking.hostName)
