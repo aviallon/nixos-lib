@@ -110,7 +110,7 @@ in
     nix.allowedUsers = mkIf cfg.hardcore (mkQuasiForce [ "@wheel" ]);
 
     # Can really badly affect performance in some occasions.
-    security.audit.enable = mkDefault true;
+    security.audit.enable = mkIf cfg.hardcore true;
     security.auditd.enable = mkQuasiForce false;
 
     systemd.services.systemd-journald =
