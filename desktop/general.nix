@@ -93,7 +93,7 @@ in
       aviallon.boot.cmdline = {
         splash = mkIf (!generalCfg.debug) "";
         "udev.log_level" = mkIf (!generalCfg.debug) 3;
-        preempt = mkDefault "full";
+        preempt = mkDefault "lazy";
         "usbhid.mousepoll" = 1; # 1ms latency for mouse
         "usbhid.kbpoll" = 4; # 4ms latency for kb
         "systemd.log_level" = config.boot.initrd.systemd.managerEnvironment.SYSTEMD_LOG_LEVEL;
