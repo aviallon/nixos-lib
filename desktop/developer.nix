@@ -140,7 +140,6 @@ in
     ];
 
     services.ollama = {
-      enable = mkDefault true;
       loadModels = [ "yi-coder:1.5b" ];
       group = "ollama";
       user = "ollama";
